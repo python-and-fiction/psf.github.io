@@ -297,7 +297,7 @@ ui.label(text='some label')
 超链接，一种点击之后跳转到指定地址的文本元素。可以传入`text`、`target`、`new_tab`三个参数。代码如下：
 
 ```python3
-ui.link(text='NiceGUI on GitHub',target= 'https://github.com/zauberzeug/nicegui',new_tab=False)
+ui.link(text='NiceGUI on GitHub', target= 'https://github.com/zauberzeug/nicegui', new_tab=False)
 ```
 
 `text`参数，字符串类型，表示超链接显示什么文字。
@@ -363,12 +363,12 @@ ui.html('This is <u>emphasized</u>.', tag='em')
 以下代码就是一个定义了基本交互的按钮，点击会弹出一个通知提示：
 
 ```python3
-ui.button('Click me!',color='green',icon='thumb_up', on_click=lambda: ui.notify('You clicked me!'))
+ui.button('Click me!', color='green', icon='thumb_up', on_click=lambda: ui.notify('You clicked me!'))
 ```
 
 `text`参数，字符串类型，表示显示在按钮上的文字，如果是英文的话，默认全部大写。该参数默认只支持字符串类型，但是整数和小数可以直接使用，其他类型需要先转换为字符串类型才能传入。
 
-`color`参数，字符串类型或者None，表示按钮的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者None（即让按钮变成默认颜色）。
+`color`参数，字符串类型或者None，表示按钮的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让按钮变成默认颜色）。
 
 `icon`参数，字符串类型，表示按钮额外显示的图标，支持传入字符串类型的图标名，具体名字会在`ui.icon`中介绍，这里不做详细介绍。
 
@@ -377,7 +377,7 @@ ui.button('Click me!',color='green',icon='thumb_up', on_click=lambda: ui.notify(
 如果觉得对按钮传入参数来自定义按钮内容的方法太死板，也可以使用以下语法，使用`with`来进入按钮的`default slot`，随意组合按钮内的内容：
 
 ```python3
-with ui.button(color='green',on_click=lambda: ui.notify('You clicked me!')):
+with ui.button(color='green', on_click=lambda: ui.notify('You clicked me!')):
     ui.icon('thumb_up')
     ui.label('Click me!')
 ```
@@ -411,8 +411,8 @@ button.on_click(test)
 以下代码定义了一个名字输入框和密码输入框，并在输入名字的时候，自动弹出通知显示名字和密码：
 
 ```python3
-name = ui.input(label='Name:',value='Peter',on_change=lambda :ui.notify(f'{name.value=},{password.value=}'))
-password = ui.input(label='Password:',value='123456',password=True,password_toggle_button=True)
+name = ui.input(label='Name:', value='Peter', on_change=lambda :ui.notify(f'{name.value=},{password.value=}'))
+password = ui.input(label='Password:', value='123456', password=True, password_toggle_button=True)
 ```
 
 ![input](README.assets/ui_input.png)
@@ -428,6 +428,31 @@ password = ui.input(label='Password:',value='123456',password=True,password_togg
 `password_toggle_button`参数，布尔类型，表示输入框内是否显示密码按钮，密码按钮可以切换输入框内的密码、明文状态。
 
 输入框控件还有很多参数和方法，就留给读者自己探索了，后续如有相关案例，到时候再细讲。
+
+##### 2.3.2.3 ui.slider和ui.knob
+
+ui.slider是滑动条，这个比较简单，参数也不多，按理说不用专门讲一下，自学即可。至于ui.knob——旋钮，这个的样式参数比较多，也有很大的自定义自由度，值得一讲。不过，这些都不是这里要专门放在一起介绍的原因，具体原因是什么，这里先卖个关子，后面再做解释。
+
+先看一段代码：
+
+```python3
+slider = ui.slider(min=0, max=100, step=1, value=50)
+ui.knob(min=0, max=100, step=1, value=50,
+        color='orange', center_color='blue', track_color='black',
+        size='3.5em',
+        show_value=True
+        ).bind_value(slider, 'value')
+```
+
+![ui_knob](README.assets/ui_knob.png)
+
+可以看到，ui.knob的前四个参数和ui.slider的一样，都是浮点类型，分别代表最小值、最大值、每次调整的最小步长、当前值。
+
+在ui.knob中，有`color`、`center_color`、 `track_color`三种可以传参修改的颜色，分别代表旋钮边缘的颜色、旋钮中间的颜色、旋钮边缘没有覆盖之前的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）、`None`（即让按钮变成默认颜色）或者`"primary"`（跟随主题颜色）。
+
+`size`是旋钮的整体大小，字符串类型，采用CSS语法的大小表示方式。
+
+`show_value`参数，布尔类型，是否在旋钮中间显示当前值。
 
 #### 2.3.3 多媒体控件
 
@@ -449,7 +474,7 @@ img2 = ui.interactive_image(src)
 
 除了`source`参数外，ui.interactive_image还有以下参数：
 
-`content`参数，字符串类型，表示覆盖在图片之上的SVG内容，SVG的画布大小就是图片的大小。当然，不太理解SVG的话也没关系，后面用到会详细介绍，也可以专门找一下资料。这里可以简单理解为一种用定义描述的几何图形，这种图形不会因为缩放变成马赛克，因为它是基于定义绘制的。
+`content`参数，字符串类型，表示覆盖在图片之上的SVG内容，SVG的画布大小就是图片的大小。当然，不太理解SVG的话也没关系，后面用到会详细介绍，也可以专门找一下资料。这里可以简单理解SVG为一种用定义描述的几何图形，这种图形不会因为缩放变成马赛克，因为它是基于定义绘制的。
 
 `size`参数，元组类型（宽度，高度），表示如果`source`没有设置的话，这就是默认图形的尺寸。这个对于绘制上面的SVG内容来说比较重要，因为这个尺寸就是画布的大小。对于想要交互创建SVG内容的操作，指定画布大小很重要。
 
@@ -474,9 +499,65 @@ with ui.interactive_image(src,on_mouse=lambda :ui.notify('You clicked interactiv
 
 
 
-##### 2.3.3.2 ui.icon和ui.avatar（更新中）
+##### 2.3.3.2 ui.icon和ui.avatar
 
+在[ui.button](#2.3.2.1 ui.button)中挖了一个有关ui.icon的坑，现在，终于到了填坑的时候。先看一个简单的示例，了解一下ui.icon控件的用法：
 
+```python3
+ui.icon(name='home', color='blue', size='xl')
+ui.icon(name='o_home', color='blue', size='xl')
+ui.icon(name='r_home', color='blue', size='xl')
+ui.icon(name='sym_o_home', color='blue', size='xl')
+ui.icon(name='sym_r_home', color='blue', size='xl')
+```
+
+<img src="README.assets/ui_icon.png" alt="ui_icon" style="zoom:67%;" />
+
+ui.icon的参数不多，就三个：
+
+`name`参数，字符串类型，表示图标字体中的图标名，ui.icon通过给定的图标名，从字体中加载图标，默认支持Material Icons图标字体。也可以自己添加其他图标字体，并结合对应图标字体的用法加载。这一部分需要根据具体情况灵活变通，这里不做详解。
+
+`color`参数，字符串类型，表示图标的颜色。
+
+`size`参数，字符串类型，表示图标的大小。
+
+理解参数不难，但是，给出的示例代码并没有看上去那么简单。这个时候，聪明的读者已经发现了猫腻：几个图标看上去很像，但不完全一样。再仔细看的话就会发现，它们的后缀都是一样的，只有前缀不同。没错，这组图标本质上都是一个，只是名字的前缀有特定的风格含义，需要特别注意一下。
+
+无前缀代表实心填充风格，"o\_" 前缀表示轮廓线风格，"r\_" 前缀表示圆角风格，"s\_"前缀表示锐化风格，"sym\_o\_"前缀表示轮廓线符号，"sym\_r\_"前缀表示圆角符号，"sym\_s\_" 前缀表示锐化符号。
+
+这个时候，有的读者就要头疼了，前缀就这么几个，还好记，可图标那么多，每个图标名字怎么记得住，有没有方便查询的网站？有，不过国内没法直接访问，那就是官网：
+
+ Material Icons查询网站（非中国大陆地区）：https://fonts.google.com/icons?icon.set=Material+Icons
+
+当然，国内也有很多渠道查询，为了避免广告嫌疑，这里就不具体指明了。
+
+不过，只是提供一个404网站，教程就失去了意义，这里还有一个备用方法，那就是小工具：
+
+ Material Icons查询器：`src\chinese_guide_of_nicegui_for_beginner\2_3_3_2_ui_icon.py`
+
+<img src="README.assets/ui_icon_query.png" alt="ui_icon_query" style="zoom:67%;" />
+
+在输入框输入关键字，选定需要的名字，然后在下面查看各个风格的图标预览，最后确定要使用的图标名称。要注意的是，图标名是遍历字体库源代码下的文件夹名字，有的图标不支持全部风格，如果发现下面的预览存在图标异常或者各个风格没有区分，证明这个图标不支持全部风格，读者需酌情调整。
+
+这一节到这里还没结束，还有一个控件要一并讲解。之所以放在一起讲，是因为这个控件主要参数和ui.icon一样，实际应用也不少，那就是头像控件——ui.avatar。
+
+按照惯例先看代码：
+
+```python3
+ui.avatar(icon='favorite_border', color='green-5', text_color='blue-10',
+          size='60px', font_size='50px', square=False, rounded=True)
+ui.avatar(icon='favorite_border', color='green-5', text_color='blue-10',
+          size='60px', font_size='50px', square=True, rounded=False)
+# 使用图片地址作为头像
+url = 'https://nicegui.io/logo_square.png'
+ui.avatar(f'img:{url}')
+with ui.avatar():
+    ui.image(url)
+```
+
+![ui_avatar](README.assets/ui_avatar.png)
+
+从参数上看，`icon`就是ui.icon的`name`；颜色这里不太一样，`color`和`text_color`分别代表头像的背景颜色、图标颜色；`size`是头像大小，`font_size`是图标大小。此外，还有两个布尔类型的参数决定头像框的形状：`square`是方形， `rounded`是圆角方形，如果两个都是`False`，头像框就是圆形。
 
 ##### 2.3.3.3 ui.audio和ui.video（更新中）
 
@@ -490,7 +571,9 @@ echart
 
 pyplot
 
-progress（线性和圆形）只用来展示但不能输入的，输入要用slider和knob
+progress:ui.和ui.（线性和圆形）只用来展示但不能输入的，输入要用slider和knob
+
+前面[ui.slider和ui.knob](#2.3.2.3 ui.slider和ui.knob)介绍过滑动条和旋钮，肯定有聪明的读者想用这两个控件做条形进度条和环形进度条，但是，这一节的标题已经表明，有专门的进度条控件，使用滑动条和旋钮充当进度条就未免有些画蛇添足。更关键的是，滑动条和旋钮接受用户输入，如果想避免用户输入影响数据展示，还要将控件禁用，具体样式又要做诸多调整，很不方便。然而，进度条控件没有这些弊端，使用起来更加简单。显然，这一节要介绍的进度条控件更适合展示进度。
 
 spinner
 
