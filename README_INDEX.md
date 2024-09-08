@@ -1260,24 +1260,6 @@ ui.run(native=True)
 
 字符串类型参数`code`就是要执行的JavaScript代码，浮点类型参数`timeout`是超时，有些JavaScript方法的执行时间比较长，可以修改这个参数来避免JavaScript执行触发超时而导致结果返回失败。
 
-##### 2.3.7.6 异步事件处理器
-
-使用`async`修饰的函数叫做异步函数，内部可以使用`await`修饰异步操作。异步的特点是按顺序执行，在对应的操作没有出结果之前不会执行下一步。ui.button的on_click可以执行异步函数，如果在异步函数内有异步操作的话，即便内部操作比较耗时，ui.button也不会因此卡住。以下面代码为例，点击按钮之后，结果没有及时响应，因为执行的是异步函数，只要耐心等待，最后执行的结果还是会准确返回。代码如下：
-
-```python3
-import asyncio
-from nicegui import ui
-
-async def async_task():
-    ui.notify('Asynchronous task started')
-    await asyncio.sleep(5)
-    ui.notify('Asynchronous task finished')
-
-ui.button('start async task', on_click=async_task)
-
-ui.run(native=True)
-```
-
 #### 2.3.8 网站页面（更新中）
 
 ui.page和auto-index的区别
