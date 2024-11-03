@@ -534,7 +534,7 @@ Candidate multilib: .;@m64
 Selected multilib: .;@m64
 ```
 
-另外，此步骤不得不使用tur-repo的包，安装过程需要良好的Github连接性，网络不好的话可以多试几次。
+另外，此步骤不得不使用tur-repo的包，安装过程需要良好的Github连接性，网络不好的话可以多试几次。由于模拟器（网易mumu）兼容性有问题，完成上述操作之后也不能编译成功，不过手机（红米note9，aarch64）上实测可以编译成功，并且后续安装gradio也能成功。
 
 gradio最大的安装难点是ruff的编译，虽然termux提供了ruff，但不是pip包，gradio没法识别，必须自己安装一次。而ruff的编译需要链接gcc库，默认的gcc是clang，而不是真的gcc，需要通过启用tur-repo来安装gcc，进而让编译时可以成功链接。
 
