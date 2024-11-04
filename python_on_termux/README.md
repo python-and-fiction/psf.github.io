@@ -320,33 +320,33 @@ nicegui[sass]依赖libsass。
 
 依赖测试结果如下：
 
-| 依赖库             | 安装结果 | 备注                                                      |
-| ------------------ | -------- | --------------------------------------------------------- |
-| aiofiles           | 成功     | 二进制包                                                  |
-| aiohttp            | 成功     | 源代码包                                                  |
-| certifi            | 成功     | 二进制包                                                  |
-| docutils           | 成功     | 二进制包                                                  |
-| fastapi            | 成功     | 二进制包<br>依赖pydantic_core（源代码包）                 |
-| httpx              | 成功     | 二进制包                                                  |
-| ifaddr             | 成功     | 二进制包                                                  |
-| itsdangerous       | 成功     | 二进制包                                                  |
-| jinja2             | 成功     | 二进制包<br>依赖MarkupSafe（源代码包）                    |
-| markdown2          | 成功     | 二进制包                                                  |
-| orjson             | 成功     | 源代码包                                                  |
-| Pygments           | 成功     | 二进制包                                                  |
-| python-multipart   | 成功     | 二进制包                                                  |
-| python-socketio    | 成功     | 二进制包                                                  |
-| requests           | 成功     | 二进制包                                                  |
-| typing-extensions  | 成功     | 二进制包                                                  |
-| urllib3            | 成功     | 二进制包                                                  |
-| uvicorn            | 成功     | 二进制包                                                  |
-| uvloop             | 成功     | 源代码包<br/>uvicorn[standrad]的依赖<br>安装nicegui时触发 |
-| vbuild             | 成功     | 二进制包                                                  |
-| watchfiles         | 成功     | 源代码包                                                  |
-| plotly             | 成功     | 二进制包                                                  |
-| matplotlib         | 成功     | 使用wiki教程<br>`pkg install matplotlib`                  |
-| nicegui-highcharts | 成功     | 二进制包<br>依赖nicegui（二进制包）                       |
-| libsass            | 成功     | `pkg install python-libsass`                              |
+| 依赖库             | 安装结果 | 备注                                                         |
+| ------------------ | -------- | ------------------------------------------------------------ |
+| aiofiles           | 成功     | 二进制包                                                     |
+| aiohttp            | 成功     | 源代码包                                                     |
+| certifi            | 成功     | 二进制包                                                     |
+| docutils           | 成功     | 二进制包                                                     |
+| fastapi            | 成功     | 二进制包<br>依赖pydantic_core（源代码包）                    |
+| httpx              | 成功     | 二进制包                                                     |
+| ifaddr             | 成功     | 二进制包                                                     |
+| itsdangerous       | 成功     | 二进制包                                                     |
+| jinja2             | 成功     | 二进制包<br>依赖MarkupSafe（源代码包）                       |
+| markdown2          | 成功     | 二进制包                                                     |
+| orjson             | 成功     | 源代码包                                                     |
+| Pygments           | 成功     | 二进制包                                                     |
+| python-multipart   | 成功     | 二进制包                                                     |
+| python-socketio    | 成功     | 二进制包                                                     |
+| requests           | 成功     | 二进制包                                                     |
+| typing-extensions  | 成功     | 二进制包                                                     |
+| urllib3            | 成功     | 二进制包                                                     |
+| uvicorn            | 成功     | 二进制包                                                     |
+| uvloop             | 成功     | 源代码包<br/>uvicorn[standrad]的依赖<br>安装nicegui时触发    |
+| vbuild             | 成功     | 二进制包                                                     |
+| watchfiles         | 成功     | 源代码包                                                     |
+| plotly             | 成功     | 二进制包                                                     |
+| matplotlib         | 成功     | 参考wiki教程<br>使用`pkg install matplotlib`安装<br>此命令会同时安装好numpy和pillow |
+| nicegui-highcharts | 成功     | 二进制包<br>依赖nicegui（二进制包）                          |
+| libsass            | 成功     | `pkg install python-libsass`                                 |
 
 之后安装nicegui没有任何问题。
 
