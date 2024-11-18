@@ -520,7 +520,7 @@ gradio依赖以下库：aiofiles, anyio, fastapi, ffmpy, gradio-client, httpx, h
 -   安装gcc编译器，命令行为`pkg install gcc-14`。
 -   编译ruff，命令行为`pip install ruff`。
 
-再安装完gcc编译器之后，使用`gcc -v`应该可以看到检测到gcc编译器的提示，而不是之前只有clang的版本信息。
+在安装完gcc编译器之后，使用`gcc -v`应该可以看到检测到gcc编译器的提示，而不是之前只有clang的版本信息。
 
 ```shell
 ~ $ gcc -v
