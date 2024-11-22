@@ -88,9 +88,9 @@ from textual.widgets import Static
 
 class MyApp(App):
     def compose(self):
-        yield Static("Hello World!")
+        yield Static('Hello World!')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = MyApp()
     app.run()
 ```
@@ -133,7 +133,7 @@ from textual.widgets import Static
 
 class MyApp(App):
     def compose(self):
-        yield Static("Hello World!")
+        yield Static('Hello World!')
 
 app = MyApp()
 ```
@@ -288,9 +288,9 @@ from textual.widgets import Static
 
 class MyApp(App):
     def compose(self):
-        yield Static("Hello World!")
+        yield Static('Hello World!')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = MyApp()
     app.run()
 ```
@@ -310,9 +310,9 @@ class MyApp(App):
         super().__init__(*args,**kwargs)
         self.ansi_color = False
     def compose(self):
-        yield Static("Hello World!")
+        yield Static('Hello World!')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = MyApp()
     app.run(inline=False)
 ```
@@ -349,24 +349,24 @@ from textual import events
 
 class EventApp(App):
     COLORS = [
-        "white",
-        "maroon",
-        "red",
-        "purple",
-        "fuchsia",
-        "olive",
-        "yellow",
-        "navy",
-        "teal",
-        "aqua",
+        'white',
+        'maroon',
+        'red',
+        'purple',
+        'fuchsia',
+        'olive',
+        'yellow',
+        'navy',
+        'teal',
+        'aqua',
     ]
     def on_mount(self) -> None:
-        self.screen.styles.background = "darkblue"
+        self.screen.styles.background = 'darkblue'
     def on_key(self, event: events.Key) -> None:
         if event.key.isdecimal():
             self.screen.styles.background = self.COLORS[int(event.key)]
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = EventApp()
     app.run()
 ```
@@ -381,23 +381,224 @@ if __name__ == "__main__":
 
 ##### 2.2.3.3 组件
 
+组件，在其他UI框架中也可以称之为控件，是用户界面上重要的组成部分。组件是一个或者一组预先定义好的内容，可以在终端中（在textual中称之为当前屏幕）显示出来，用来构成用户界面。和其他UI框架中的控件类似，textual的组件包括静态文本（之前代码中的Static）、按钮、输入框等官方实现的组件，方便开发者组合定义自己想要的组件。
 
+想必聪明的读者在学习前面的代码时已经注意到，MyApp类中除了介绍过的`on_`开头的事件响应方法，还包含着一个名为`compose`的方法，需要显示的静态文本就放在这个方法内。
 
-退出
+没错，不同于其他框架（比如之前学习的nicegui）调用控件代码就会直接显示控件，textual显示控件的方法，有点类似使用布局定义好控件之后，统一调用显示方法来显示控件。在textual中，这个统一的显示方法，就是App子类中的compose方法。在compose方法中，使用`yield`关键字（类似`return`）返回要显示的组件，使compose方法变成一个生成器，textual框架就会将compose方法中返回的组件显示到终端中。不同于`return`只能返回一次，多次使用`yield`可以返回多个组件，这样的话，终端上可以显示多个组件。
 
+在compose方法中定义需要显示的组件是简单好用的方法，一般推荐读者这样操作。但是，在此方法中显示组件是随着textual程序运行一同进行的，如果需要在执行交互之后才显示组件，那就要用到App类的mount方法。调用此方法，并给此方法传入组件，即可在需要的时候显示组件。
 
+以下面的代码为例，对比一下两种显示组件的方法。代码中，compose方法使用了两次yield，使得终端里可以显示两个静态文本。因为这里没有设置控件的布局，因此第二个静态文本“Please input:”是以终端默认的显示方式——换行，显示在第一个静态文本之后。
 
-挂起
+在on_key方法中，当按键为数字键时，通过调用`self.mount`，并传入静态文本控件，可以实现基于按键操作显示新的静态文本。
 
+代码和效果图如下：
 
+```python3
+from textual.app import App
+from textual.widgets import Static
 
-CSS
+class MyApp(App):
+    def compose(self):
+        yield Static('Hello World!')
+        yield Static('Please input:')
+    def on_key(self, event):
+        if event.key.isdecimal():
+            self.mount( Static(f'Hello {event.key}!') )
 
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
 
+![widget](textual.assets/widget.gif)
 
-标题与副标题
+##### 2.2.3.4 退出
 
+退出程序的方法，不止`ctrl`+`c`。
 
+一开始介绍textual的代码时，只说了退出程序使用组合键`ctrl`+`c`。其实，这样说没错，一般运行终端命令，想要强制结束程序的时候，就是使用这个组合键。但是，如果细细思考，这个说法似乎有问题。组合键是强制结束时候使用，正常结束的话，有没有编程执行的结束方法？总不能模拟组合键吧？如果想要添加个退出按钮呢？该如何让按钮执行退出操作？
+
+上面几个问题的答案，就在下面的代码中。当然，代码中涉及到后面才会讲到的知识点，这里不会细讲，本节只讲`self.exit()`这种退出方法。如果读者有兴趣并且学有余力，可以自行对照官网文档学习。若是读者不着急，可以期待后面相关的章节中，再次回顾这里的代码，那时会细讲一次。
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    def compose(self):
+        yield Static('Hello World!')
+        yield Static('Press q or click buttons to quit:')
+        yield Button('Exit',action='app.exit_app()')
+        yield Button('Quit',action='app.quit()')
+    def on_key(self, event):
+        if event.key == 'q':
+            self.exit()
+    def action_exit_app(self):
+        self.exit()
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![exit](textual.assets/exit.png)
+
+代码实现了三种退出程序的方法，其中，使用点击按钮的方法是后面的知识点，这里仅供读者体验，不要求掌握，暂时也不细讲。此外，还有一种方法，就是结合前面讲过的事件，在响应按键的方法中，通过识别当前按键是不是`q`键，来决定是否执行`self.exit()`。其中，self就是后面实例化的App子类，也就是子类的实例。该实例有名为exit的方法，调用此方法就可以退出textual程序。
+
+##### 2.2.3.5 CSS
+
+前面提到过textual支持CSS样式，可教程直到现在，用于演示的代码既没有布局设计，也没有一点CSS美化的痕迹，不写一个相关示例来展示一下，读者恐怕要失去对textual的兴趣了。
+
+别急，示例这就来了。虽然textual的CSS样式不是标准Web的CSS，但是语法类似，如果有nicegui入门教程的基础，哪怕直接上手textual的CSS，也没什么难度。
+
+就以上一节的代码为例，通过设置CSS样式，让界面变得好看一些。
+
+以下是程序要用的CSS样式代码。在上面的`myapp.py`文件同目录下创建`myapp.tcss`，将代码存到文件中。
+
+```css
+Screen {
+    layout: grid;
+    grid-size: 2;
+    grid-gutter: 2;
+    padding: 2;
+}
+Static {
+    width: 100%;
+    height: 100%;
+    column-span: 2;
+    content-align: center bottom;
+    text-style: bold;
+}
+Button {
+    width: 100%;
+}
+```
+
+将`myapp.py`文件内容修改如下，主要是添加`CSS_PATH = 'myapp.tcss'`。
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def compose(self):
+        yield Static('Hello World!')
+        yield Static('Press q or click buttons to quit:')
+        yield Button('Exit',action='app.exit_app()')
+        yield Button('Quit',action='app.quit()')
+    def on_key(self, event):
+        if event.key == 'q':
+            self.exit()
+    def action_exit_app(self):
+        self.exit()
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+运行代码，即可看到效果如图：
+
+![css](textual.assets/css.png)
+
+给类设置`CSS_PATH`的值为tcss文件的路径，即可给该App子类的组件设置样式。具体的样式用法会在后面的样式章节专门讲，这里只是介绍一下应用样式的方法。值得注意的是，这里的样式文件使用tcss为扩展名，并不是说一定要用这个扩展名才行。这里是为了与Web中的CSS文件区分，不使用常规的css为扩展名，而是采用了含义为textual css的tcss。当然，如果读者有其他偏好，使用其他扩展名也可以。
+
+采用单独文件保存样式的话，如果是用调试模式运行程序，在样式文件中修改样式，修改效果会实时显示到终端中。
+
+如果不太喜欢这种将样式放到单独文件中的形式，可以参考下面的代码，给类设置`CSS`的值为完整的样式内容，即可将样式嵌入到python源代码中。
+
+需要注意的是，为了样式美观，代码中的样式采用缩进形式换行，因此使用的是三引号的多行文本。在实际使用过程中，样式可以去掉换行，成为一行内容，那就可以只用单引号的字符串。
+
+另外，将样式嵌入到python源代码中，会使样式实时显示修改的功能失效，这也算有得有失吧。
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    CSS = '''
+    Screen {
+        layout: grid;
+        grid-size: 2;
+        grid-gutter: 2;
+        padding: 2;
+    }
+    Static {
+        width: 100%;
+        height: 100%;
+        column-span: 2;
+        content-align: center bottom;
+        text-style: bold;
+    }
+    Button {
+        width: 100%;
+    }
+    '''
+    def compose(self):
+        yield Static('Hello World!')
+        yield Static('Press q or click buttons to quit:')
+        yield Button('Exit',action='app.exit_app()')
+        yield Button('Quit',action='app.quit()')
+    def on_key(self, event):
+        if event.key == 'q':
+            self.exit()
+    def action_exit_app(self):
+        self.exit()
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+##### 2.2.3.6 标题与副标题
+
+textual的类除了`CSS_PATH`和`CSS`这两个设置样式的属性之外，还有`TITLE`和`SUB_TITLE`这两个属性，分别表示程序的标题和副标题。为了显示标题和副标题，需要添加Header标题栏。代码如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button,Header
+
+class MyApp(App):
+    TITLE = 'MyApp'
+    SUB_TITLE = 'Best App'
+    def compose(self):
+        yield Header()
+        yield Static('Hello World!')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+显示效果如图：
+
+![title](textual.assets/title.svg)
+
+当然，这两个是类属性，如果想在创建实例之后动态修改，就不能使用这两个纯大写的属性，而是使用纯小写的属性代替。参考下面的代码，代码中没有在类中设置标题和副标题，而是在App子类实例化之后，使用实例的属性设置标题和副标题，这样得到的显示效果和上图一样。此外，此操作方法也可用于事件的响应代码中，实现动态修改标题和副标题。在代码中，通过判断按键是数字还是字母，来将标题修改为数字，将副标题修改为字母。
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button,Header
+
+class MyApp(App):
+    def compose(self):
+        yield Header()
+        yield Static('Hello World!')
+    def on_key(self, event):
+        if event.key.isdecimal():
+            self.title = event.key
+        if event.key.isalpha():
+            self.sub_title = event.key
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.title = 'MyApp'
+    app.sub_title = 'Best App'
+    app.run()
+```
 
 #### 2.2.4 样式
 
@@ -459,9 +660,17 @@ https://textual.textualize.io/api/
 
 ​	run和serve的端口参数`--port`，同名不同义，修改serve命令调试端口的技巧
 
+基本概念
+
+​	退出
+
+​		程序退出也有参数技巧，退出run循环之后，实际上还能执行代码，可以在run方法之后，接受textual程序的返回值，来判断程序是不是正常退出。
+
+​	挂起
+
 主题
 
-反应
+反应性
 
 worker
 
