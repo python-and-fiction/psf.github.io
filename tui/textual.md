@@ -504,7 +504,7 @@ if __name__ == '__main__':
 
 ![css](textual.assets/css.png)
 
-给类设置`CSS_PATH`的值为tcss文件的路径，即可给该App子类的组件设置样式。具体的样式用法会在后面的样式章节专门讲，这里只是介绍一下应用样式的方法。值得注意的是，这里的样式文件使用tcss为扩展名，并不是说一定要用这个扩展名才行。这里是为了与Web中的CSS文件区分，不使用常规的css为扩展名，而是采用了含义为textual css的tcss。当然，如果读者有其他偏好，使用其他扩展名也可以。
+给类设置`CSS_PATH`的值为tcss文件的路径，即可给该App子类的组件设置样式。具体的样式用法会在后面的样式章节专门讲，这里只是介绍一下应用样式的方法。值得注意的是，这里的样式文件使用tcss为扩展名，并不是说一定要用这个扩展名才行。这里是为了与Web中的CSS文件区分，不使用常规的css为扩展名，而是采用了含义为textual css的tcss。当然，如果读者有其他偏好，使用其他扩展名也可以。不过，如果想要使用官方提供的[CSS语法高亮扩展](https://marketplace.visualstudio.com/items?itemName=Textualize.textual-syntax-highlighter)，最好使用tcss后缀，否则只能手动选择语法高亮方案为TextualCSS。vscode用户可以安装此扩展，在打开tcss文件之后看到对应的语法高亮。
 
 采用单独文件保存样式的话，如果是用调试模式运行程序，在样式文件中修改样式，修改效果会实时显示到终端中。
 
@@ -602,9 +602,92 @@ if __name__ == '__main__':
 
 #### 2.2.4 样式
 
+上一节中，介绍了textual程序的基本组成和用法，那些是后续开发中常用的功能。其中，CSS这一节还介绍了加载CSS文件样式的两种方法。不过，在正式学习textual的CSS语法之前，还有必要介绍一个应用样式的接口。相比于记住语法规则和编写完整的CSS文件，直接使用组件的接口设置组件的样式，更简单快捷。
+
+组件有一个名为`styles`的属性，该属性代表组件的样式接口。通过调用此属性下的子属性，可以快速设置对应属性代表的样式。
+
+下面的代码展示了如何使用此接口设置screen（一个代表当前屏幕的特殊组件，屏幕的用法和更多知识后面会细讲）和普通组件静态文本的样式，修改它们的颜色和其他样式。
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def compose(self):
+        text = Static('Hello World!')
+        text.styles.color = 'red'
+        yield text
+    def on_mount(self):
+        self.screen.styles.background = 'darkblue'
+        self.screen.styles.border = ('heavy', 'white')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+效果如图：
+
+![styles](textual.assets/styles.png)
+
+代码中，`text.styles.color = 'red'`是设置静态文本的颜色为红色，对于文本而言，颜色（更多用法参考[官网文档](https://textual.textualize.io/styles/color/)）就是指文字的颜色，如果是其他具有前景颜色属性的组件，则颜色表示前景色。`self.screen.styles.background = 'darkblue'`是把当前屏幕的背景色（更多用法参考[官网文档](https://textual.textualize.io/styles/background/)）设置为深蓝色。对于屏幕而言，其前景色表示显示在上面的、没有指定颜色的文本的颜色，而上面的静态文本已经指定颜色，这里指定颜色的优先级比上面的指定低，因此这里是设置了背景色来表明效果。此外，`self.screen.styles.border = ('heavy', 'white')`还设定了当前屏幕的边框粗细和边框颜色（更多用法参考[官网文档](https://textual.textualize.io/styles/border/)）。
+
+相信读者已经注意到一点，上面代码中用到的颜色都是含义通俗易懂的字符串，而不是使用十六进制数字或者三元组数字等量化表示颜色的方法。其实，textual支持那些有点神秘的数字表示法，只是为了更易懂一些，代码中特地使用了textual预先定义好的颜色名字。具体名字可以参考[官网文档](https://textual.textualize.io/api/color/#textual.color--named-colors)或者下图：
+
+![color](textual.assets/color.png)
+
+至于量化表示颜色的方法，textual支持这几种表示方法：
+
+-   RGB颜色，以`#`开头，六位十六进制数字，每两位代表一种颜色的分量值，依次代表红色、绿色、蓝色，例如`#ff0000`（红色）。对于代表颜色分量的两位数字一样的情况，可以简写为一位数字，那原来`#`后的六位数字就可以变成三位数字，例如前面表示红色的示例可以写成`#f00`。
+-   RGB 颜色，以`rgb`开头，形式类似调用函数，有三个参数，都是十进制数字（也就是上一种表达方式中的十六进制数字对应的十进制值），分别是代表红色、绿色、蓝色，例如`rgb(255,0,0)`
+-   HSL 颜色，以`hsl`开头，形式类似调用函数，有三个参数，分别是色相、饱和度、亮度。其中，色相是取值0-360的角度，饱和度和亮度是取值0%-100%的百分比，例如`hsl(0,100%,50%)`（红色）。
+
+除了上面的颜色表达方式，`color`属性和`background`属性还接受Color对象作为动态的颜色。Color对象支持的方法和更多用法可以参考[官网文档](https://textual.textualize.io/api/color/)，这里只简单介绍一下需要用的方法。
+
+想要使用Color对象，需要从textual.color模块中导入。使用`from textual.color import Color`导入之后，就和前面介绍的第二种RGB颜色表达方法一样，Color对象的实例化需要三个对应的十进制参数。
+
+下面的代码中，使用了上面提到的五种颜色表示方法，来将静态文本的背景颜色设置为红色：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.color import Color
+
+class MyApp(App):
+    def compose(self):
+        text = [Static('Hello World!') for _ in range(5)]
+        text[0].styles.background = 'red' 
+        text[1].styles.background = '#ff0000' # 或者#f00
+        text[2].styles.background = 'rgb(255,0,0)'
+        text[3].styles.background = 'hsl(0,100%,50%)'
+        text[4].styles.background = Color(255,0,0)
+        for i in text:
+            yield i
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![color2](textual.assets/color2.png)
+
+
+
+透明度Alpha
+
+
+
+https://textual.textualize.io/styles/
+
 
 
 #### 2.2.5 textual的CSS
+
+
+
+https://textual.textualize.io/styles/
+
+https://textual.textualize.io/css_types/
 
 
 
@@ -618,6 +701,8 @@ DOM查询
 
 事件与消息
 
+https://textual.textualize.io/events/
+
 
 
 输入
@@ -630,7 +715,7 @@ DOM查询
 
 组件
 
-
+https://textual.textualize.io/widgets/
 
 动画
 
@@ -640,11 +725,7 @@ DOM查询
 
 
 
-
-
-### 2.3 组件详解
-
-
+### 2.3 组件一览
 
 
 
@@ -667,6 +748,10 @@ https://textual.textualize.io/api/
 ​		程序退出也有参数技巧，退出run循环之后，实际上还能执行代码，可以在run方法之后，接受textual程序的返回值，来判断程序是不是正常退出。
 
 ​	挂起
+
+样式
+
+​	颜色类（from textual.color import Color）
 
 主题
 
