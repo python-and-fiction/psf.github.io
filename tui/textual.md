@@ -634,7 +634,7 @@ if __name__ == '__main__':
 
 相信读者已经注意到一点，上面代码中用到的颜色都是含义通俗易懂的字符串，而不是使用十六进制数字或者三元组数字等量化表示颜色的方法。其实，textual支持那些有点神秘的数字表示法，只是为了更易懂一些，代码中特地使用了textual预先定义好的颜色名字。具体名字可以参考[官网文档](https://textual.textualize.io/api/color/#textual.color--named-colors)或者下图：
 
-![color](textual.assets/color.png)
+![color](textual.assets/color.svg)
 
 至于量化表示颜色的方法，textual支持这几种表示方法：
 
@@ -713,6 +713,10 @@ if __name__ == '__main__':
 ![color3](textual.assets/color3.png)
 
 尺寸相关
+
+
+
+![dimensions](textual.assets/dimensions.svg)
 
 
 
