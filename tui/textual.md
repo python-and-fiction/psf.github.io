@@ -716,9 +716,9 @@ if __name__ == '__main__':
 
 
 
-![dimensions](textual.assets/dimensions.svg)
 
 
+![dimensions](textual.assets/dimensions.png)
 
 
 
