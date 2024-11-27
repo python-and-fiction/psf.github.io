@@ -602,6 +602,8 @@ if __name__ == '__main__':
 
 #### 2.2.4 样式
 
+##### 2.2.4.1 样式接口
+
 上一节中，介绍了textual程序的基本组成和用法，那些是后续开发中常用的功能。其中，CSS这一节还介绍了加载CSS文件样式的两种方法。不过，在正式学习textual的CSS语法之前，还有必要介绍一个应用样式的接口。相比于记住语法规则和编写完整的CSS文件，直接使用组件的接口设置组件的样式，更简单快捷。
 
 组件有一个名为`styles`的属性，该属性代表组件的样式接口。通过调用此属性下的子属性，可以快速设置对应属性代表的样式。
@@ -630,7 +632,9 @@ if __name__ == '__main__':
 
 ![styles](textual.assets/styles.png)
 
-代码中，`text.styles.color = 'red'`是设置静态文本的颜色为红色，对于文本而言，颜色（更多用法参考[官网文档](https://textual.textualize.io/styles/color/)）就是指文字的颜色，如果是其他具有前景颜色属性的组件，则颜色表示前景色。`self.screen.styles.background = 'darkblue'`是把当前屏幕的背景色（更多用法参考[官网文档](https://textual.textualize.io/styles/background/)）设置为深蓝色。对于屏幕而言，其前景色表示显示在上面的、没有指定颜色的文本的颜色，而上面的静态文本已经指定颜色，这里指定颜色的优先级比上面的指定低，因此这里是设置了背景色来表明效果。此外，`self.screen.styles.border = ('heavy', 'white')`还设定了当前屏幕的边框粗细和边框颜色（更多用法参考[官网文档](https://textual.textualize.io/styles/border/)）。
+代码中，`text.styles.color = 'red'`是设置静态文本的颜色为红色，对于文本而言，颜色（更多用法参考[官网文档](https://textual.textualize.io/styles/color/)）就是指文字的颜色，如果是其他具有前景颜色属性的组件，则颜色表示前景色。`self.screen.styles.background = 'darkblue'`是把当前屏幕的背景色（更多用法参考[官网文档](https://textual.textualize.io/styles/background/)）设置为深蓝色。对于屏幕而言，其前景色表示显示在上面的、没有指定颜色的文本的颜色，而上面的静态文本已经指定颜色，这里指定颜色的优先级比上面的指定低，因此这里是设置了背景色来表明效果。此外，`self.screen.styles.border = ('heavy', 'white')`还设定了当前屏幕的边框粗细和边框颜色（更多用法参考[官网文档](https://textual.textualize.io/styles/border/)，或者看后面详细讲解的内容）。
+
+##### 2.2.4.2 颜色
 
 相信读者已经注意到一点，上面代码中用到的颜色都是含义通俗易懂的字符串，而不是使用十六进制数字或者三元组数字等量化表示颜色的方法。其实，textual支持那些有点神秘的数字表示法，只是为了更易懂一些，代码中特地使用了textual预先定义好的颜色名字。具体名字可以参考[官网文档](https://textual.textualize.io/api/color/#textual.color--named-colors)或者下图：
 
@@ -712,15 +716,471 @@ if __name__ == '__main__':
 
 ![color3](textual.assets/color3.png)
 
-尺寸相关
+##### 2.2.4.3 盒子模型
 
+如果有CSS基础的话，就能轻易想象到CSS中的盒子模型。没有基础也没关系，这里会再讲一遍。
 
+textual组件通常占据一个矩形区域，就像一个盒子一样。这个盒子最小可以到一个字符大小，最大可以到整个屏幕。当然，如果样式中启用了[滚动](https://textual.textualize.io/styles/overflow/)，还能更大。
 
+对于组件这个盒子而言，以下几种相关的样式会影响到组件的大小表现：
 
+-   [宽度（width）](https://textual.textualize.io/styles/width/)和[高度（height）](https://textual.textualize.io/styles/height/)决定了组件的显示大小。
+-   [内边距（padding）](https://textual.textualize.io/styles/padding/)决定了组件内包含的内容（如文字或者其他组件）到组件可视边界的距离。
+-   [边框（border）](https://textual.textualize.io/styles/border/)则让组件的可视边界变得突出，边框可以设置样式和粗细，内边距则是在边框粗细的基础上计算距离。
+
+其实，除了上面几个与组件显著相关的尺寸样式之外，[外边距（margin）](https://textual.textualize.io/styles/margin/)也是属于组件的尺寸样式，只不过外边距不会影响组件的大小和内容表现，只会在与其他组件一起参与布局时，表现为其他组件距离组件可视边界的远近。
+
+具体几个尺寸样式的关系，下图表现得很直观：
 
 ![dimensions](textual.assets/dimensions.png)
 
+##### 2.2.4.4 宽度、高度和比例单位
 
+设置组件的宽度（width）会限制组件的所使用的列数，设置组件的高度（height）会限制组件的所使用的行数。以下面的代码为例，在设置了宽度为30、高度为10之后（紫色区域的大小即组件的宽度和高度），原本多行的内容会被限制在很小的区域内，宽度小于内容宽度会导致内容换行，高度小于内容高度会导致超过指定高度的内容被裁剪，不会完整显示。
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+TEXT = '''The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!'''
+
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static(TEXT)
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.background = 'purple'
+        self.widget.styles.width = 30
+        self.widget.styles.height = 10
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![width_height](textual.assets/width_height.png)
+
+但是，更多时候需要设置组件的宽度为固定值，而让高度随内容变化。这时，可以设置高度为`'auto'`，这样的话，高度就会基于内容多少而变化，始终确保全部内容显示出来，代码如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+TEXT = '''The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!'''
+
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static(TEXT)
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.background = 'purple'
+        self.widget.styles.width = 30
+        self.widget.styles.height = 'auto'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![width_height_auto](textual.assets/width_height_auto.png)
+
+除了设置为固定值和基于内容变化的自动，textual还支持以下几种基于屏幕或者容器的比例单位：
+
+-   `%`为后缀、前面是数字表示百分比的字符串，代表组件的宽度或者高度是容器的百分之多少，例如`'50%'`。
+-   `vw`和`vh`为后缀、前面是数字表示百分比的字符串，代表组件的宽度或者高度是可视区域（即终端）的百分之多少，`vw`表示可视区域的宽度，`vh`表示可视区域的高度，例如`'50vw'`。
+-   `w`和`h`为后缀、前面是数字表示百分比的字符串，其用法与`%`后缀单位一样，只不过，`w`表示容器的宽度，`h`表示容器的高度。如果想要让宽度为容器的固定比例值，同时自身还要保持宽高比，不会随着容器的大小变化而比例变化，就可以将宽度和高度都设置为一样的单位，例如，设置宽度为`'50w'`，高度为`'150w'`。
+
+下面的代码中，三个静态文本被放到宽度只有终端宽度一半的容器中，它们的宽度分别被设置为`'50%'`、`'50vw'`、`'50w'`。可以从动态图中看到终端尺寸变化时，三者的效果区别：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container
+
+class MyApp(App):
+    def compose(self):
+        self.widgets = [ Static() for _ in range(3) ]
+        self.container = Container(*self.widgets)
+        yield self.container
+
+    def on_mount(self) -> None:
+        self.container.styles.width = '50%'
+        self.container.styles.height = 'auto'
+        for widget in self.widgets:
+            index = self.widgets.index(widget)
+            widget.styles.height = 5
+            widget.styles.background = ['purple','green','blue'][index]
+            widget.styles.width = ['50%','50vw','50w'][index]
+            widget.update(f'The widget\'s width is {['50%','50vw','50w'][index]}.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![width_height_percent](textual.assets/width_height_percent.gif)
+
+百分制的比例单位很好用，同时也带来另一个问题——如果想要让组件占据容器的三分之一，怎么写？
+
+100的三分之一，是33.3333……好吧，想要完美的三分之一的话，几乎不可能，只能用精度比较高的小数实现，让近似值显示效果等同于三分之一。不过，还有一个单位可以完美实现此效果，那就是分数单位`fr`（即fraction），一个为解决三等分而生（也许不是）的单位。
+
+想要完美使用分数单位，就要让使用该单位的组件在某一方向上完全占据容器。为什么要这样做呢？那就要从分数单位的特性说起。假定在一个方向上，有三个组件，每个组件的长度（对应实际就是宽度或者高度）都是1fr，那实际显示时，这个长度就会变成总长的三分之一。每个组件的长度是一份，总长是三份。实际上，分数单位的英文fr，就是单词fraction（分数）的意思。下面的代码正好展示了这个特性：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container
+
+class MyApp(App):
+    def compose(self):
+        self.widgets = [ Static() for _ in range(3) ]
+        self.container = Container(*self.widgets)
+        yield self.container
+
+    def on_mount(self) -> None:
+        self.container.styles.width = '50%'
+        self.container.styles.height = 'auto'
+        for widget in self.widgets:
+            index = self.widgets.index(widget)
+            widget.styles.width = 50
+            widget.styles.background = ['purple','green','blue'][index]
+            widget.styles.height = '1fr'
+            widget.update('The widget\'s height is 1fr.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![width_height_fr](textual.assets/width_height_fr.png)
+
+需要注意的是，读者在实际使用中可能会发现，上面几种比例单位的显示效果并不完美，应该是三分之一或者50%的组件，和同样宽高的组件差一点。这是因为终端显示单个字符必须是完整的最小宽高，不会做缩放也没法继续分割。组件的大小组成又是基于字符而来，因此，在调整终端大小的时候，会出现终端或者容器大小没法被整除，部分组件就会比同样数值的组件少一行或者一列。TUI程序受限于终端显示，这也是没有办法的。
+
+上面用于宽度和高度的单位，也适用于组件的[最小宽度（min_width）](https://textual.textualize.io/styles/min_width/)、[最大宽度（max_width）](https://textual.textualize.io/styles/max_width/)、[最小高度（min_height）](https://textual.textualize.io/styles/min_height/)、[最大高度（max_height）](https://textual.textualize.io/styles/max_height/)。这几个属性用于设置终端大小变化时，组件显示大小的上下限。
+
+##### 2.2.4.5 内边距
+
+内边距（padding）是指组件边界距离内部内容的远近，完整的用法可以参考[官网文档](https://textual.textualize.io/styles/padding/)。
+
+以下面的代码为例，将内边距设置为2之后，内容到上下左右边界的距离都是2个单位（字高或者字宽）：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static()
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.width = 30
+        self.widget.styles.padding = 2
+        self.widget.styles.background = 'purple'
+        self.widget.update('The widget\'s padding is 2.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![padding_1](textual.assets/padding_1.png)
+
+如果读者看过内边距的官网文档（实际上是样式手册），肯定很好奇，文档中写明内边距支持设置两个值或者四个值，使用样式接口实现的话，代码怎么写？
+
+给没时间看文档的读者解释一下，上面的代码中，内边距只设置一个值，那么四个方向上的内边距就都用此值。如果想要单独定义某个方向的内边距，就要给内边距传递两个值或者四个值。两个值表示上下方向上的内边距使用第一个值，左右方向上的内边距使用第二个值；四个值表示上边的内边距使用第一个值，右边的内边距使用第二个值，下边的内边距使用第三个值，左边的内边距使用第四个值。
+
+传递多个值给内边距，需要使用元组将多个值包起来，如`(1,2)`，具体见下面的代码示例：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static()
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.width = 30
+        padding = (1,2) #上下为1，左右为2
+        # (1,2,1,2)的话，就是对应上、右、下、左
+        self.widget.styles.padding = padding
+        self.widget.styles.background = 'purple'
+        self.widget.update(f'The widget\'s padding is {padding}.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![padding_1_2](textual.assets/padding_1_2.png)
+
+##### 2.2.4.6 边框
+
+如盒子模型一节中的图片所示，边框（border）是包含在组件内、用于表示组件边界的突出性显示元素。想要设置边框的话，就要设置`styles.border`属性为一个描述边框样式、包含两个字符串的元组，如` ('heavy','yellow')`。元组的第一个元素是边框样式（更多样式参考[官网文档](https://textual.textualize.io/styles/border/#all-border-types)），元组的第二个元素是边框颜色，支持颜色名字、量化颜色表达（RGB颜色或者HSL颜色）。
+
+不过，如果读者看了[官网文档](https://textual.textualize.io/styles/border/)，就会看到最上面介绍的用法，可能会有个疑问：页面里写着可以额外添加一个百分比数字来设置颜色透明度，但在样式接口没有这个用法，如何给样式接口中的颜色设置透明度？
+
+接口不提供直接的方法，但可以用Alpha颜色代替，间接实现，即使用Color.parse可以识别的带透明度的颜色（RGBA颜色或者HSLA颜色），也可以直接用Color对象，构建时传入透明度信息。
+
+一般的用法：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static()
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.width = 50
+        border = ('heavy','yellow')
+        self.widget.styles.border = border
+        self.widget.styles.background = 'purple'
+        self.widget.update(f'The widget\'s border is {border}.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![border_1](textual.assets/border_1.png)
+
+设置边框的透明度：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.color import Color
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static()
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.width = 50
+        border = ('heavy',Color(255,255,0,a=0.5))
+        self.widget.styles.border = border
+        self.widget.styles.background = 'purple'
+        self.widget.update(f'The widget\'s border is {border}.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![border_2](textual.assets/border_2.png)
+
+和内边距支持1个、2个、4个值类似，边框样式也支持一样的数量，并且概念相同。当值是2个时，第一个值设置的是上下边框的样式，第二个值设置的是左右边框的样式。当值是4个时，第一个值设置的是上边框的样式，第二个值设置的是右边框的样式，第三个值设置的是下边框的样式，第四个值设置的是左边框的样式。
+
+给边框设置多个值，需要将样式元组放到列表里，如` [('heavy','yellow'),('heavy','blue')]`。
+
+代码示例如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static()
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.width = 50
+        border = [('heavy','yellow'),('heavy','blue')]
+        # 2个表示上下、左右的样式，四个表示上、右、下、左的样式
+        self.widget.styles.border = border
+        self.widget.styles.background = 'purple'
+        self.widget.update(f'The widget\'s border is {border}.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![border_3](textual.assets/border_3.png)
+
+##### 2.2.3.7 边框标题和边框副标题的对齐方向
+
+组件有两个和边框有关的属性，只有组件的边框显示时（边框的样式不为`'hidden'`或者`'none'`）才会显示，那就是边框标题（border_title）和边框副标题（border_subtitle）。边框标题显示在上边框上，默认在左边；设置了边框标题之后，边框就会变得和winform的分组框（GroupBox）一样，可以用来概述组件内的内容或者组件内其他组件的分类。边框副标题显示在下边框，默认在右边；边框副标题可以看作是显示在下边框上的边框标题，或者当作对边框标题的补充解释。
+
+如果想修改边框标题或者边框副标题的对齐方向，就要设置样式接口中的边框标题对齐（border_title_align）或者边框副标题对齐（border_subtitle_align）。对齐方向支持`'left'`（向左）、`'center'`（居中）、`'right'`（向右）。
+
+完整内容可以参考官网文档：
+
+https://textual.textualize.io/styles/border_title_align/
+
+https://textual.textualize.io/styles/border_subtitle_align/
+
+下面的代码中，就是添加了边框标题和边框副标题之后，将边框标题设置为居中：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static()
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.width = 50
+        border = ('heavy','yellow')
+        self.widget.styles.border = border
+        self.widget.styles.background = 'purple'
+        self.widget.update(f'The widget\'s border is {border}.')
+        self.widget.border_title = 'border_title'
+        self.widget.border_subtitle = 'border_subtitle'
+        self.widget.styles.border_title_align = 'center'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![border_title](textual.assets/border_title.png)
+
+##### 2.2.4.8 轮廓
+
+（先说轮廓和边框相同，然后卖个关子，说又有点不同，然后先展示代码和运行效果，再说轮廓的不同点，给个完美解决方法。）
+
+轮廓（Outline）与边框用法相同，但是不属于组件尺寸的一部分，，不会让内部的内容重新排版，因此可能会与内容重叠
+
+https://textual.textualize.io/styles/outline/
+
+
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static()
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.width = 50
+        outline = ('heavy','yellow')
+        self.widget.styles.outline = outline
+        self.widget.styles.background = 'purple'
+        self.widget.update(
+            f'''
+The widget\'s outline is {outline}.
+'''
+        )
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![outline](textual.assets/outline.png)
+
+
+
+（说一下上面代码里和现实效果的奇怪之处，）
+
+大纲对于强调小部件很有用，但请注意它可能会掩盖您的内容。最好设置一个内边距（用自己的话说一遍）
+
+
+
+上面的怪异代码就可以变成和原来一样整齐的代码：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def compose(self):
+        self.widget = Static()
+        yield self.widget
+
+    def on_mount(self) -> None:
+        self.widget.styles.width = 50
+        outline = ('heavy','yellow')
+        self.widget.styles.outline = outline
+        self.widget.styles.background = 'purple'
+        self.widget.styles.padding = 1
+        self.widget.update(f'The widget\'s outline is {outline}.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+##### 2.2.4.9 盒子尺寸类型
+
+content-box
+
+![content_box](textual.assets/content_box.png)
+
+border-box
+
+![border_box](textual.assets/border_box.png)
+
+##### 2.2.4.10 外边距
+
+https://textual.textualize.io/styles/margin/
+
+
+
+##### 2.2.4.11 更多样式
+
+（下面内容润色一下，主要是总结上面内容，并引出下一节textual的CSS，说明textual的CSS是更加强大（写在CSS中，不受限于Python接口，比如边框一节中就不支持颜色带上透明度百分比，只能用Alpha颜色）、全面的外观设计方法）
+
+我们已经介绍了文本应用程序使用的最基本的样式，但您还可以使用更多样式来自定义应用程序外观的许多方面。请参阅样式参考以获取完整列表。
+
+在下一节中，将介绍textual的CSS，这是一种将样式应用于小部件的强大方法，可以使您的代码不受样式属性的影响。
 
 https://textual.textualize.io/styles/
 
@@ -796,7 +1256,32 @@ https://textual.textualize.io/api/
 
 样式
 
-​	颜色类（from textual.color import Color）
+​	颜色类（from textual.color import Color），Color.parse其实还可以转换ansi颜色，比如`Color.parse('ansi_red')`
+
+```python3
+ANSI_COLORS = [
+    "black",
+    "red",
+    "green",
+    "yellow",
+    "blue",
+    "magenta",
+    "cyan",
+    "white",
+    "bright_black",
+    "bright_red",
+    "bright_green",
+    "bright_yellow",
+    "bright_blue",
+    "bright_magenta",
+    "bright_cyan",
+    "bright_white",
+]
+```
+
+​	特别的颜色：transparent
+
+​	边框标题相关的其他样式：[`border-title-color`](https://textual.textualize.io/styles/border_subtitle_color/)、[`border-title-background`](https://textual.textualize.io/styles/border_subtitle_background/)、[`border-title-style`](https://textual.textualize.io/styles/border_subtitle_style/)、[`border-subtitle-color`](https://textual.textualize.io/styles/border_subtitle_color/)、[`border-subtitle-background`](https://textual.textualize.io/styles/border_subtitle_background/)、[`border-subtitle-style`](https://textual.textualize.io/styles/border_subtitle_style/)。
 
 主题
 
