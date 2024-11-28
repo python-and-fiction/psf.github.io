@@ -1051,7 +1051,7 @@ if __name__ == '__main__':
 
 ##### 2.2.3.7 边框标题和边框副标题的对齐方向
 
-组件有两个和边框有关的属性，只有组件的边框显示时（边框的样式不为`'hidden'`或者`'none'`）才会显示，那就是边框标题（border_title）和边框副标题（border_subtitle）。边框标题显示在上边框上，默认在左边；设置了边框标题之后，边框就会变得和winform的分组框（GroupBox）一样，可以用来概述组件内的内容或者组件内其他组件的分类。边框副标题显示在下边框，默认在右边；边框副标题可以看作是显示在下边框上的边框标题，或者当作对边框标题的补充解释。
+组件有两个和边框有关的属性，只有组件的边框显示（需要设置了边框的样式且不为`'hidden'`或者`'none'`）时才会显示，那就是边框标题（border_title）和边框副标题（border_subtitle）。边框标题显示在上边框上，默认在左边；设置了边框标题之后，边框就会变得和winform的分组框（GroupBox）一样，可以用来概述组件内的内容或者组件内其他组件的分类。边框副标题显示在下边框，默认在右边；边框副标题可以看作是显示在下边框上的边框标题，或者当作对边框标题的补充解释。
 
 如果想修改边框标题或者边框副标题的对齐方向，就要设置样式接口中的边框标题对齐（border_title_align）或者边框副标题对齐（border_subtitle_align）。对齐方向支持`'left'`（向左）、`'center'`（居中）、`'right'`（向右）。
 
@@ -1091,13 +1091,7 @@ if __name__ == '__main__':
 
 ##### 2.2.4.8 轮廓
 
-（先说轮廓和边框相同，然后卖个关子，说又有点不同，然后先展示代码和运行效果，再说轮廓的不同点，给个完美解决方法。）
-
-轮廓（Outline）与边框用法相同，但是不属于组件尺寸的一部分，，不会让内部的内容重新排版，因此可能会与内容重叠
-
-https://textual.textualize.io/styles/outline/
-
-
+轮廓（outline）与边框用法相同，甚至把边框示例代码中的`border`全部替换为`outline`，都没问题。不过，真要是完全替换而不做一点修改，那绝对不行，比如下面的代码：
 
 ```python3
 from textual.app import App
@@ -1126,15 +1120,17 @@ if __name__ == '__main__':
 
 ![outline](textual.assets/outline.png)
 
+看上去只是把代码里的`border`全换成了`outline`，不过代码还是有些不同，比如：`self.widget.update`下面，原本是显示在组件内的内容，用的只是普通的f字符串，这里却变成了f多行字符串；代码执行的效果也与边框不同，倒不是说内容里的`border`变成`outline`，而是内容的开头，`The`变成了`he`。
 
+原来，轮廓还是与边框有区别的，那就是对内容的遮挡。因为轮廓不属于组件的一部分，并不会参与组件大小的组成，加在组件上的轮廓，就像是不透明的幻灯片一样盖在组件之上，会遮挡住靠边的内容。而边框是组件的一部分，增加的边框也算组件大小的一部分。因此，增加边框之后，组件的内容会被边框挤占控件，内容会重新排版。
 
-（说一下上面代码里和现实效果的奇怪之处，）
+这也是为什么要把原来的单行字符串换成多行字符串，字符串内给内容开头和结尾都增加了一行。内容最左边没有加空格，因此内容的第一个字符就被轮廓挡住了。另外，虽然这里挡住的是第一个字符，但是，如果内容的第一个字是汉字的话，汉字一个字在终端显示里是两个字符的宽度（以笔者的测试环境而言），实际执行时也是第一个字被遮挡而不显示，不会出现显示半个汉字的情况。不过，此时会出现额外一个字符宽度的空白，读者在实际使用时可以注意一下。
 
-大纲对于强调小部件很有用，但请注意它可能会掩盖您的内容。最好设置一个内边距（用自己的话说一遍）
+轮廓还有一点与边框不同，轮廓不支持标题。上一节提到的边框（副）标题，没法与轮廓组合使用。组件没有轮廓（副）标题这种属性；只设置边框（副）标题和轮廓的话，边框（副）标题会因为边框样式没设置而不显示，而轮廓也会盖住边框（副）标题；同时设置边框（副）标题、边框和轮廓的话，轮廓会盖住边框。
 
+更多轮廓的用法，可以参考[官网文档](https://textual.textualize.io/styles/outline/)。
 
-
-上面的怪异代码就可以变成和原来一样整齐的代码：
+当然，想要让没有标题的边框变成轮廓的话，也不是没有办法，只需增加一个单位宽的内边距即可。如下面代码中的`self.widget.styles.padding = 1`，就可以让上面的怪异代码就可以变成和原来一样整齐的代码：
 
 ```python3
 from textual.app import App
@@ -1158,33 +1154,94 @@ if __name__ == '__main__':
     app.run()
 ```
 
+![outline2](textual.assets/outline2.png)
+
 ##### 2.2.4.9 盒子尺寸类型
 
-content-box
+不知道各位读者有没有发现，上面几节讲组件的边框和内边距，如果组件的宽度或者高度确定，在设置这些样式时，组件内的内容会随之重新排版，不会改变设定好的宽度或者高度。一般来说，这样的表现是没问题的，因为设计边框或者内边距的时候，不会希望组件的大小变化而导致整体的排布产生变化。不过，也有例外。倘若内容区域已经确定，不想设计边框或者内边距的时候影响内容排版，那就要改变这个行为，将盒子尺寸类型（box_sizing）设置为`'content-box'`即可，完整用法参见[官网文档](https://textual.textualize.io/styles/box_sizing/)。
+
+将盒子尺寸类型设置为content-box的话，组件的宽度和高度就变成了内容的宽度和高度，相关尺寸样式的关系如下图：
 
 ![content_box](textual.assets/content_box.png)
 
-border-box
+默认盒子尺寸类型是border-box，相关尺寸样式的关系如下图：
 
 ![border_box](textual.assets/border_box.png)
 
+下面的代码示例可以让这两种盒子尺寸类型的对比更加明显：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [Static(),Static()]
+        self.mount_all(self.widgets)
+        for widget in self.widgets:
+            index = self.widgets.index(widget)
+            widget.styles.width = 30
+            widget.styles.height = 6
+            widget.styles.padding = 1
+            widget.styles.border = ('heavy','white')
+            widget.styles.background = ['purple','green'][index]
+            box_sizing = ['border-box','content-box'][index]
+            widget.styles.box_sizing = box_sizing
+            widget.update(f'The widget\'s box_sizing is {box_sizing}.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![box_sizing](textual.assets/box_sizing.png)
+
 ##### 2.2.4.10 外边距
 
-https://textual.textualize.io/styles/margin/
+外边距是指组件的边界距离其他组件的远近。外边距的用法和内边距类似，支持1个、2个、4个值，完整用法参考[官网文档](https://textual.textualize.io/styles/margin/)。
 
+代码示例如下：
 
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [Static(),Static()]
+        self.mount_all(self.widgets)
+        for widget in self.widgets:
+            index = self.widgets.index(widget)
+            widget.styles.width = 30
+            widget.styles.height = 6
+            widget.styles.padding = 1
+            widget.styles.border = ('heavy','white')
+            widget.styles.background = ['purple','green'][index]
+            margin = 2 # (1,2)的话上下为1，左右为2
+            # (1,2,1,2)的话，就是对应上、右、下、左
+            widget.styles.margin = margin
+            widget.update(f'The widget\'s margin is {margin}.')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![margin](textual.assets/margin.png)
+
+外边距用法上没什么难度，但肯定有聪明的读者发现了问题：两个组件的外边距都是2，但在图片中，应该距离4行的两个组件，中间只有两行的距离，是不是有问题？
+
+其实并不是。当相邻的两个组件都设置了外边距时，这两个组件之间的距离就取外边距较大的。
 
 ##### 2.2.4.11 更多样式
 
-（下面内容润色一下，主要是总结上面内容，并引出下一节textual的CSS，说明textual的CSS是更加强大（写在CSS中，不受限于Python接口，比如边框一节中就不支持颜色带上透明度百分比，只能用Alpha颜色）、全面的外观设计方法）
+上面介绍了样式接口中常用的几个样式和基本概念，其实textual支持的样式还有很多。受限于篇幅，这里便不再赘述，有兴趣的读者可以自行查阅[官网文档](https://textual.textualize.io/styles/)。
 
-我们已经介绍了文本应用程序使用的最基本的样式，但您还可以使用更多样式来自定义应用程序外观的许多方面。请参阅样式参考以获取完整列表。
+样式接口虽然方便，如果把所有的样式都写到Python代码里，则会让Python代码太冗长。此外，将样式写到单独的样式文件中的话，调试样式会方便不少，可以实时查看样式效果。所以，下一节，将重点介绍textual的CSS。样式接口不支持的功能，CSS可以实现：比如边框一节中，让边框颜色和普通颜色一样使用百分比表示透明度；一些没有暴露出来样式接口的，CSS中全都可以设置。
 
-在下一节中，将介绍textual的CSS，这是一种将样式应用于小部件的强大方法，可以使您的代码不受样式属性的影响。
+当然，CSS的学习会比使用样式接口难，如果读者暂时不想接触太多前端知识，可以跳过下一节（建议还是学习一下，里面会涉及到让textual程序更加美观的思路）。若是已经学过Web的CSS，可以快速浏览一下。
 
-https://textual.textualize.io/styles/
-
-
+敬请期待下一节——textual的CSS。
 
 #### 2.2.5 textual的CSS
 
@@ -1196,7 +1253,7 @@ https://textual.textualize.io/css_types/
 
 
 
-DOM查询
+#### 2.2.6 DOM查询
 
 
 
