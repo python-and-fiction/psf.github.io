@@ -1,4 +1,4 @@
-# textual的中文入门教程
+# Textual的中文入门教程
 
 [TOC]
 
@@ -10,7 +10,7 @@ Textual是一个用于 Python 的 TUI（文本用户界面）库，是 Rich 的�
 
 之前的《nicegui的中文入门教程》中介绍的nicegui是一个GUI框架、WebUI框架，基于它实现的界面可以运行在桌面和浏览器中，对应的，可以称之为GUI程序、WebUI程序。TUI程序则是运行在用户终端（或者叫命令行）中，以终端支持的显示方式提供的图形化程序，因此TUI可以解释为终端用户界面（Terminal User Interface），而终端能提供的显示方式一般是可打印字符，可以通过特定字符的组合使用，实现GUI中组件的类似效果，因此，TUI也可以被解释为基于文本的用户界面（Text-based User Interface）。
 
-相比于nicegui的框架用法简单，组件用法繁多，textual的框架用法硬核不少，需要了解一些Python之外的Web知识（样式、布局），再加上textual官网不提供中文教程，本教程由此诞生。本教程将基于textual的官网教程，整合官网教程内容，系统性地提供中文版学习教程，方便中文开发者入门使用。
+相比于nicegui的框架用法简单，组件用法繁多，textual的框架用法硬核不少，需要了解一些Python之外的Web知识（样式、布局），再加上textual官网不提供中文教程，本教程由此诞生。本教程将基于textual的官网教程，整合官网教程内容，系统性地提供中文版学习教程，补充官网没有详细说明的用法，方便中文开发者入门使用。
 
 ## 1 环境准备
 
@@ -577,6 +577,8 @@ if __name__ == '__main__':
 
 ![title](textual.assets/title.svg)
 
+![title](textual.assets/title.png)
+
 当然，这两个是类属性，如果想在创建实例之后动态修改，就不能使用这两个纯大写的属性，而是使用纯小写的属性代替。参考下面的代码，代码中没有在类中设置标题和副标题，而是在App子类实例化之后，使用实例的属性设置标题和副标题，这样得到的显示效果和上图一样。此外，此操作方法也可用于事件的响应代码中，实现动态修改标题和副标题。在代码中，通过判断按键是数字还是字母，来将标题修改为数字，将副标题修改为字母。
 
 ```python3
@@ -639,6 +641,8 @@ if __name__ == '__main__':
 相信读者已经注意到一点，上面代码中用到的颜色都是含义通俗易懂的字符串，而不是使用十六进制数字或者三元组数字等量化表示颜色的方法。其实，textual支持那些有点神秘的数字表示法，只是为了更易懂一些，代码中特地使用了textual预先定义好的颜色名字。具体名字可以参考[官网文档](https://textual.textualize.io/api/color/#textual.color--named-colors)或者下图：
 
 ![color](textual.assets/color.svg)
+
+![color](textual.assets/color.png)
 
 至于量化表示颜色的方法，textual支持这几种表示方法：
 
@@ -1237,53 +1241,919 @@ if __name__ == '__main__':
 
 上面介绍了样式接口中常用的几个样式和基本概念，其实textual支持的样式还有很多。受限于篇幅，这里便不再赘述，有兴趣的读者可以自行查阅[官网文档](https://textual.textualize.io/styles/)。
 
-样式接口虽然方便，如果把所有的样式都写到Python代码里，则会让Python代码太冗长。此外，将样式写到单独的样式文件中的话，调试样式会方便不少，可以实时查看样式效果。所以，下一节，将重点介绍textual的CSS。样式接口不支持的功能，CSS可以实现：比如边框一节中，让边框颜色和普通颜色一样使用百分比表示透明度；一些没有暴露出来样式接口的，CSS中全都可以设置。
-
-当然，CSS的学习会比使用样式接口难，如果读者暂时不想接触太多前端知识，可以跳过下一节（建议还是学习一下，里面会涉及到让textual程序更加美观的思路）。若是已经学过Web的CSS，可以快速浏览一下。
+样式接口虽然方便，如果把所有的样式都写到Python代码里，则会让Python代码变得太过冗长。此外，将样式写到单独的样式文件中的话，调试样式会方便不少，可以实时查看样式效果；还可以重复使用已经设计好的样式，不需要给每一个组件设置一遍相同的样式，也不用在另一个程序中给需要同样样式的组件做重复的工作。所以，下一节，将重点介绍textual的CSS。样式接口不支持的功能，CSS可以实现：比如边框一节中，让边框颜色和普通颜色一样使用百分比表示透明度；一些没有暴露样式接口的，CSS中全都可以设置；样式接口需要设置每种组合情况的样式，CSS中可以简化组合情况的样式设置。
 
 敬请期待下一节——textual的CSS。
 
 #### 2.2.5 textual的CSS
 
+其实本节要讲的内容和上节的内容都是一类，都属于样式。只不过，上节的样式是用Python的接口调用，而本节是纯CSS语法的样式。相信很多读者自己查阅文中的官网文档链接时也发现了：文档中相关样式的用法说明，主要是CSS语法，而且Python接口不一定全部支持，Python接口的用法示例不一定有。官网文档确实如此，这也是为什么本教程要做类似翻译一样的“重复”工作：官网的文档看似全面，但不详细；而官网教程看似详细，却又不全面。
+
+扯远了，按理来说，本节的内容比较偏向CSS基础，应该放在上一节之前。不过，一上来就假定读者没有CSS基础而端上主食，怕是读者难以下咽，这才先介绍了简单易用的样式接口，也方便那些学过CSS的读者。话说回来，如果读者有CSS基础，本节内容学起来简直易如反掌，毕竟textual的CSS概念就是源于Web的CSS，语法基本一致，只是根据textual的功能和特性做了部分修改。当然，倘若读者没有相关基础或者基础尚未扎实，也不要紧，本节会带着读者重新学习一遍，在熟悉CSS语法的同时，了解一下textual的CSS有什么特点。
+
+使用VSCode的读者，别忘了安装官方提供的[CSS语法高亮扩展](https://marketplace.visualstudio.com/items?itemName=Textualize.textual-syntax-highlighter)，可以方便看到正确的语法高亮。textual的CSS虽然灵感源自Web的CSS，但实际上支持的样式有限，具体参考[官网文档](https://textual.textualize.io/styles/)；样式中涉及到的CSS类型，则参考[这一份文档](https://textual.textualize.io/css_types/)。
+
+废话不多说，正式开始。
+
+##### 2.2.5.1 样式表
+
+CSS的全称是*Cascading Stylesheet*，翻译过来的话，就是层叠样式表。层叠指的是CSS应用、显示方式，就像一层一层叠起来一样，上面的内容会盖住下面的。但是在编程中的话，就是最后设置样式会覆盖到前面设置的样式上 ，因此显示的就是最后设置的样式，很形象。样式表，就是指其语法特点，就像一个指明样式的表格一样。当然，这个表格并不是Excel那种表格，而是纯文本形式的`样式类型:样式名`这样冒号间隔的表格。
+
+照本宣科学习CSS实在无趣，不如先看个CSS代码示例，对照着学习CSS的基本结构：
+
+```css
+Header {
+  dock: top;
+  height: 3;
+  content-align: center middle;
+  background: blue;
+  color: white 50%;
+}
+```
+
+这是一个给Header组件应用样式的CSS示例。正如前面所讲，大括号内就是样式规则。规则中的冒号分隔了样式类型和样式名，以`dock: top;`为例：`dock`是停靠位置，就是这个组件往哪里靠，就像船停泊一样，是靠在这边还是那边；`top`表示最上面的位置，结合样式类型是停靠位置，则此条规则这样解释——停靠位置是最上面。
+
+下面的几条样式类似，都是样式类型是样式名。听起来是不是有点奇怪？好像缺了主语。不急，示例还没解释完。这些都是大括号里的内容，大括号外面还有内容呢。大括号之前的部分是选择器，表示大括号内的样式规则给谁应用，即样式的应用范围。选择器也有复杂的语法规则，这边暂时不延伸，只当做一个组件（示例中的Header确实是个组件）来看，示例的意思就可以解释为：Header组件的停靠位置是最上面，下面几条规则均用于Header组件，就不一一重复了。
+
+所以，样式规则的解释通常是这样的：选择器表示样式的应用范围；选择器后的大括号内表示应用哪些样式；每条样式规则是样式类型和样式名的配对组合。
+
+需要注意的是，可能教程是讲Python框架的话，读者会自然认为CSS的语法规则也有缩进要求。实则不然，这里的示例采用严格的缩进只是为了方便分析和美观，并不会影响CSS的解析和使用。在CSS中，如果有标点符号（括号、分号、冒号等）分隔，不需要在意缩进、空格和换行。但是，没有被标点分隔的完整部分，如果语法要求有空格或者没有空格，不可增删空格而导致空格分隔的部分变化，比如`color: white 50%;`中，`white 50%`的空格将这部分分为两部分，两部分中间的空格（两头没有空格的地方也行）可以增加或者换行，但不能省略；同时也不能增加空格或则换行使得两部分变成三部分。
+
+##### 2.2.5.2 文档对象模型
+
+按理来说，接下来应该介绍选择器的语法规则，但是，在此之前，需要了解一下文档对象模型，对于选择器的学习很有帮助。
+
+文档对象模型，即Document Object Model，简称DOM，是HTML中的概念，是说HTML的结构就像树一样，不断分支。学习这个概念，有助于理解CSS中的选择器语法，因为选择器的含义就是匹配特定的分支规则，来应用样式。
+
+当然，textual程序是TUI程序，本身没有文档的概念，但其对组件的排布结构，和树的结构一样。此外，textual中的CSS也与Web的CSS类似，所以这里才借用这个概念，方便理解textual程序的结构，也有助于学习textual的CSS。
+
+为了方便理解，下面用一个可以运行的代码示例，辅助解释：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Header(),
+            Container(
+                Static('Do you like Textual?'),
+                Horizontal(
+                    Button('Yes'),
+                    Button('Maybe'),
+                ),
+            ),
+            Footer(),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+程序的结构模型如图：
+
+<img src="textual.assets/DOM.png" alt="DOM" style="zoom:67%;" />
+
+代码不长，但为了方便区分，里面引入一些后面才讲的功能，这里先简单介绍一下。
+
+`from textual.containers import Container, Horizontal`中，`textual.containers`是容器模块，从模块里导入了` Container`和`Horizontal`。前者其实在前面学习比例单位时候已经用过，就是一个普通的容器组件，可以理解为一个篮子；后者则是一个将组件水平排序的容器，放在里面的组件会横向排成一行，而不是容器或者无容器时的默认竖向排布。
+
+`from textual.widgets import Header, Footer, Static, Button`中， `Static`和`Button`前面用了很多次，就是静态文本和按钮，这里只作简单演示，具体的交互功能，后面的组件介绍中会细讲。`Header`和`Footer`是直译的话是页眉和页脚，但其用法更像是GUI中的标题栏和状态栏，所以称之为标题栏和状态栏更合适。只不过textual为了节约空间占用，标题栏和状态栏还有一些交互功能。
+
+相信读者还注意到，示例代码中并没有将组件布局放到compose方法里，而是使用了`self.mount_all(self.widgets)`。倒不是组件布局非要这样才能实现，而是mount_all方法支持一个包含组件列表的迭代器，可以一次性将迭代器内的所有组件显示出来。这个操作放到on_mount方法内，操作很方便，但不是唯一方法。
+
+如果读者习惯在compose方法中使用yield显示组件，则代码如下：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class MyApp(App):
+    def compose(self):
+        yield Header()
+        yield Container(
+            Static('Do you like Textual?'),
+            Horizontal(
+                Button('Yes'),
+                Button('Maybe'),
+            ),
+        )
+        yield Footer()
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+若是喜欢之前示例中，定义好组件布局之后再显示，代码也可以写成这样：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class MyApp(App):
+    def compose(self):
+        self.widgets = [
+            Header(),
+            Container(
+                Static('Do you like Textual?'),
+                Horizontal(
+                    Button('Yes'),
+                    Button('Maybe'),
+                ),
+            ),
+            Footer(),
+        ]
+        for widget in self.widgets:
+            yield widget
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+三种风格的显示结果和结构是一样的，并不影响下面内容的理解和学习，读者可以按需选用。
+
+回到程序的结构模型图，只看里面的MyApp和Screen：
+
+<img src="textual.assets/DOM2.png" alt="DOM2" style="zoom:67%;" />
+
+代码中，`app = MyApp()`产生了MyApp类的实例，对应图中就是菱形的MyApp。此时，程序还不能显示，因此图形是与其他组件不同的。只有运行了`app.run()`之后，进入textual的内部循环，才会产生Screen这个可以显示的根组件。
+
+从关系上来说，先有MyApp实例，它才能产生Screen组件，后面才能在Screen上显示其他组件。因此，关系如上图所示。
+
+然后，顺着图往下看，就看到了Screen直接产生的三个组件：
+
+<img src="textual.assets/DOM3.png" alt="DOM3" style="zoom:67%;" />
+
+代码中，虽然Container里面还包含着其他组件，但对Screen来说，第一层或者说最上层中，就是这三个组件与其连接。因此，对于程序结构这棵树而言，Screen分支出这三个组件。
+
+再往下就是Container分支出两个组件，其中的Horizontal再分支出两个组件，对应到代码中，就是对应组件的参数是分支出来的组件对象，也就不难理解了：
+
+<img src="textual.assets/DOM4.png" alt="DOM4" style="zoom:67%;" />
+
+##### 2.2.5.3 CSS文件
+
+这一大节主要讲的是textual的CSS，上一小节却没有一点CSS的迹象，而是讲了文档对象模型，这又怎么和CSS有什么关系？
+
+先别急，在下面剖析选择器语法之前，还需要学习一下，如何给上一小节的示例代码，增加CSS文件的引用，以及方便调试的运行方法。
+
+其实，再往前的内容已经介绍过方法，就是App子类里的`CSS`和`CSS_PATH`。前者是直接使用CSS文件内容，后者是CSS文件的路径。
+
+为了方便学习下面的内容，读者需要在代码文件的同目录下，创建tcss后缀的CSS文件（示例中是myapp.tcss），然后将包含后缀的完整文件名，赋予`CSS_PATH`。那么，代码就变成下面的样子：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [
+            Header(),
+            Container(
+                Static('Do you like Textual?'),
+                Horizontal(
+                    Button('Yes'),
+                    Button('Maybe'),
+                ),
+            ),
+            Footer(),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+很多时候，为了方便设计的样式重复使用，也是为了减少CSS文件的体积，不同程序使用的样式如果有重复部分，会把重复内容提取到单独的CSS文件中，方便组合CSS文件来实现更多可能。此时，一个程序就会使用几个CSS文件才能实现完整的样式效果。`CSS_PATH`也支持使用多个CSS文件的路径，只需将多个文件路径放到列表中即可。假如上面的程序使用'myapp.tcss'和'myapp_ext.tcss'这两个CSS文件，代码就要写成`CSS_PATH = ['myapp.tcss','myapp_ext.tcss']`。示例如下：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class MyApp(App):
+    CSS_PATH = ['myapp.tcss','myapp_ext.tcss']
+    def on_mount(self):
+        self.widgets = [
+            Header(),
+            Container(
+                Static('Do you like Textual?'),
+                Horizontal(
+                    Button('Yes'),
+                    Button('Maybe'),
+                ),
+            ),
+            Footer(),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+样式接口、App子类里的`CSS`和`CSS_PATH`都可以给组件设置样式，到底用哪种方法调试CSS最合适？
+
+答案就是App子类里的`CSS_PATH`。
+
+当完成上面的步骤之后，后面运行程序就不能使用直接点击或者`python myapp.py`这种了，而是要用`textual run --dev myapp.py`。这个时候，只需在编辑器中打开添加到程序中的CSS文件，编写样式。保存文件之后，终端内的程序会实时显示样式。不像其他两种方法需要反复结束程序、运行程序，这种调试方法简单快捷，很适合程序结构基本完成的情况下，设计更加美观的样式。
+
+说到调试，编写样式的时候，难免需要添加一些解释性说明或者注释内容，这里不得不说一下CSS中注释的写法。
+
+因为CSS支持删减没必要空格和一切换行来压缩CSS文件大小，因此没有其他语言中的行注释，只有块注释。块注释是以`/*`开始，遇到`*/`结束，就像括号一样。能和括号一样合法配对的块注释符号中间，都是注释内容。比如下面的示例，只在一行内注释：
+
+```css
+Header {
+    dock: top;/* one line */
+    height: 3;
+    content-align: center middle;
+    background: blue;
+    color: white 50%;
+  }
+```
+
+也可以多行注释，让不需要生效的内容失效：
+
+```css
+Header {
+    dock: top;/* multi lines
+    height: 3;
+    content-align: center middle;
+    background: blue;
+    color: white 50%;
+    */
+  }
+```
+
+需要注意一点，CSS的注释支持中文，但直接使用中文注释可能会报错。不同于textual程序显示中文时会自动处理，CSS文件中的中文不会自动处理。因为程序内使用python的open方法打开CSS文件时时没有指定编码，而代码文件的编码一般是utf-8，在CSS文件中添加中文注释可能会报错（主要是Windows）。如果英文不佳，不想注释里只用英文，需要使用下面的方法解决：
+
+1.   修改CSS文件保存时的编码与终端编码一致，使用`chcp`命令获取终端编码（一般是活动代码页），转换为标准编码。比如，中文环境下，一般是活动代码页936，即cp936，也就是GBK编码。那么，可以点击编辑器右下角的编码来选择编码，通过编码保存，选择GBK。或者按下`Ctrl + Shift + p`，搜索`workbench.action.editor.changeEncoding`，也可以设置编码。
+
+2.   为了让python的open方法默认使用utf-8编码，需要在电脑的环境变量中增加`PYTHONUTF8`，值为1。然后使用下面的命令检查，如果没有生效，重启终端或者系统之后再看：
+
+     ```shell
+     #powershell终端使用这个检查
+     Get-ChildItem Env:PYTHONUTF8
+     #cmd终端使用这个检查
+     echo %PYTHONUTF8%
+     ```
 
 
-https://textual.textualize.io/styles/
+3.   也可以在python源码的开头添加以下代码（PS：如果官方在代码中做了和下面相同的修改，这几个中文报错的解决方法就不需要了）：
 
-https://textual.textualize.io/css_types/
+     ```python3
+     import os
+     from textual.css.stylesheet import Stylesheet, CssSource
+     from pathlib import PurePath
+     from textual.css.errors import StylesheetError
+     def read(self, filename: str | PurePath) -> None:
+         """Read Textual CSS file.
+     
+         Args:
+             filename: Filename of CSS.
+     
+         Raises:
+             StylesheetError: If the CSS could not be read.
+             StylesheetParseError: If the CSS is invalid.
+         """
+         filename = os.path.expanduser(filename)
+         try:
+             with open(filename, "rt", encoding="utf-8") as css_file:
+                 css = css_file.read()
+             path = os.path.abspath(filename)
+         except Exception:
+             raise StylesheetError(f"unable to read CSS file {
+                                   filename!r}") from None
+         self.source[(str(path), "")] = CssSource(css, False, 0)
+         self._require_parse = True
+     Stylesheet.read = read
+     ```
+     
+
+##### 2.2.5.4 选择器
+
+终于要说选择器了。从这一小节开始，代码示例将包含python代码和代码中使用的CSS文件，同时将在python代码同目录下使用`textual run --dev myapp.py`来运行程序，方便调试CSS时看到实时效果。
+
+首先要介绍的是类型选择器。在Web的CSS中，有个类似的选择器叫标签选择器。虽然textual程序的文档对象模型和HTML的标签树很像，但在textual中，这个类似的选择器叫类型选择器，原本对应的标签名则变成了对应组件的类名。记住，只是基本用法类似，textual的CSS并不支持Web的CSS的所有特性，一旦读者理解textual的CSS之后，请不要将二者混为一谈。
+
+类型选择器的基本结构是这样的：
+
+```css
+组件类名 {
+    样式类型: 样式名;
+}
+```
+
+为了方便理解类型选择器，一起来看一个示例。
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class Alert(Static):
+    pass
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [
+            Header(),
+            Container(
+                Alert('Question:'),
+                Static('Do you like Textual?'),
+                Horizontal(
+                    Button('Yes'),
+                    Button('Maybe'),
+                ),
+            ),
+            Footer(),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+Alert {
+  color: red;
+}
+```
+
+在python代码中，通过继承Static类，得到一个Alert类。Alert类没有任何内容，只有继承操作，可以理解为Alert类和Static类的功能一样，只不过Alert类是Static类的子类。
+
+代码中，还有两个类对应的组件实例：`Alert('Question:')`和`Static('Do you like Textual?')`。因此，如果在CSS中定义了一个类型选择器，则程序中该类名的所有实例都会应用此选择器的样式。如图所示：
+
+![selector_1](textual.assets/selector_1.png)
+
+刚才说了，类型选择器会让该类所有的实例应用样式，所以，假如将子类的类型选择器改为基类的类型选择器，那该类和其子类的全部实例都会应用样式：
+
+```css
+Static {
+  color: blue;
+}
+```
+
+![selector_2](textual.assets/selector_2.png)
+
+那么问题来了，子类的类型选择器和基类的类型选择器同时存在的情况下，会有什么样的效果？
+
+答案是，如样式表的含义所说，越靠近组件的定义越优先。
+
+听起来有点不明所以，实际上很好理解。CSS文件的读取顺序是从上到下，也就是说，下面的定义会覆盖上面的定义。假如一个组件要应用的样式从下往上找，已经找到了符合条件的选择器，那组件就不会应用该选择器上面其他符合条件的选择器。以下面两个CSS文件内容为例：
+
+子类在上：
+
+```css
+Alert {
+  color: red;
+}
+Static {
+  color: blue;
+}
+```
+
+![selector_3](textual.assets/selector_3.png)
+
+基类在上：
+
+```css
+Static {
+  color: blue;
+}
+Alert {
+  color: red;
+}
+```
+
+![selector_4](textual.assets/selector_4.png)
+
+除了类型选择器匹配组件之外，还有一种用星号（`*`）匹配所有组件的特殊选择器——通用选择器，基本结构如下所示：
+
+```css
+* {
+    样式类型: 样式名;
+}
+```
+
+任何没有对应类型选择器匹配的组件，都会应用通用选择器的样式。
+
+需要注意的是，虽然通用选择器和类型选择器都可以匹配组件，但类型选择器比通用选择器优先，哪怕通用选择器写在类型选择器之后。
+
+类名选择器听起来和类型选择器很像，但二者不一样。类名选择器在CSS中是一种以英文句号（`.`）开头、后接类名（用数字、大小写字母、下划线和连字符任意组合，但不能以数字和`-`开头）的选择器，其优先级比类型选择器高。其基本结构如下所示：
+
+```css
+.类名 {
+    样式类型: 样式名;
+}
+```
+
+切勿把类名选择器的类名与组件的类混淆。想要应用类名选择器的话，需要给组件的`classes`参数传入类名，就是类名选择器的类名。`classes`参数是一个字符串类型参数，参数支持多个类名，在字符串内使用空格分隔即可，表示组件同时应用两个类。比如：
+
+```python3
+# 应用alert类
+Alert('Question:',classes='alert')
+# 应用alert类和attention类
+Alert('Question:',classes='alert attention')
+```
+
+不同于类型选择器只适用于一种组件，类名选择器可以被应用于不同种类的组件，下面看一下示例。
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class Alert(Static):
+    pass
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [
+            Header(),
+            Container(
+                Alert('Question:',classes='alert'),
+                Static('Do you like Textual?',classes='alert attention'),
+                Horizontal(
+                    Button('Yes'),
+                    Button('Maybe'),
+                ),
+            ),
+            Footer(),
+        ]
+        self.mount_all(self.widgets)
 
 
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+.alert {
+  color: red;
+}
+.attention {
+  background: blue 50%;
+}
+```
+
+效果如图：
+
+![selector_5](textual.assets/selector_5.png)
+
+如果想要对同时应用多个类的组件添加额外的样式，而不想单独修改每个类的样式，可以使用英文句号（`.`）连接同时应用的样式（比如`.alert.attention`），得到新的类名选择器。在新的选择器中设置样式，不会影响到单独的每个类。示例如下：
+
+```css
+.alert.attention {
+  color: yellow;
+  background: green 50%;
+}
+.alert {
+  color: red;
+}
+.attention {
+  background: blue 50%;
+}
+```
+
+![selector_6](textual.assets/selector_6.png)
+
+一般来说，英文句号连接两个类，以补充样式为主，上面示例里覆盖了单独类的用法不常见，这样的做法会混淆单个类的含义。不过，示例中的用法引出了新的问题：类型选择器中，下面的选择器会覆盖上面的选择器，但在类名选择器中，为什么写在最上面的选择器却优先生效了？
+
+这就涉及到选择器的优先级问题。除了上面提到的下面的选择器比上面的选择器优先，类名选择器比类型选择器优先，在类名选择器内部，还有一个优先规则：一个选择器包含的类名越多越优先。
+
+比如，`.alert.attention`包含两个类名，就比只有一个类名的类名选择器优先。当然，选择器的优先级规则还有很多，等介绍完所有的选择器和组合器，会汇总讲解优先级，这里不做太详细的展开。
+
+除了在创建组件实例时给`classes`参数传入类名选择器，组件还有几种方法操作类名选择器：
+
+-   [add_class方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.add_class)：给组件添加一个或者多个类名，用法是`Static('Do you like Textual?').add_class('attention','alert',update=True)`。方法返回示例本身，布尔类型参数`update`表示是否更新组件样式。
+-   [remove_class方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.remove_class)：删除组件的一个或者多个类名，用法是`Static('Do you like Textual?').remove_class('attention','alert',update=True)`。方法返回示例本身，布尔类型参数`update`表示是否更新组件样式。
+-   [toggle_class方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.toggle_class)：切换组件的一个或者多个类名的有无，即如果存在该类名则删除，不存在则添加，用法是`Static('Do you like Textual?').toggle_class('attention','alert',update=True)`，方法返回示例本身。
+-   [has_class方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.has_class)：检查组件是否有一个或者多个类名，方法返回检查结果，只有组件的样式类包含全部提供的类名才返回`True`。
+-   [classes属性](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.classes)：是一个组件当前样式类的冻结合集，可以通过给其赋予和`classes`参数一样要求的字符串来覆盖组件的样式类。
+
+伪类选择器是指在原有的选择器后使用英文冒号（`:`）连接的表示交互状态的类名选择器。比如下面代码中的`hover`就是表示鼠标悬停时的交互状态：
+
+```css
+Static:hover {
+  color: red;
+}
+```
+
+当鼠标悬停到静态文本上时，静态文本会变色：
+
+![selector_7](textual.assets/selector_7.gif)
+
+textual支持以下伪类选择器：
+
+-   `:blur`：表示组件没有获得焦点（获得焦点是指被点击、切换、进入输入状态等，没有获得焦点即不是前面提到的状态）时，组件的状态。
+-   `:dark`：表示程序主题切换为深色时，组件的状态（即`App.theme.dark == True`时的状态）。
+-   `:disabled`：表示组件被禁用时的状态。
+-   `:enabled`：表示组件被启用时的状态。
+-   `:even`：表示符合伪类前面选择器条件的组件中，给处在文档对象模型同级别的组件按次序标号（从1开始），组件的标号是偶数的状态。
+-   `:first-of-type`：表示符合伪类前面选择器条件的组件中，给处在文档对象模型同级别的组件按次序标号（从1开始），组件的标号是1（即第一个）的状态。
+-   `:focus-within`：表示组件或者子组件（文档对象模型子级别的组件）获得焦点（被点击、切换、进入输入状态等）时，组件的状态。
+-   `:focus`：表示组件获得焦点（被点击、切换、进入输入状态等）时，组件的状态。
+-   `:hover`：表示鼠标悬停在组件上时，组件的状态。
+-   `:inline`：表示程序以行内模式运行时，组件的状态。
+-   `:last-of-type`：表示符合伪类前面选择器条件的组件中，给处在文档对象模型同级别的组件按次序标号（从1开始），组件的标号是-1（即最后一个）的状态。
+-   `:light`：表示程序主题切换为浅色时，组件的状态（即`App.theme.dark == False`时的状态）。
+-   `:odd`：表示符合伪类前面选择器条件的组件中，给处在文档对象模型同级别的组件按次序标号（从1开始），组件的标号是奇数的状态。
+
+ID选择器是以井号（`#`）开头、后接ID名（用数字、大小写字母、下划线和连字符任意组合，但不能以数字和`-`开头）的选择器。基本结构如下：
+
+```css
+#ID名 {
+    样式类型: 样式名;
+}
+```
+
+不同于类名选择器，ID选择器具有唯一性，一个组件只能设置一个ID，因此ID选择器只能给一个组件设置样式。ID选择器的优先级也比类名选择器高，也就是说，如果一个组件同时匹配了类名选择器和ID选择器，ID选择器优先生效。另外，不像类名选择器有方法修改，ID选择器只能在创建实例时添加，后续不能修改。
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class Alert(Static):
+    pass
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [
+            Header(),
+            Container(
+                Alert('Question:',id='alert'),
+                Static('Do you like Textual?',id='attention'),
+                Horizontal(
+                    Button('Yes'),
+                    Button('Maybe'),
+                ),
+            ),
+            Footer(),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+#alert {
+    color: red;
+}
+#attention {
+    color: blue;
+}
+```
+
+输出如下：
+
+![selector_8](textual.assets/selector_8.png)
+
+##### 2.2.5.5 组合器
+
+除了使用单一的选择器来设计样式之外，还可以组合任意数量的选择器，形成新的“选择器”——组合器来给特定条件下的组件设计样式。组合器匹配的是最后一个选择器，前面被组合的选择器都是最后一个选择器的前提条件。
+
+textual支持的组合器只有两种：后代组合器和子代组合器。
+
+后代组合器是指使用空格间隔两个选择器，表示空格后的选择器所匹配的组件是空格前的后代。从文档对象模型中看，以空格前的选择器所匹配的组件为原点（下图中的Container为例），凡是向上溯源时能经过原点的，都算原点的后代（Static、Horizontal、两个Button都是）。
+
+基本结构如下：
+
+```css
+选择器1 选择器2 {
+    样式类型: 样式名;
+}
+```
+
+<img src="textual.assets/DOM4.png" alt="DOM4" style="zoom:67%;" />
+
+子代组合器就是把后代组合器中用来间隔两个选择器的空格换成大于号（`>`），表示大于号后的选择器所匹配的组件是大于号前的直接后代。从文档对象模型中看，以大于号前的选择器所匹配的组件为原点（上图中的Container为例），凡是向上溯源一级就能回到原点的，都算原点的直接后代（Static、Horizontal）。
+
+基本结构如下：
+
+```css
+选择器1>选择器2 {
+    样式类型: 样式名;
+}
+```
+
+除了上面两种组合器，还有一种其实前面已经在类名选择器里提过，但没有明确定义的并列组合器——使用与号（`&`）连接两个选择器，表示两个选择器是并列关系，与号也可以叫做并列关系符号。
+
+基本结构如下：
+
+```css
+选择器1&选择器2 {
+    样式类型: 样式名;
+}
+```
+
+什么是并列关系？这里的并列关系不是说文档对象模型中在同一层级，而是同时具备的意思。回顾一下类名选择器一节，说过在一个类名选择器后，使用英文句号连接另一个类名（`.alert.attention`），用于表示同时具备两个类名的组件。其实，这里就已经说的是并列组合器了，只是这里省略了一个并列关系符号，它完整的形式是`.alert&.attention`。并列关系常用于修饰两个（及以上）类名选择器、两个（及以上）不同类别的选择器。但需要注意的是：ID选择器具有唯一性，不能并列两个ID选择器；类型选择器涉及到继承关系，同级类不能同时具备，类和子类虽然可以同时具备但没有意义，一般也不会并列两个类型选择器。
+
+比如，想要选择样式类名为`attention`的静态文本设置样式，可以这样写：
+
+```css
+Static&.attention {
+    color: red;
+    background: green 50%;
+}
+```
+
+组合器可以让不同种类的选择器组合使用，同样的，组合器也可以混合起来，进一步组合，比如：
+
+```css
+选择器1 选择器2>选择器3&选择器4 {
+    样式类型: 样式名;
+}
+```
+
+下面看一下组合器应用的实际代码。
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class Alert(Static):
+    pass
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [
+            Header(),
+            Container(
+                Alert('Question:'),
+                Static('Do you like Textual?'),
+                Horizontal(
+                    Button('Yes'),
+                    Button('Maybe'),
+                ),
+            ),
+            Footer(),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+Screen Static {
+    color: red;
+}
+Container>Static {
+    background: yellow 20%;
+}
+```
+
+效果如图：
+
+![combinator](textual.assets/combinator.png)
+
+##### 2.2.5.6 优先级
+
+不管是单个选择器还是多个选择器组合形成的组合器，难免会遇到不同条件下匹配到同一个组件的情况。此时，组件的样式会是什么样子，就取决于选择器、组合器的优先级情况。选择器的优先级在前面已经介绍过：ID选择器 > 伪类选择器 > 类名选择器 > 类型选择器 > 通用选择器；相同优先级的条件下，写在下面的比写在上面的优先。注意，伪类本身的优先级和类名选择器一样，但因为需要附加在其他选择器之后，所以比单个类名选择器优先。
+
+单个选择器还有思绪分清优先级，有无数组合可能的组合器，优先级又是怎么确定的？难道是遵循下面优先？那这样就太难确定哪个组合器优先生效，光是排序这个步骤就要浪费很多时间。
+
+其实，组合器的优先级也有规律，就和选择器的优先级类似，遵循以下规律：
+
+-   ID选择器多的优先。如果数量相同，则看下一条规则。
+-   类名选择器多的优先。伪类选择器等于类名选择器，即如果选择器中包含伪类，相当于类名选择器的数量加一。如果数量相同，则看下一条规则。
+-   类型选择器多的优先。如果数量相同，则遵循写在下面的优先。
+
+除了上面的优先级规则外，在样式名的最后添加重要标记——`!important`会让该样式成为CSS文件里最优先生效的样式，比如：
+
+```css
+.attention {
+    background: blue 50% !important;
+}
+.alert.attention {
+    color: yellow;
+    background: green 50%;
+}
+```
+
+虽然单个类名选择器被放在最上面，但重要标记还是会让这条样式强制生效。
+
+注意，重要标记只是针对单条样式，选择器内其他样式没有添加重要标记的话，依然遵循优先级规则。此外，重要标记只在CSS文件内优先级最高，同时使用CSS文件和样式接口的话，样式接口的优先级高于所有CSS文件内的样式（包括带有重要标记的样式）。
+
+##### 2.2.5.7 变量与初始值
+
+如果在CSS文件中一样的样式很多，使用CSS变量定义，并在后面使用该变量当做样式名，可以减少不少重复工作，也减少了后续修改时的工作量。
+
+使用美元符号（`$`）开头后接变量名，就是CSS中的变量。变量后用英文冒号（`:`）接变量要代替的样式名，后续就可以使用`$变量名`的形式代替样式名。示例如下：
+
+```css
+$border: wide green;
+Static {
+    border: $border;
+}
+```
+
+注意，变量只能用在样式名中，不可用于样式类型和选择器中。
+
+定义变量时也可以嵌入其他变量：
+
+```css
+$success: green;
+$border: wide $success;
+Static {
+    border: $border;
+}
+```
+
+所有的样式类型都支持一个名为`initial`的特殊样式名。该样式名等同于默认值，使用该样式名，会让样式类型的值变成默认CSS（用法含义参考[官网文档](https://textual.textualize.io/guide/widgets/#default-css)，这里不细讲，后续再讲）中的值。
+
+注意，如果在默认CSS中使用`initial`会让样式变成完全无样式。
+
+以下面的代码为例，使用`initial`会让设置好的颜色变成默认颜色：
+
+```css
+Static {
+    color: green;
+}
+Static {
+    color: initial ;
+}
+```
+
+##### 2.2.5.8 嵌套
+
+textual的CSS还支持嵌套使用。
+
+前面已经学过后代组合器，是一种用空格间隔选择器表示其从属关系、匹配复杂层次组件的方法。基本结构如下：
+
+```css
+选择器1 选择器2 {
+    样式类型: 样式名;
+}
+```
+
+其实，这种从属关系也可以在CSS文件中体现，只需将上面的样式变成嵌套形式：
+
+```css
+选择器1 {
+    选择器2 {
+    	样式类型: 样式名;
+    }
+}
+```
+
+这样，选择器2就被嵌入选择器1内。这样写的好处是，假如选择器1有特定的样式，就不需要单独写一份选择器1的样式，只需在嵌套形式中，直属于选择器1的部分添加即可。而且，可以在CSS文件中直观展示组合器生效的规则。假如组合器的规则比较复杂，嵌套可以减少前置条件的重复次数，更加清晰地展现选择器之间的关系。
+
+以下是一个CSS嵌套的实际实例：
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.containers import Container, Horizontal
+from textual.widgets import Header, Footer, Static, Button
+
+class Alert(Static):
+    pass
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [
+            Header(),
+            Container(
+                Alert('Question:',classes='alert'),
+                Static('Do you like Textual?',classes='alert attention'),
+                Horizontal(
+                    Button('Yes'),
+                    Button('Maybe'),
+                ),
+            ),
+            Footer(),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+Screen {
+    background:yellow 20%;
+}
+Screen .alert {
+    color: red;
+}
+Screen .alert.attention {
+    color: yellow;
+    background: green 50%;
+}
+```
+
+输出如下：
+
+![nesting_css](textual.assets/nesting_css.png)
+
+myapp.tcss文件转换成嵌套形式的话如下：
+
+```css
+Screen {
+    background:yellow 20%;
+    .alert {
+        color: red;
+        &.attention {
+            color: yellow;
+            background: green 50%;
+        }
+    }
+}
+```
+
+在嵌套转换中，想必读者已经注意到一个特殊的符号——与号（`&`）。这个符号是并列关系符号，组合器一节已经说过，表示该符号两边的选择器的关系是并列的。
+
+但在嵌套的CSS中，将并列关系符号当做前缀，没有另一个并列的选择器，看上去有点不符合语法。其实，这里隐藏了符号前的选择器——其所属的选择器，表示该选择器与其所属的选择器是并列关系。比如，嵌套的CSS中，`&.attention`表示的是`.attention`与其所属的`.alert`并列，等于`.alert&.attention`或者`.alert.attention`。
 
 #### 2.2.6 DOM查询
 
 
 
-布局
+基于选择器（组合器）规则的query方法，可以直接定位某一类组件。
 
 
 
-事件与消息
+
+
+#### 2.2.7 布局
+
+
+
+
+
+
+
+#### 2.2.8 事件与消息
 
 https://textual.textualize.io/events/
 
 
 
-输入
+#### 2.2.9 输入
 
 
 
-行动
+#### 2.2.10 行动
 
 
 
-组件
+#### 2.2.11 组件
+
+
 
 https://textual.textualize.io/widgets/
 
-动画
+
+
+#### 2.2.12 动画
 
 
 
-屏幕
+#### 2.2.13 屏幕
 
 
 
@@ -1342,8 +2212,12 @@ ANSI_COLORS = [
 
 主题
 
-反应性
+反应性reactivity
 
-worker
+执行者worker
 
 调色盘
+
+
+
+rich相关的样式：https://rich.readthedocs.io/en/latest/markup.html 和 https://rich.readthedocs.io/en/latest/style.html#styles
