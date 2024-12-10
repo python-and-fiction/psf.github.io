@@ -1509,7 +1509,7 @@ Header {
      ```
 
 
-3.   也可以在python源码的开头添加以下代码（PS：如果官方在代码中做了和下面相同的修改，这几个中文报错的解决方法就不需要了）：
+3.   也可以在python源码的开头添加以下代码（最新动态：给官方提了issue之后，官方已经修复次问题，除了需要特别指定编码的情况，一般不需要添加下面的代码）：
 
      ```python3
      import os
@@ -1616,7 +1616,11 @@ Static {
 
 答案是，如样式表的含义所说，越靠近组件的定义越优先。
 
-听起来有点不明所以，实际上很好理解。CSS文件的读取顺序是从上到下，也就是说，下面的定义会覆盖上面的定义。假如一个组件要应用的样式从下往上找，已经找到了符合条件的选择器，那组件就不会应用该选择器上面其他符合条件的选择器。以下面两个CSS文件内容为例：
+听起来有点不明所以，实际上很好理解。CSS文件的读取顺序是从上到下，也就是说，下面的定义会覆盖上面的定义。
+
+也就是说，对于CSS文件内的每个选择器来说，从上到下，依次对符合条件的组件设置样式。假如下面的选择器与上面的匹配结果相同，相同的样式类型会被覆盖，没有的样式类型会新增，已有但不相同的样式类型不会处理。
+
+以下面两个CSS文件内容为例，相同的颜色样式会被下面的覆盖，假如存在上面有但下面没有的样式类型，则会同时保留：
 
 子类在上：
 
@@ -1769,7 +1773,7 @@ Static:hover {
 textual支持以下伪类选择器：
 
 -   `:blur`：表示组件没有获得焦点（获得焦点是指被点击、切换、进入输入状态等，没有获得焦点即不是前面提到的状态）时，组件的状态。
--   `:dark`：表示程序主题切换为深色时，组件的状态（即`App.theme.dark == True`时的状态）。
+-   `:dark`：表示程序主题切换为黑暗主题时，组件的状态（即`App.theme.dark == True`时的状态）。
 -   `:disabled`：表示组件被禁用时的状态。
 -   `:enabled`：表示组件被启用时的状态。
 -   `:even`：表示符合伪类前面选择器条件的组件中，给处在文档对象模型同级别的组件按次序标号（从1开始），组件的标号是偶数的状态。
@@ -1779,7 +1783,7 @@ textual支持以下伪类选择器：
 -   `:hover`：表示鼠标悬停在组件上时，组件的状态。
 -   `:inline`：表示程序以行内模式运行时，组件的状态。
 -   `:last-of-type`：表示符合伪类前面选择器条件的组件中，给处在文档对象模型同级别的组件按次序标号（从1开始），组件的标号是-1（即最后一个）的状态。
--   `:light`：表示程序主题切换为浅色时，组件的状态（即`App.theme.dark == False`时的状态）。
+-   `:light`：表示程序主题切换为明亮主题时，组件的状态（即`App.theme.dark == False`时的状态）。
 -   `:odd`：表示符合伪类前面选择器条件的组件中，给处在文档对象模型同级别的组件按次序标号（从1开始），组件的标号是奇数的状态。
 
 ID选择器是以井号（`#`）开头、后接ID名（用数字、大小写字母、下划线和连字符任意组合，但不能以数字和`-`开头）的选择器。基本结构如下：
@@ -1867,7 +1871,7 @@ textual支持的组合器只有两种：后代组合器和子代组合器。
 }
 ```
 
-除了上面两种组合器，还有一种其实前面已经在类名选择器里提过，但没有明确定义的并列组合器——使用与号（`&`）连接两个选择器，表示两个选择器是并列关系，与号也可以叫做并列关系符号。
+还有一种其实前面已经在类名选择器里提过——并列组合器——使用与号（`&`）连接两个选择器，表示两个选择器是并列关系，与号也可以叫做并列关系符号。
 
 基本结构如下：
 
@@ -1888,10 +1892,33 @@ Static&.attention {
 }
 ```
 
+与并列组合器类似但严格来说算选择器的，是分组组合器——使用英文逗号（`,`）连接两个选择器或者组合器。和Web的CSS同名选择器作用类似，分组组合器就像是一个使用英文逗号（`,`）分隔的数组，每个元素所代表的匹配条件都是并列的。需要注意的是，这里的并列并不是上面同时具备的并列，而是任意一个条件符合都会应用样式的并列。
+
+基本结构如下：
+
+```css
+条件1,条件2 {
+    样式类型: 样式名;
+}
+```
+
+等同于：
+
+```css
+条件1 {
+    样式类型: 样式名;
+}
+条件2 {
+    样式类型: 样式名;
+}
+```
+
+组合器中的条件可以是前面提到的任意选择器或者组合器。
+
 组合器可以让不同种类的选择器组合使用，同样的，组合器也可以混合起来，进一步组合，比如：
 
 ```css
-选择器1 选择器2>选择器3&选择器4 {
+选择器1 选择器2>选择器3&选择器4,选择器5 {
     样式类型: 样式名;
 }
 ```
@@ -1971,7 +1998,7 @@ Container>Static {
 
 虽然单个类名选择器被放在最上面，但重要标记还是会让这条样式强制生效。
 
-注意，重要标记只是针对单条样式，选择器内其他样式没有添加重要标记的话，依然遵循优先级规则。此外，重要标记只在CSS文件内优先级最高，同时使用CSS文件和样式接口的话，样式接口的优先级高于所有CSS文件内的样式（包括带有重要标记的样式）。
+注意，重要标记只是针对单条样式，选择器内其他样式没有添加重要标记的话，依然遵循优先级规则。此外，重要标记只在CSS文件内优先级最高，同时使用CSS文件和样式接口的话，样式接口的优先级高于所有CSS文件内的样式（包括带有重要标记的样式）。分组组合器的条件需要拆分成单个组合器或者选择器之后再与其他组合器对比优先级，不能直接当作普通组合器来参与优先级排序。
 
 ##### 2.2.5.7 变量与初始值
 
@@ -2109,7 +2136,336 @@ Screen {
 
 但在嵌套的CSS中，将并列关系符号当做前缀，没有另一个并列的选择器，看上去有点不符合语法。其实，这里隐藏了符号前的选择器——其所属的选择器，表示该选择器与其所属的选择器是并列关系。比如，嵌套的CSS中，`&.attention`表示的是`.attention`与其所属的`.alert`并列，等于`.alert&.attention`或者`.alert.attention`。
 
-#### 2.2.6 DOM查询
+#### 2.2.6 主题
+
+上一节讲了很多CSS的知识，尤其是变量，对于自定义组件特别有用。假如需要自定义组件的话，需要写不少新的样式，来确保自定义的组件与原生组件外观基本一致。幸好textual提供预定义的基础色变量，可以很方便地用在自定义的组件中，和主题颜色保持一致。之后，更是在0.86.0版本中添加了主题功能，使用python接口也能很方便地创建、修改主题颜色。
+
+##### 2.2.6.1 基础色变量
+
+在正式学习主题功能之前，需要先了解一下基础色变量——构成主题的基本要素。除了设计主题需要了解，如果需要在CSS中给自定义组件设置跟随主题的颜色，下面的内容也会很有帮助。
+
+基础色变量是组成主题的一系列颜色的统称，它们是以CSS变量的形式存在。不同的基础色变量用于不同的位置，主题通过设置这些变量的值（除了主要色，都可以在CSS文件中覆盖默认值），来让程序界面呈现出不同的颜色风格。
+
+基础颜色变量和其含义可以参考下表：
+
+| 颜色变量      | 含义                                                         |
+| :------------ | :----------------------------------------------------------- |
+| `$primary`    | 主要色，也可以看作是品牌色，常用于标题和表示强调时的背景。   |
+| `$secondary`  | 次要色，也可以当做第二品牌色，用途和主要色差不多，但常用于与主要色同时使用但需要区分的场景。 |
+| `$foreground` | 前景色，也是默认的文本颜色，应该在`$background`、`$surface`、`$panel`上清晰可见。 |
+| `$background` | 背景色，用于没有内容的背景的颜色，也是屏幕组件的默认背景色。 |
+| `$surface`    | 组件的默认背景色，通常覆盖在`$background`之上。              |
+| `$panel`      | 用于区分内容部分和其他部分的颜色，可以理解为专用于内容的背景色，但在文本中很少使用。 |
+| `$boost`      | 带有透明度的颜色，用于在背景上创建新的图层。                 |
+| `$warning`    | 表示警告的背景色，`$text-warning`是表示警告的前景色。        |
+| `$error`      | 表示错误的背景色，`$text-error`是表示错误的前景色。          |
+| `$success`    | 表示成功的背景色，`$text-success`是表示成功的前景色。        |
+| `$accent`     | 用以引起注意的颜色，不过很少使用。通常在需要与`$primary`、`$secondary`形成对比时使用。 |
+
+##### 2.2.6.2 颜色深浅度
+
+前一节提到的基础色变量，可以添加后缀，使颜色变得更浅或者更深：
+
+-   在基础色变量后添加`-lighten-1`、`-lighten-2`、`-lighten-3`可以让颜色变浅，最后的数字越大越浅，一共三级，比如：`$error-lighten-3`。
+-   在基础色变量后添加`-darken-1`、`-darken-2`、`-darken-3`可以让颜色变深，最后的数字越大越深，一共三级，比如：`$error-darken-3`。
+
+##### 2.2.6.3 文本颜色
+
+如基础色变量一节中所讲，`$foreground`是默认的文本颜色，为的是确保该颜色在`$background`、`$surface`、`$panel`上清晰可见。
+
+除此以外，还有两个和文本颜色有关的变量：`$foreground-muted`和`$foreground-disabled`。前者颜色柔和一些，适用于文本不太重要的场景，比如副标题；后者颜色比前者更浅，适用于文本内容所属的组件被禁用的场景，表示组件或者内容的禁用状态。
+
+有时候，文本的背景颜色不好预测，并且也不想文本颜色和前景色关联，可以将`foreground`替换为`text`，得到`$text`、`$text-muted`、`$text-disabled`，使文本颜色脱离前景色，通过自动计算背景色来生成，同样可以确保文本清晰可见。
+
+和基础色变量类似，文本的颜色也支持一些基础文本色变量，这些颜色是基于基础颜色变量生成的，可以设置不同场景下的文本颜色：
+
+-   `$text-primary`
+-   `$text-secondary`
+-   `$text-accent`
+-   `$text-warning`
+-   `$text-error`
+-   `$text-success`
+
+效果如图：
+
+![text_color](textual.assets/text_color.png)
+
+##### 2.2.6.4 柔和颜色
+
+上一节里介绍了`$foreground-muted`，其后缀表示该颜色是柔和版本，其实就是给原本颜色设置了70%的透明度。
+
+除了`$foreground-muted`之外，还有以下几种柔和版本的颜色变量，即基础柔和色变量：
+
+-   `$primary-muted`
+-   `$secondary-muted`
+-   `$accent-muted`
+-   `$warning-muted`
+-   `$error-muted`
+-   `$success-muted`
+
+效果如图：
+
+![muted_color](textual.assets/muted_color.png)
+
+##### 2.2.6.5 其他样式变量
+
+除了前几节介绍的与颜色相关的变量，textual还内置了一些和组件有关的样式变量（主要是颜色）。
+
+边框：
+
+| 变量名            | 用途                                             | 默认值                   |
+| :---------------- | :----------------------------------------------- | :----------------------- |
+| `$border`         | 添加了边框且获得焦点的组件，该组件的边框颜色     | `$primary`               |
+| `$border-blurred` | 添加了边框且没有获得焦点的组件，该组件的边框颜色 | 稍微加深一点的`$surface` |
+
+光标：
+
+| 变量名                             | 用途                                       | 默认值                |
+| :--------------------------------- | :----------------------------------------- | :-------------------- |
+| `$block-cursor-foreground`         | 光标块的文本颜色（比如在选项列表中的光标） | `$text`               |
+| `$block-cursor-background`         | 光标块的背景颜色                           | `$primary`            |
+| `$block-cursor-text-style`         | 光标块的文本样式                           | `"bold"`              |
+| `$block-cursor-blurred-foreground` | 没有获得焦点的光标块颜色                   | `$text`               |
+| `$block-cursor-blurred-background` | 没有获得焦点的光标块背景颜色               | 30%透明度的`$primary` |
+| `$block-cursor-blurred-text-style` | 没有获得焦点的光标块文本样式               | `"none"`              |
+| `$block-hover-background`          | 当鼠标悬停在光标块时的背景颜色             | 5%透明度的`$boost`    |
+
+输入框：
+
+| 变量名                        | 用途                 | 默认值                          |
+| :---------------------------- | :------------------- | :------------------------------ |
+| `$input-cursor-background`    | 输入框光标的背景颜色 | `$foreground`                   |
+| `$input-cursor-foreground`    | 输入框光标的文本颜色 | `$background`                   |
+| `$input-cursor-text-style`    | 输入框光标的文本样式 | `"none"`                        |
+| `$input-selection-background` | 被选择文本的背景颜色 | 40%透明度的`$primary-lighten-1` |
+| `$input-selection-foreground` | 被选择文本的文本颜色 | `$background`                   |
+
+滚动条：
+
+| 变量名                         | 用途                                       | 默认值                        |
+| :----------------------------- | :----------------------------------------- | :---------------------------- |
+| `$scrollbar`                   | 滚动条的颜色                               | `$panel`                      |
+| `$scrollbar-hover`             | 鼠标悬停在滚动条上时的滚动条颜色           | `$panel-lighten-1`            |
+| `$scrollbar-active`            | 鼠标开始激活（拖动）滚动条时的滚动条颜色   | `$panel-lighten-2`            |
+| `$scrollbar-background`        | 滚动条轨道的颜色                           | `$background-darken-1`        |
+| `$scrollbar-corner-color`      | 滚动条边角的颜色                           | 和`$scrollbar-background`相同 |
+| `$scrollbar-background-hover`  | 当鼠标悬停在滚动条区域时，滚动条轨道的颜色 | 和`$scrollbar-background`相同 |
+| `$scrollbar-background-active` | 当滚动条激活时，滚动条轨道的颜色           | 和`$scrollbar-background`相同 |
+
+链接：
+
+| 变量名                   | 用途                               | 默认值                 |
+| :----------------------- | :--------------------------------- | :--------------------- |
+| `$link-background`       | 链接的背景颜色                     | `"initial"`            |
+| `$link-background-hover` | 鼠标悬停在链接上时，链接的背景颜色 | `$primary`             |
+| `$link-color`            | 链接的文本颜色                     | `$text`                |
+| `$link-style`            | 链接的文本样式                     | `"underline"`          |
+| `$link-color-hover`      | 鼠标悬停在链接上时，链接的文本颜色 | `$text`                |
+| `$link-style-hover`      | 鼠标悬停在链接上时，链接的文本样式 | `"bold not underline"` |
+
+页脚：
+
+| 变量名                           | 用途                       | 默认值          |
+| :------------------------------- | :------------------------- | :-------------- |
+| `$footer-foreground`             | 页脚的文本颜色             | `$foreground`   |
+| `$footer-background`             | 页脚的背景颜色             | `$panel`        |
+| `$footer-key-foreground`         | 页脚内快捷键文本的颜色     | `$accent`       |
+| `$footer-key-background`         | 页脚内快捷键文本的背景颜色 | `"transparent"` |
+| `$footer-description-foreground` | 页脚内描述文本的颜色       | `$foreground`   |
+| `$footer-description-background` | 页脚内描述文本的背景颜色   | `"transparent"` |
+| `$footer-item-background`        | 页脚内项目的背景颜色       | `"transparent"` |
+
+按钮：
+
+| 变量名                     | 用途                     | 默认值           |
+| :------------------------- | :----------------------- | :--------------- |
+| `$button-foreground`       | 标准按钮的前景色         | `$foreground`    |
+| `$button-color-foreground` | 带色按钮的前景色         | `$text`          |
+| `$button-focus-text-style` | 获得焦点的按钮的文本样式 | `"bold reverse"` |
+
+##### 2.2.6.7 主题
+
+铺垫了那么多，终于要说到textual的主题功能了。
+
+textual内置了一些预设主题：'textual-dark'、'textual-light'、'nord'、'gruvbox'、'catppuccin-mocha'、'textual-ansi'、'dracula'、'tokyo-night'、'monokai'、'flexoki'、'catppuccin-latte'、'solarized-light'。
+
+在App子类中设置`theme`属性为任一主题，即可将textual的主题切换。也可以设置子类实例的`theme`属性，不过这个方法只能在类的初始化方法、compose方法、on_mount方法中使用，不能在类内直接使用。
+
+示例如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.theme import Theme,BUILTIN_THEMES
+
+class MyApp(App):
+    theme = 'nord' # 方法一
+    def on_mount(self):
+        self.theme = 'nord' # 方法二
+        self.widgets = [ Static(f'{name}') for name in BUILTIN_THEMES.keys()]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![theme_1](textual.assets/theme_1.png)
+
+除了这些内置主题，还可以使用`Theme`对象创建新的主题。不过，创建新主题之后，需要使用register_theme方法将主题对象注册到App的子类中，才能将其应用。
+
+使用下面的代码导入Theme类：
+
+```python3
+from textual.theme import Theme
+```
+
+构建Theme对象时，需要传入一些参数：
+
+```python3
+arctic_theme = Theme(
+    name='arctic',
+    primary='#88C0D0',
+    secondary='#81A1C1',
+    accent='#B48EAD',
+    foreground='#D8DEE9',
+    background='#2E3440',
+    success='#A3BE8C',
+    warning='#EBCB8B',
+    error='#BF616A',
+    surface='#3B4252',
+    panel='#434C5E',
+    boost='#434C5E',
+    dark=True,
+    variables={
+        'block-cursor-text-style': 'none',
+        'footer-key-foreground': '#88C0D0',
+        'input-selection-background': '#81a1c1 35%',
+    },
+)
+```
+
+参数含义如下：
+
+`name`参数是字符串类型，就是该主题的名字，在切换、设置主题时，使用的名字就是这个参数的值。
+
+从`primary`参数开始，直到`boost`参数，这些就是前面讲过的基础色变量，在构建对象时传入颜色值，textual会生成相应的CSS变量。可能有的读者觉得，每个基础色都要写，还要花时间研究对应颜色应该取什么值，还是有点麻烦。其实，除了`primary`参数是必填的，其余颜色都可以自己生成，如果嫌麻烦，可以用自动生成的值。当然，自动生成有时候可能不如预期好看，可以给部分基础色参数传入想要的值，让其他值自动生成。
+
+`dark`参数是布尔类型，用于表明该主题是明亮主题还是黑暗主题。如果主题是黑暗主题，其他颜色会基于黑暗主题的规则生成，内置的组件也会显示对应黑暗主题的样式。如果自定义样式中有`:dark`伪类，那该样式会随之应用。
+
+`variables`参数是字典类型，用于传入上一节中其他样式变量里想要指定的样式变量。字典的键是样式变量名，字典的值就是样式变量的值。
+
+创建完对象之后，需要使用register_theme方法在App子类内注册。需要在子类的初始化方法、compose方法、on_mount方法中执行下面的代码：
+
+```python3
+self.register_theme(arctic_theme) # 注册方法
+self.theme = arctic_theme.name # 设置主题
+```
+
+完整代码如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.theme import Theme,BUILTIN_THEMES
+
+arctic_theme = Theme(
+    name='arctic',
+    primary='#88C0D0',
+    secondary='#81A1C1',
+    accent='#B48EAD',
+    foreground='#D8DEE9',
+    background='#2E3440',
+    success='#A3BE8C',
+    warning='#EBCB8B',
+    error='#BF616A',
+    surface='#3B4252',
+    panel='#434C5E',
+    boost='#434C5E',
+    dark=True,
+    variables={
+        'block-cursor-text-style': 'none',
+        'footer-key-foreground': '#88C0D0',
+        'input-selection-background': '#81a1c1 35%',
+    },
+)
+
+class MyApp(App):
+    def on_mount(self):
+        self.register_theme(arctic_theme)
+        self.theme = arctic_theme.name
+        self.widgets = [ Static(f'{name}') for name in BUILTIN_THEMES.keys()]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+可能读者会有新的想法：除了textual提供的样式变量，还想自定义一些样式变量给组件使用。
+
+如果想自定义样式变量，就要在App子类内实现get_theme_variable_defaults方法。该方法返回的是和Theme对象的`variables`参数一样的字典，字典的键是样式变量名，字典的值就是样式变量的*默认值*。实现此方法之后，就可以在App子类内的CSS、CSS文件内、Theme对象中使用自定义的样式变量。
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.theme import Theme,BUILTIN_THEMES
+
+arctic_theme = Theme(
+    name='arctic',
+    primary='#88C0D0',
+    secondary='#81A1C1',
+    accent='#B48EAD',
+    foreground='#D8DEE9',
+    background='#2E3440',
+    success='#A3BE8C',
+    warning='#EBCB8B',
+    error='#BF616A',
+    surface='#3B4252',
+    panel='#434C5E',
+    boost='#434C5E',
+    dark=True,
+    variables={
+        'my-color':'green',
+        'my-bgcolor':'blue'
+    },
+)
+
+class MyApp(App):
+    CSS = '''
+    Static {
+        color:$my-color;
+    }
+    '''
+    CSS_PATH = 'myapp.tcss'
+    def get_theme_variable_defaults(self):
+        return {'my-color':'red','my-bgcolor':'green'}
+    def on_mount(self):
+        self.register_theme(arctic_theme)
+        self.theme = arctic_theme.name
+        self.widgets = [ Static(f'{name}') for name in BUILTIN_THEMES.keys()]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+Static {
+    background:$my-bgcolor 20%;
+}
+```
+
+效果如图：
+
+![theme_2](textual.assets/theme_2.png)
+
+#### 2.2.7 DOM查询
 
 
 
@@ -2210,13 +2566,40 @@ ANSI_COLORS = [
 
 ​	边框标题相关的其他样式：[`border-title-color`](https://textual.textualize.io/styles/border_subtitle_color/)、[`border-title-background`](https://textual.textualize.io/styles/border_subtitle_background/)、[`border-title-style`](https://textual.textualize.io/styles/border_subtitle_style/)、[`border-subtitle-color`](https://textual.textualize.io/styles/border_subtitle_color/)、[`border-subtitle-background`](https://textual.textualize.io/styles/border_subtitle_background/)、[`border-subtitle-style`](https://textual.textualize.io/styles/border_subtitle_style/)。
 
-主题
+
 
 反应性reactivity
 
 执行者worker
 
 调色盘
+
+给Header添加参数来隐藏icon：
+
+```python3
+from textual.widgets import Header
+from textual.widgets._header import HeaderTitle, HeaderClock, HeaderClockSpace, HeaderIcon
+
+class HeaderWithIcon(Header):
+    def __init__(self, show_clock: bool = False, show_icon: bool = True, *, name: str | None = None, id: str | None = None, classes: str | None = None, icon: str | None = None, time_format: str | None = None):
+        super().__init__(show_clock, name=name, id=id, classes=classes, icon=icon, time_format=time_format)
+        self._show_icon = show_icon
+        self.header_icon = HeaderIcon()
+        self.header_icon.visible = self._show_icon    
+
+    def compose(self):
+        self.header_icon.data_bind(Header.icon)
+        yield self.header_icon
+        yield HeaderTitle()
+        yield (
+            HeaderClock().data_bind(Header.time_format)
+            if self._show_clock
+            else HeaderClockSpace()
+        )
+Header = HeaderWithIcon
+```
+
+
 
 
 

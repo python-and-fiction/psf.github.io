@@ -540,6 +540,28 @@ gradio最大的安装难点是ruff的编译，虽然termux提供了ruff，但不
 
 gradio的其他安装难点则和前面一样，在几个包的编译和需要使用pkg安装的包，编译需要较长时间，尽量提前安装，确保成功之后再安装gradio。如果是直接安装gradio，会因为每次安装失败都要重复编译过程，而浪费不少时间。另外，编译需要设备的内存较大，如果程序闪退，可以适当调整交换空间大小。rust写的包的编译还需要较好Github连接性，如果编译报rust相关的错误（比如看到cargo字样），可以多尝试几次。
 
+### 2.5 flet
+
+Flet是一个基于Flutter框架构建、专为Python提供构建跨平台图形界面的快速开发框架。
+
+官网：https://flet.dev/
+
+安装命令：
+
+```shell
+pip install flet[all]
+```
+
+依赖分析：
+
+其实flet的依赖都可以正常安装，安装命令没法在Termux正常使用的原因很低级：官方的all和desktop可选项会让linux平台安装flet-desktop-light，而不是flet-desktop。哪怕flet程序只是设置为web端而不是桌面端，运行命令`flet run -w`还是需要flet-desktop的二进制文件。因此，安装要分步骤，需要先解决flet-desktop的安装问题，而不能直接安装flet[all]。
+
+解决步骤：
+
+先安装flet-desktop，再安装flet、flet-cli、flet-web（或者 flet[cli]、flet[web]），这样才能成功安装。其实只要单独安装即可，不使用 flet[all]、flet[desktop]就行，最后确保flet、flet-cli、flet-desktop、flet-web都安装成功，版本都是0.25.0以上且版本号一样即可。
+
+即便如此，也只能运行web视图，不建议使用桌面视图。
+
 ## 3 还有一件事
 
 上面检查依赖的方法是`pip show {Python包名}`，只能检查一级依赖，如果依赖产生的依赖需要特殊处理，则只能手动测试发现。其实，如果想要一次性、完整检查出可能需要解决的依赖问题，可以在普通的系统平台上，运行`pip download {Python包名}`，当前目录就会下载该包和该包所有的依赖（包括依赖的依赖）。
