@@ -2283,7 +2283,7 @@ Screen {
 | `$button-color-foreground` | 带色按钮的前景色         | `$text`          |
 | `$button-focus-text-style` | 获得焦点的按钮的文本样式 | `"bold reverse"` |
 
-##### 2.2.6.7 主题
+##### 2.2.6.6 主题
 
 铺垫了那么多，终于要说到textual的主题功能了。
 
@@ -2358,7 +2358,7 @@ arctic_theme = Theme(
 创建完对象之后，需要使用register_theme方法在App子类内注册。需要在子类的初始化方法、compose方法、on_mount方法中执行下面的代码：
 
 ```python3
-self.register_theme(arctic_theme) # 注册方法
+self.register_theme(arctic_theme) # 注册主题
 self.theme = arctic_theme.name # 设置主题
 ```
 
@@ -2467,37 +2467,236 @@ Static {
 
 #### 2.2.7 DOM查询
 
+前面的章节中介绍了DOM，也介绍了CSS的选择器。选择器可以在CSS中很方便地给符合条件的组件设置样式，是个非常有用的功能。当然，除了设置样式，在python中还能使用选择器语法筛选、查找组件，方便对那些没有赋值给变量的无名组件，设置样式或者执行其他操作。
+
+需要注意的是，下面提到的query开头的查询方法都是App类、Screen类、组件的方法，只有在App的子类内使用时才能正确查询。不在App的子类内查询，是没法读取DOM的，也没法返回正确的结果。查询方法的完整用法可以参考[官网文档](https://textual.textualize.io/api/dom_node/)，教程中只介绍基本用法。
+
+##### 2.2.7.1 query方法
+
+query方法可以查询符合条件的组件，如果没有传入选择器，则返回调用对象的所有子组件（其实是DOMQuery对象，一个可迭代对象，具体见[官网文档](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery)，后面会细讲）。以代码为例，调用query方法的是self，即App子类。根据前面介绍的文档对象模型，App子类下是Screen，Screen下是子类内创建的各个组件。因此，代码中使用迭代方法将查询的结果再次输出到Screen里新增的静态文本中时，就可以看到App子类下的所有组件：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [ Static('one'),Static('two'),Button('three')]
+        self.mount_all(self.widgets)
+        for widget in self.query():
+            self.mount(Static(str(widget)))
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![query](textual.assets/query.png)
+
+如果传入选择器语法给query方法，则会得到符合选择器语法的结果：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [ Static('one'),Static('two'),Button('three')]
+        self.mount_all(self.widgets)
+        for widget in self.query('Static'):
+            self.mount(Static(str(widget)))
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![query_2](textual.assets/query_2.png)
+
+除了传入选择器语法给query方法，也可以传入组件类型，等同于类型选择器，比如代码中的`self.query('Static')`就可以改为`self.query(Static)`。
+
+通过前面的代码示例，相信读者已经猜到，query方法返回的DOMQuery对象就像python内部的list对象一样。没错，DOMQuery对象除了可以迭代遍历之外，也支持list对象的其他操作，比如：索引（`query[0]`）、计算长度（`len(query)`）、反转结果排序（`reverse(query)`）等。除此以外，DOMQuery对象还支持一些特有方法：
+
+-   [results方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.results)，返回匹配的结果。不过，此方法返回的结果不同于DOMQuery对象，该方法的返回值是生成器，也就是说不支持list对象一样的方法（比如索引）。此外，此方法也能传入一个参数，用于在DOMQuery对象中筛选特定类型的组件（如果结果为空不报错，只会返回空白）。比如，`self.query().results(Button)`就是在结果中筛选Button类型的组件，得到只有Button组件的生成器。
+
+-   [first方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.first)、[last方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.last)，返回结果的第一个、最后一个组件。这两个方法和results方法一样支持传入参数来进一步筛选结果中特定类型的组件，表示只有结果中第一个、最后一个组件是该类型的组件才正常返回（如果结果为空会报错）。这两个方法因为返回的是确定的结果，所以返回值的类型是组件，而不是生成器，因此不能对这两个方法的返回值进行迭代。
+
+-   [filter方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.filter)，可以在DOMQuery对象的基础上，使用另一个选择器进行筛选，表示结果中符合该筛选条件的组件。不过，不同于query方法不传入参数表示筛选全部，filter方法必须传入选择器，否则会报错。当然，如果传入的是空字符串，则结果也会变成空。
+
+-   [exclude方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.exclude)，可以在DOMQuery对象的基础上，使用另一个选择器进行排除，表示结果中除了符合选择器条件之外的组件。同filter方法一样，参数必须是有效的选择器，不传入参数会报错，空字符串会导致结果为空。
+
+-   可以对结果统一执行的无需循环的方法。在此需要解释一下什么叫无需循环的方法。前面介绍的查询结果中，如果结果是可迭代的，想要设置结果中的组件的样式，需要先迭代遍历结果（DOMQuery对象），得到每个元素，才能执行元素的方法。比如：
+
+    ```python3
+    for widget in self.query('Static'):
+        widget.add_class('alert')
+    ```
+
+    如果该方法是无需循环的方法，则可以直接让DOMQuery对象调用，不需要单独迭代遍历一次。那么，上面的代码就可以这样写：
+
+    ```python3
+    self.query('Static').add_class('alert')
+    ```
+
+    可以对结果统一执行的无需循环的方法有：
+
+    -   [add_class方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.add_class)，给结果中的每个组件添加一个或多个样式类，参数支持传入多个样式类名，如`self.query('Static').add_class('alert','attention')`。
+    -   [blur方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.focus)，让结果中的每个组件失去焦点。注意，此方法会让焦点回归到默认，即第一个可以获取焦点的组件（焦点序号为1的组件）。
+    -   [focus方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.focus)，让结果中第一个组件获得焦点。
+    -   [refresh方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.refresh)，刷新结果中的每个组件的显示。常用于设置了结果的样式相关属性之后，需要确保显示样式和当前属性一致的情况。
+    -   [remove_class方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.remove_class)，给结果中的每个组件删除一个或多个样式类，参数支持传入多个样式类名，如`self.query('Static').remove_class('alert','attention')`。
+    -   [remove方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.remove)， 从DOM中删掉结果中的每个组件。
+    -   [set_class方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.set_class)，给结果中的每个组件设置一个或多个样式类，参数支持传入多个样式类名，如`self.query('Static').set_class('alert','attention')`。不同于add_class方法只是添加，该方法会先清除掉组件原本设置的样式类。
+    -   [set方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.set)，设置结果中的每个组件的公共属性（显示状态display、可视性visible、禁用状态disabled、载入状态loading），只需给方法传入对应的关键字参数即可，比如`self.query('Button').set(display=False,visible=False,disabled=False,loading=False)`。需要注意的是，显示状态display和可视性visible虽然都是控制组件是否显示，前者会同时隐藏组件的占位空间，后者只是让组件不显示，但原位还是会有组件大小的占位空间。另外，set方法不同于其他方法，迭代遍历DOMQuery对象时，每个元素没有set方法，只有DOMQuery对象才能执行set方法。
+    -   [toggle_class方法](https://textual.textualize.io/api/query/#textual.css.query.DOMQuery.toggle_class)，给结果中的每个组件切换一个或多个样式类，即如果存在该类名则删除，不存在则添加。
+
+    除了remove方法，其余方法都是返回DOMQuery对象，也就是说其他方法可以串联执行，比如`self.query('Static').add_class('alert','attention').refresh()`，就是添加样式类之后刷新组件的显示。当然，remove方法也可以串联进去，只能放到最后执行。
+
+综合上面用法，写一段简单的示例代码：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [ 
+            Static('one'),
+            Static('two'),
+            Button('three'),
+            Button('four',classes='yes')]
+        self.mount_all(self.widgets)
+        self.query('Button').set(display=False) # 隐藏所有按钮
+        for static in self.query('Static'):
+            static.styles.color = 'red' # 将所有静态文本的颜色改为红色
+        for button in self.query('Button').filter('.yes'):
+            button.display = True # 显示class为yes的按钮
+            button.label = 'three' # 修改class为yes的按钮的标签为three
+       
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![query_3](textual.assets/query_3.png)
+
+##### 2.2.7.2 其他query方法
+
+除了强大的query方法，textual还提供了一些细化的查询方法。不同于query方法返回DOMQuery对象，支持比较规整的子方法，这些细化的查询方法适用于特定场景，有的返回的是具体组件，不需要迭代；有的只查询直接子级，不会返回全部子级。读者可以按需选用，也可以query方法全解决。
+
+[query_one方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.query_one)：
+
+和query方法一样使用选择器语法来筛选组件，只是该方法如其名，只会返回一个结果。哪怕能匹配到多个，也只返回第一个结果，因此，方法返回的是组件，不是可迭代的DOMQuery对象。需要注意的是，不同于query方法，此方法如果找不到结果会报错，所以不能省略选择器或者传入空字符串。
+
+第一个参数除了用选择器语法字符串之外，还可以使用组件的类名，比如`self.query_one(Static)`。
+
+看到这里，读者可能会想起来，query方法的results子方法就可以传入组件类型当参数，来筛选结果，query_one是否也可以？
+
+query_one方法当然也可以，只不过，query_one方法不需要调用results子方法，而是传入第二个参数即可。比如`self.query_one('.yes',Static)`。
+
+示例代码如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [ 
+            Static('one'),
+            Static('two',classes='yes'),
+            Button('three'),
+            Button('four',classes='yes')]
+        self.mount_all(self.widgets)
+        self.query_one('.yes',Static).styles.color = 'red'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![query_4](textual.assets/query_4.png)
+
+[query_exactly_one方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.query_exactly_one)：
+
+和query_one方法几乎一样，只是query_exactly_one方法的选择器语法只能匹配一个结果，一旦匹配得到多个结果就会报错。其他的报错和参数支持情况一样。
+
+示例代码如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [ 
+            Static('one'),
+            Static('two',classes='yes'),
+            Button('three'),
+            Button('four',classes='yes')]
+        self.mount_all(self.widgets)
+        self.query_exactly_one('.yes&Static',Static).styles.color = 'red'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![query_4](textual.assets/query_4.png)
+
+[query_children方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.query_children)：
+
+query_children方法用法和query方法基本一样，唯一不同的是，query_children方法只能查询调用该方法的组件的直接子级（即文档对象模型中组件的对外箭头，直接指向的其他组件）。所以，下面的示例中，调用该方法的不是`self`，而是`self.screen`（屏幕组件）：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [ 
+            Static('one'),
+            Static('two',classes='yes'),
+            Button('three'),
+            Button('four',classes='yes')]
+        self.mount_all(self.widgets)
+        for static in self.screen.query_children('.yes').results(Static):
+            static.styles.color = 'red'
+        for static in self.screen.query_children(Static).filter('.yes'):
+            static.styles.background = 'green 20%'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![query_5](textual.assets/query_5.png)
+
+因为该方法返回的是DOMQuery对象，那些DOMQuery对象支持的方法一样可以用。
+
+#### 2.2.8 布局
 
 
-基于选择器（组合器）规则的query方法，可以直接定位某一类组件。
 
 
 
 
 
-#### 2.2.7 布局
-
-
-
-
-
-
-
-#### 2.2.8 事件与消息
+#### 2.2.9 事件与消息
 
 https://textual.textualize.io/events/
 
 
 
-#### 2.2.9 输入
+#### 2.2.10 输入
 
 
 
-#### 2.2.10 行动
+#### 2.2.11 行动
 
 
 
-#### 2.2.11 组件
+#### 2.2.12 组件
 
 
 
@@ -2505,11 +2704,11 @@ https://textual.textualize.io/widgets/
 
 
 
-#### 2.2.12 动画
+#### 2.2.13 动画
 
 
 
-#### 2.2.13 屏幕
+#### 2.2.14 屏幕
 
 
 
