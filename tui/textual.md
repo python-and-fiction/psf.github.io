@@ -103,6 +103,8 @@ if __name__ == '__main__':
 
 如果需要退出的话，按下`ctrl`+`c`，即可退出。
 
+注意，textual在1.0.0版本修改`ctrl`+`c`快捷键为复制功能，默认的退出快捷键变成了`ctrl`+`q`。而`ctrl`+`q`在VSCode中会启动`workbench.action.quickOpenView`，因此，需要修改此命令的快捷键为其他按键，或者启用`terminal.integrated.sendKeybindingsToShell`；也可以在`terminal.integrated.commandsToSkipShell`中添加`-workbench.action.quickOpenView`（注意前面有个减号，推荐此方法，影响最小）。
+
 需要注意的是，因为pdm初始化项目会产生`src\{项目名}`目录，标准操作是将源代码放到该目录下，而vscode的打开终端只是到项目根目录，通过命令行运行的话，需要cd到`src\{项目名}`目录，即源代码文件的同级目录，后续的命令行操作之前皆需要执行此操作，就不再赘述，读者实操之前请不要忘了这一步。
 
 相比于nicegui最短三行的“Hello World!”，textual的代码显得臃肿不少，结构上也复杂得多。不过不用担心，这里只是简单看一下textual程序的代码和运行效果，不需要细究每一行代码的作用，在学习textual代码的作用之前，还需要学习一些代码之外的知识。
@@ -2675,6 +2677,46 @@ if __name__ == '__main__':
 因为该方法返回的是DOMQuery对象，那些DOMQuery对象支持的方法一样可以用。
 
 #### 2.2.8 布局
+
+先总体说一下布局的概念，可以callback前面用到的
+
+from textual.containers import Container, Horizontal
+
+介绍一下基本的水平垂直布局，算是布局的基础学习（这里图示为主，还不涉及代码）
+
+介绍布局样式设计时，同时在tcss文件（这里需要提供官网文档https://textual.textualize.io/styles/layout/）和python中设置（这里需要介绍一下textual.containers模块https://textual.textualize.io/api/containers/），前者是纯CSS语法，后者是样式接口。
+
+然后介绍上下文管理器表达的方法，只是插入介绍，后续的代码示例不用，因为只能在compose方法中使用。
+
+
+
+网格布局要单独一节，先图示，然后两种方法都介绍一遍怎么用，然后深入介绍网格布局的详细样式设计（行和列的大小等）
+
+https://textual.textualize.io/styles/grid/
+
+
+
+docking
+
+https://textual.textualize.io/styles/dock/
+
+
+
+layers
+
+https://textual.textualize.io/styles/layer/
+
+https://textual.textualize.io/styles/layers/
+
+
+
+offset
+
+https://textual.textualize.io/styles/offset/
+
+
+
+非常用的布局（textual.containers里其他布局组件）
 
 
 
