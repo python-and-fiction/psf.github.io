@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
 如果需要退出的话，按下`ctrl`+`c`，即可退出。
 
-注意，textual在1.0.0版本修改`ctrl`+`c`快捷键为复制功能，默认的退出快捷键变成了`ctrl`+`q`。而`ctrl`+`q`在VSCode中会启动`workbench.action.quickOpenView`，因此，需要修改此命令的快捷键为其他按键，或者启用`terminal.integrated.sendKeybindingsToShell`；也可以在`terminal.integrated.commandsToSkipShell`中添加`-workbench.action.quickOpenView`（注意前面有个减号，推荐此方法，影响最小）。
+注意，textual在1.0.0版本修改`ctrl`+`c`快捷键为复制功能，默认的退出快捷键变成了`ctrl`+`q`。而`ctrl`+`q`在VSCode中会启动`workbench.action.quickOpenView`，因此，需要修改此命令的快捷键为其他按键，或者启用`terminal.integrated.sendKeybindingsToShell`；也可以在`terminal.integrated.commandsToSkipShell`中添加`-workbench.action.quickOpenView`（注意前面有个减号，推荐此方法，影响最小）。但是，如果使用下节介绍的开发者工具运行textual程序，退出快捷键依然是`ctrl`+`c`。
 
 需要注意的是，因为pdm初始化项目会产生`src\{项目名}`目录，标准操作是将源代码放到该目录下，而vscode的打开终端只是到项目根目录，通过命令行运行的话，需要cd到`src\{项目名}`目录，即源代码文件的同级目录，后续的命令行操作之前皆需要执行此操作，就不再赘述，读者实操之前请不要忘了这一步。
 
@@ -2678,21 +2678,728 @@ if __name__ == '__main__':
 
 #### 2.2.8 布局
 
-先总体说一下布局的概念，可以callback前面用到的
+其实前面已经涉及过布局组件，只是当时主要介绍其他内容，而不是介绍布局。
 
-from textual.containers import Container, Horizontal
+比如`from textual.containers import Container, Horizontal`，就是导入了布局组件`Horizontal`。
 
-介绍一下基本的水平垂直布局，算是布局的基础学习（这里图示为主，还不涉及代码）
+textual支持多种布局，最常用的是水平、垂直、网格布局。当然，前面的很多示例其实已经有了布局的雏形，只是textual默认垂直布局，除非需要其他布局，才需要特别设置（比如上文提到的`Horizontal`，就是为了让组件水平布局）。
 
-介绍布局样式设计时，同时在tcss文件（这里需要提供官网文档https://textual.textualize.io/styles/layout/）和python中设置（这里需要介绍一下textual.containers模块https://textual.textualize.io/api/containers/），前者是纯CSS语法，后者是样式接口。
+在正式学习布局之前，需要先创建一下用于演示布局的示例代码，后续可以方便对比布局的区别。
 
-然后介绍上下文管理器表达的方法，只是插入介绍，后续的代码示例不用，因为只能在compose方法中使用。
+myapp.py文件的内容如下：
 
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container
 
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [ 
+            Container(
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.mount_all(self.widgets)
 
-网格布局要单独一节，先图示，然后两种方法都介绍一遍怎么用，然后深入介绍网格布局的详细样式设计（行和列的大小等）
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
 
-https://textual.textualize.io/styles/grid/
+myapp.tcss文件的内容如下：
+
+```css
+Static {
+    height: 1fr;
+    width: 1fr;
+    border: solid green;
+}
+```
+
+为了方便测试样式的效果，后面请使用`textual run --dev myapp.py`来运行示例代码，也可以每次修改之后重启程序。
+
+##### 2.2.8.1 垂直布局
+
+如[官网文档](https://textual.textualize.io/styles/layout/)所写，垂直布局是默认的布局样式，而textual的容器（Screen组件可以看作App下的容器）也遵循这个原则，默认以垂直布局的方式排布容器内的组件。
+
+何为垂直布局？
+
+如下图所示，在容器内新增的组件会按照从上到下的顺序排在已有组件的下面：
+
+![vertical](textual.assets/vertical.png)
+
+在示例代码中，三个静态文本都在容器组件Container中，所以，需要设置Container的布局才能看到效果（默认就是垂直布局，其实不设置也一样）。
+
+设置布局的方法有两种：一是使用前面介绍过的样式接口（将`styles.layout`设置为`'vertical'`），直接在python代码中设置；二是在CSS文件中设置（给容器添加样式`layout: vertical`）。
+
+使用样式接口，需要修改myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [ 
+            Container(
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.widgets[0].styles.layout = 'vertical'
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+在CSS中设置布局，需要修改myapp.tcss文件的内容如下：
+
+```css
+Static {
+    height: 1fr;
+    width: 1fr;
+    border: solid green;
+}
+Container {
+    layout: vertical;
+}
+```
+
+![vertical_2](textual.assets/vertical_2.png)
+
+需要注意一点，示例中的代码，将静态文本的宽度和高度设置为`1fr`，使得宽度和高度都可以均匀等分Screen组件，不存在宽度和高度超过可显示区域的情况。如果高度设置为固定数值，所有组件的高度和超过可显示区域，会导致没法查看未显示的部分。
+
+比如，在CSS文件的基础上做以下修改：
+
+```css
+Static {
+    height: 10;
+    width: 1fr;
+    border: solid green;
+}
+Container {
+    layout: vertical;
+}
+```
+
+会看到：
+
+![vertical_3](textual.assets/vertical_3.png)
+
+原本能显示全部三个静态文本的终端，因为静态文本高度之和超过终端高度，而不能全部显示。
+
+这个时候，需要给容器设置溢出样式为自动，让终端显示出滚动条，滚动显示剩余内容。
+
+溢出样式overflow参考[官网文档](https://textual.textualize.io/styles/overflow/)，两个方向都设置为自动auto（含义参考[官网文档](https://textual.textualize.io/css_types/overflow/)），即`overflow: auto auto`；也可以值设置一个方向`overflow-y: auto`（垂直方向对应的是y轴，Screen组件默认添加了此样式，如果容器是Screen，则不用单独设置）。
+
+以下是修改后的结果：
+
+```css
+Static {
+    height: 10;
+    width: 1fr;
+    border: solid green;
+}
+Container {
+    layout: vertical;
+    overflow: auto auto;
+}
+```
+
+![vertical_4](textual.assets/vertical_4.png)
+
+##### 2.2.8.2 水平布局
+
+水平布局则与垂直布局的方向不同，从上下方向的排布，变成左右方向的排布。如下图所示，在容器内新增的组件会按照从左到右的顺序排在已有组件的右侧：
+
+![horizontal](textual.assets/horizontal.png)
+
+与垂直布局类似，设置水平布局的方法一样有两种：一是使用前面介绍过的样式接口（将`styles.layout`设置为`'horizontal'`），直接在python代码中设置；二是在CSS文件中设置（给容器添加样式`layout: horizontal`）。
+
+使用样式接口，需要修改myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [ 
+            Container(
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.widgets[0].styles.layout = 'horizontal'
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+在CSS中设置布局，需要修改myapp.tcss文件的内容如下：
+
+```css
+Static {
+    height: 1fr;
+    width: 1fr;
+    border: solid green;
+}
+Container {
+    layout: horizontal;
+}
+```
+
+![horizontal_2](textual.assets/horizontal_2.png)
+
+如果静态文本的宽度设置为固定数值，会遇到与垂直布局类似的问题，宽度之和超过终端宽度，会导致没法查看未显示的部分。
+
+同样的，容器的溢出样式设置为自动可以解决。和垂直布局类似，水平布局也可以单独设置x轴方向的溢出样式`overflow-x: auto`。不过，Screen组件没有设置水平方向的溢出样式，如果容器是Screen组件，则需要给Screen组件设置x轴方向的溢出样式。
+
+以下是修改后的结果：
+
+```css
+Static {
+    height: 1fr;
+    width: 100;
+    border: solid green;
+}
+Container {
+    layout: horizontal;
+    overflow:auto auto;
+}
+```
+
+##### 2.2.8.3 布局容器组件与上下文管理器语法
+
+有心的读者可能已经发现了，示例代码中，除了导入Container组件，还导入了Horizontal组件和Vertical组件，可几个示例都没有使用这两个组件。没错，使用样式设置布局，总归是要在写了样式之后才能看到效果。在设计布局的阶段，写出布局样式之前，看不出Container组件究竟是水平布局还是垂直布局。好在Horizontal组件和Vertical组件提供了预设的布局，只要使用这两个组件，其内部组件的布局就是如它们的名字般确定。
+
+布局容器的用法很简单，前面需要什么样式的布局，只需将原来的Container换成对应的名字即可。比如，想要水平布局的三个静态文本，只需将代码修改如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [ 
+            Horizontal(
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+Static {
+    height: 1fr;
+    width: 1fr;
+    border: solid green;
+}
+```
+
+![layout_widget](textual.assets/layout_widget.png)
+
+布局容器组件除了可以省略写布局样式的步骤，还支持使用上下文管理器`with`来代替函数调用式设计布局的方式。使用上下文管理器进入布容器局组件的上下文之后，在上下文内yield的组件会自动出现在布局容器内部。因此，此语法只能在compose方法内使用：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def compose(self):
+        with Horizontal():
+            yield Static('one')
+            yield Static('two')
+            yield Static('three')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+此写法和上面的python代码效果一样，只是使用上下文管理器语法会让布局设计更加直观，甚至可以将函数调用式布局与上下文管理器语法混合使用：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def compose(self):
+        with Horizontal(Static('one'), Static('two')):
+            yield Static('three')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+读者可以根据喜好自由选择布局语法，这里没有特别推荐的。
+
+##### 2.2.8.4 网格布局
+
+除了垂直布局和水平布局，还有一种常用的布局，那就是网格布局。网格布局和办公软件中的表格类似，最小可以是一个单元格，最大可以扩展成连续的大单元格（就像是合并之后的单元格）。如下图所示，网格布局的灵活性比单个方向的布局高：
+
+![grid](textual.assets/grid.png)
+
+但是，相比于垂直布局、水平布局的简单，网格布局既灵活又复杂。若要了解网格布局的复杂性，需要先看一下示例代码。
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical,Grid
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [ 
+            Container(
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+Static {
+    height: 1fr;
+    width: 1fr;
+    border: solid green;
+}
+Container {
+    layout: grid;
+}
+```
+
+看上去和垂直布局的示例类似，只是这里的布局换成了网格布局——`grid`。然而，运行结果却让人匪夷所思：
+
+![grid_2](textual.assets/grid_2.png)
+
+看起来和垂直布局一样，难道是写错代码了？
+
+非也，其实，这就是网格布局，只是看起来有点像垂直布局而已。如果想要让二者产生区别，需要引入另一样式——`grid-size`。
+
+只修改布局的话，网格布局就会产生这样的效果，想要完整体验网格布局，还需要了解网格布局相关的其他样式，具体可以参考[官网文档](https://textual.textualize.io/styles/grid/)。在众多相关样式中，第一个需要了解的，就是网格尺寸样式——`grid-size`（完整用法参考[官网文档](https://textual.textualize.io/styles/grid/grid_size/)）。
+
+该样式支持一个或者两个非负整数。只设置一个非负整数时，表示网格的列数；设置两个非负整数时，第二个非负整数表示行数。在没有设置此样式时，默认网格的列数是1，行数是0（表示无限）。默认情况下，网格布局就只有一列的网格，所以看上去和垂直布局一样。
+
+接下来，给网格尺寸设置为2列2行看看效果。
+
+在CSS文件中设置的话，要修改成这样：
+
+```css
+Static {
+    height: 1fr;
+    width: 1fr;
+    border: solid green;
+}
+Container {
+    layout: grid;
+    grid-size: 2 2;
+}
+```
+
+在python代码中使用样式接口设置，则需要单独设置列（`grid_size_columns`）、行（`grid_size_rows`）的数值：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical,Grid
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [ 
+            Container(
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.widgets[0].styles.layout = 'grid'
+        self.widgets[0].styles.grid_size_columns = 2
+        self.widgets[0].styles.grid_size_rows = 2
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+结果如下：
+
+![grid_3](textual.assets/grid_3.png)
+
+这次，网格布局和垂直布局就有区别了。
+
+就像表格中调整行高、列宽一样，网格布局中，行、列的大小可以使用样式单独设置。需要注意的是，调整行、列的大小只是针对网格布局中的每个格子，格子内的组件的最大宽高会被限制为格子大小，来确保格子内的组件可以完整显示。因此，格子内组件的宽高可以在小于格子大小的范围内自由调整。为了确保行、列的大小的调整效果直观，不受组件大小的变化影响，示例中组件的宽高设置为`1fr`或者`100%`，并不是说格子内的组件必须这样设置。
+
+设置列的宽度（[官网文档](https://textual.textualize.io/styles/grid/grid_columns/)），需要在容器中添加`grid-columns`样式。该样式接受多个长度（长度的单位含义参考宽度、高度和比例单位一节），每个长度代表对应列的宽度。比如，设置的样式为`grid-columns: 1fr 2fr`，表示第一列的宽度是`1fr`，第二列的宽度是`2fr`。而网格的尺寸是2列2行，则第一列的宽度是三分一，第二列的宽度是三分之二。
+
+对应的样式接口是`styles.grid_columns`，样式接口中的长度均为字符串类型，想要传入的多个长度必须包装成元组类型。比如，`self.widgets[0].styles.grid_columns = ('1fr','2fr')`。假如只传入一个长度，则既可以用元组类型`self.widgets[0].styles.grid_columns = ('1fr',)`，也可以直接使用字符串类型`self.widgets[0].styles.grid_columns = '1fr'`。
+
+设置行的高度（[官网文档](https://textual.textualize.io/styles/grid/grid_rows/)）则对应的是`grid-rows`，对应的样式接口是`styles.grid_rows`，数值含义类似，只是对应的值是行的高度。
+
+长度支持固定数值、分数、百分数。如果百分数之和超过100%，需要设置溢出样式，否则，超过最大宽高的部分就会被遮挡，无法显示。
+
+前面出现过传入的长度数量小于列数的情况，对于此情况，程序遵循以下原则：如果提供的每列、每行的长度数量小于列数、行数，那不足的部分会重复前面提供的长度，循环使用提供的长度。比如：列数是5，`grid-columns`设置为`10 20 30`，那么，程序就会自动重复前面已经提供的长度，实际得到的`grid-columns`是`10 20 30 10 20`。
+
+示例如下：
+
+myapp.py文件的内容如下，对应样式接口的设置方法：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical,Grid
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [ 
+            Container(
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.widgets[0].styles.layout = 'grid'
+        self.widgets[0].styles.grid_size_columns = 2
+        self.widgets[0].styles.grid_size_rows = 2
+        self.widgets[0].styles.grid_columns = ('1fr','2fr')
+        self.widgets[0].styles.grid_rows = ('1fr','2fr')
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下，对应CSS中的设置方法：
+
+```css
+Static {
+    height: 1fr;
+    width: 100%;
+    border: solid green;
+}
+Container {
+    layout: grid;
+    grid-size: 2 2;
+    grid-columns: 1fr 2fr;
+    grid-rows: 1fr 2fr;
+}
+```
+
+输出如下：
+
+![grid_4](textual.assets/grid_4.png)
+
+既然用的是长度单位，网格布局的行高列宽自然也支持设根据内容调整大小的`'auto'`。
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical,Grid
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [ 
+            Container(
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.widgets[0].styles.layout = 'grid'
+        self.widgets[0].styles.grid_size_columns = 2
+        self.widgets[0].styles.grid_size_rows = 2
+        self.widgets[0].styles.grid_columns = ('auto','2fr')
+        self.widgets[0].styles.grid_rows = ('auto','2fr')
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![grid_5](textual.assets/grid_5.png)
+
+当然，像表格一样实现合并单元格的效果也可以做到，需要给网格内顶层组件设置列扩展样式（完整用法参考[官网文档](https://textual.textualize.io/styles/grid/column_span/)）、行扩展样式（完整用法参考[官网文档](https://textual.textualize.io/styles/grid/row_span/)）。
+
+为了方便解释，需要用到下面的基础示例代码：
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical,Grid
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        s1 = Static('one',classes='span')
+        self.widgets = [ 
+            Container(
+            s1,
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.widgets[0].styles.layout = 'grid'
+        self.widgets[0].styles.grid_size_columns = 3
+        self.widgets[0].styles.grid_size_rows = 3
+        self.widgets[0].styles.grid_columns = '1fr'
+        self.widgets[0].styles.grid_rows = '1fr'
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+Static {
+    height: 1fr;
+    width: 100%;
+    border: solid green;
+}
+Container {
+    layout: grid;
+    grid-size: 3 3;
+    grid-columns: 1fr;
+    grid-rows: 1fr;
+}
+```
+
+每个网格内的组件默认占据的是一行一列，一个单元格。假如设置行扩展为二，那组件占据的大小就变成了两行一列——两个单元格。同理，单独设置列扩展为二，占据大小也变成了两个单元格。但是，如果行扩展和列扩展都设置为二，就变成了二乘二——四个单元格。
+
+![grid_6](textual.assets/grid_6.png)
+
+列扩展的样式名是`column-span`，对应的样式接口是`styles.column_span`。行扩展的样式名是`row-span`，对应的样式接口是`styles.row_span`。这两个样式接受整数作为值，表示其扩展的目标大小。
+
+以设置列扩展为例，示例代码如下：
+
+myapp.py文件的内容如下，对应样式接口的设置方法：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical,Grid
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        s1 = Static('one',classes='span')
+        self.widgets = [ 
+            Container(
+            s1,
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.widgets[0].styles.layout = 'grid'
+        self.widgets[0].styles.grid_size_columns = 3
+        self.widgets[0].styles.grid_size_rows = 3
+        self.widgets[0].styles.grid_columns = '1fr'
+        self.widgets[0].styles.grid_rows = '1fr'
+        s1.styles.column_span = 2
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下，对应CSS中的设置方法：
+
+```css
+Static {
+    height: 1fr;
+    width: 100%;
+    border: solid green;
+}
+Container {
+    layout: grid;
+    grid-size: 3 3;
+    grid-columns: 1fr;
+    grid-rows: 1fr;
+}
+.span {
+    column-span: 2;
+}
+```
+
+结果如下：
+
+![grid_7](textual.assets/grid_7.png)
+
+因为设置行扩展、列扩展只能针对网格内顶层组件，所以代码中给组件添加了一个样式类`'span'`，在CSS中设置列扩展时，使用的是类名选择器。
+
+为了让每个静态文本的边界看得清楚，上面的几个示例中，都给静态文本加了边框。边框让静态文本的边界变得清晰，但也让读者一直误解了一件事——网格布局内的每个网格之间都有间隔。其实不是这样的，每个网格之间都是紧密相邻的。为了让读者清楚看到，现在，代码中静态文本的边框将被去除，用背景颜色代替。同时为了能看清网格之间是紧密相邻还是有间隔，静态文本的父容器，将使用另一种背景颜色。
+
+就使用上面列扩展的示例代码，只修改CSS文件：
+
+```css
+Static {
+    height: 1fr;
+    width: 100%;
+    background: darkmagenta;
+}
+Container {
+    layout: grid;
+    grid-size: 3 3;
+    grid-columns: 1fr;
+    grid-rows: 1fr;
+    background: lightgreen;
+}
+.span {
+    column-span: 2;
+}
+```
+
+![grid_8](textual.assets/grid_8.png)
+
+从前面一路学过来的读者肯定自信满满，想让网格之间有间隔那还不简单，外边距margin就是干这个的：
+
+```css
+Static {
+    height: 1fr;
+    width: 100%;
+    background: darkmagenta;
+    margin: 1;
+}
+Container {
+    layout: grid;
+    grid-size: 3 3;
+    grid-columns: 1fr;
+    grid-rows: 1fr;
+    background: lightgreen;
+}
+.span {
+    column-span: 2;
+}
+```
+
+![grid_9](textual.assets/grid_9.png)
+
+效果很显著，也很完美，代码也不复杂。不过，若是想要网格之间有间隔，网格容器的边界和网格之间没有间隔，需要怎么做？
+
+也许，单独设置每个边界网格内组件的四个方向的外边距可以实现，但代码上会变得很复杂，有没有更加简单的方法？
+
+想要简单实现，网格间距（完整用法参见[官网文档](https://textual.textualize.io/styles/grid/grid_gutter/)）正是最好的选择。
+
+网格间距的样式名是`grid-gutter`，支持一个或者两个非负整数值。传递一个非负整数，表示行间距、列间距都是这个值。如果传入两个非负整数，则第一个整数表示行间距，第二个整数表示列间距。
+
+比如，设置行间距为1、列间距为5：
+
+```css
+Static {
+    height: 1fr;
+    width: 100%;
+    background: darkmagenta;
+}
+Container {
+    layout: grid;
+    grid-size: 3 3;
+    grid-columns: 1fr;
+    grid-rows: 1fr;
+    background: lightgreen;
+    grid-gutter: 1 5;
+}
+.span {
+    column-span: 2;
+}
+```
+
+![grid_10](textual.assets/grid_10.png)
+
+读者可能要好奇，网格间距是不是没有样式接口？前面几个样式，介绍的时候会同时说一下对应的样式，这个样式怎么没有？
+
+先别急，网格间距的样式接口与CSS样式使用的方式不太一样。CSS样式中可以传递一个或者两个整数到同一个名字中，来调整不同的效果。想要在样式接口中实现同样的效果，则必须使用两个样式接口。
+
+网格间距中行间距，样式接口是`styles.grid_gutter_horizontal`。网格间距中列间距，样式接口是`styles.grid_gutter_vertical`。看上去是不是与垂直布局、水平布局的方向相反？明明行间距是垂直方向上行与行之间的间隔，英文里用的却是水平一词。为了方便理解，这里建议读者这样想：行表示水平排布，所以行间距水平的行之间的距离；列是垂直的，对应的间距就是垂直。
+
+去掉上面CSS文件中的`grid-gutter`样式，使用样式接口实现的话，myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+from textual.containers import Container,Horizontal,Vertical,Grid
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        s1 = Static('one',classes='span')
+        self.widgets = [ 
+            Container(
+            s1,
+            Static('two'),
+            Static('three'),
+            )
+        ]
+        self.widgets[0].styles.layout = 'grid'
+        self.widgets[0].styles.grid_size_columns = 3
+        self.widgets[0].styles.grid_size_rows = 3
+        self.widgets[0].styles.grid_columns = '1fr'
+        self.widgets[0].styles.grid_rows = '1fr'
+        self.widgets[0].styles.grid_gutter_horizontal = 1
+        self.widgets[0].styles.grid_gutter_vertical = 5
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![grid_10](textual.assets/grid_10.png)
+
+因为终端字符的字高通常是字宽的两倍，为了让行间距、列间距的视觉效果相近，建议将列间距设置为行间距的两倍。
+
+![grid_11](textual.assets/grid_11.png)
+
+##### 2.2.8.5 停靠
 
 
 
@@ -2702,6 +3409,8 @@ https://textual.textualize.io/styles/dock/
 
 
 
+##### 2.2.8.6 图层
+
 layers
 
 https://textual.textualize.io/styles/layer/
@@ -2710,15 +3419,11 @@ https://textual.textualize.io/styles/layers/
 
 
 
+##### 2.2.8.7 偏移
+
 offset
 
 https://textual.textualize.io/styles/offset/
-
-
-
-非常用的布局（textual.containers里其他布局组件）
-
-
 
 
 
