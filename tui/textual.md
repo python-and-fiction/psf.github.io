@@ -3401,33 +3401,218 @@ if __name__ == '__main__':
 
 ##### 2.2.8.5 停靠
 
+除了上面提到的垂直布局、水平布局、网格布局这些布局中组件排序基本固定的布局，还有一种可以打乱排序的布局——停靠。停靠严格来说不算一种布局，因为其样式不属于`layout`，而是单独的`dock`。何为停靠？停靠可以理解为让组件脱离容器的原有布局，变成靠边、固定在某个位置（支持上、下、左、右四个位置）的船坞，不随其他同级组件一起活动。停靠样式常用于设计标题栏、状态栏、侧边栏，可以让内容固定显示在特定区域。
 
+如下图所示，设置了停靠的组件会被固定到特定为止，哪怕其他同级组件可以上下滚动，该组件也不会随之滚动：
 
-docking
+![dock_1](textual.assets/dock_1.png)
 
-https://textual.textualize.io/styles/dock/
+停靠的样式名是`dock`，样式接口是`styles.dock`，停靠支持`'bottom'`、`'left'`、`'right'`、`'top'`四个位置，完整说明可以参考[官网文档](https://textual.textualize.io/styles/dock/)。
 
+以下面的代码为例：
 
+myapp.py文件的内容如下：
 
-##### 2.2.8.6 图层
+```python3
+from textual.app import App
+from textual.widgets import Static
 
-layers
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        s1 = Static('dock',classes='dock')
+        self.widgets = [
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            s1,
+        ]
+        self.screen.styles.layout = 'horizontal'
+        s1.styles.width = '15%'
+        s1.styles.height = '100%'
+        s1.styles.background = 'lightgreen'
+        self.mount_all(self.widgets)
 
-https://textual.textualize.io/styles/layer/
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
 
-https://textual.textualize.io/styles/layers/
+myapp.tcss文件的内容如下：
 
+```css
+Static {
+    height: auto;
+    width: 10;
+}
+```
 
+上面的代码，将得到以下结果：
 
-##### 2.2.8.7 偏移
+![dock_2](textual.assets/dock_2.png)
 
-offset
+可以看到，写有`'dock'`的静态文本如代码中的顺序，在第四位。
 
-https://textual.textualize.io/styles/offset/
+然后，给静态文本设置停靠样式为`'left'`之后，将看到该静态文本固定显示在左边：
 
+myapp.py文件的内容如下，对应样式接口的设置方法：
 
+```python3
+from textual.app import App
+from textual.widgets import Static
 
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        s1 = Static('dock',classes='dock')
+        self.widgets = [
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            s1,
+        ]
+        self.screen.styles.layout = 'horizontal'
+        s1.styles.width = '15%'
+        s1.styles.height = '100%'
+        s1.styles.background = 'lightgreen'
+        s1.styles.dock = 'left' # 设置dock样式
+        self.mount_all(self.widgets)
 
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下，对应CSS中的设置方法：
+
+```css
+Static {
+    height: auto;
+    width: 10;
+}
+.dock {
+    dock: left;
+}
+```
+
+输出如下：
+
+![dock_3](textual.assets/dock_3.png)
+
+需要特别注意的是，如果多个组件设置了同一个方向上的停靠样式，根据组件的顺序，后设置停靠的组件会覆盖在先前设置停靠的组件的上面。
+
+示例如下：
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        s1 = Static('dock',classes='dock')
+        s2 = Static('dock',classes='dock2')
+        self.widgets = [
+            Static('one'),
+            Static('two'),
+            Static('three'),
+            s1,
+            s2,
+        ]
+        self.screen.styles.layout = 'horizontal'
+        s1.styles.width = '15%'
+        s1.styles.height = '100%'
+        s1.styles.background = 'lightgreen'
+        s1.styles.dock = 'left'
+        s2.styles.width = '10%'
+        s2.styles.height = '100%'
+        s2.styles.background = 'lightpink'
+        s2.styles.dock = 'left'
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+结果如下：
+
+![dock_4](textual.assets/dock_4.png)
+
+##### 2.2.8.6 图层与偏移
+
+上一节中，同时设置一个方向的停靠，会让后设置的组件重叠到先前的组件上。这就引出一个textual的特性——图层。textual的绘制顺序是先低后高，这也解释了上一节中排在后面的停靠组件为什么会覆盖住先前停靠组件：停靠实际上是把组件的图层提高到已有组件之上，后添加停靠的组件会把先前停靠的组件当做已有组件，进而提高到更高一层。在此之前的布局（垂直、水平、网格），实际上都是在同一图层上绘制，哪怕是停靠，也只是因为默认渲染顺序，表现出图层的效果，并不是因为设置了图层。
+
+在textual中，没有Web中那样的z-index来区分一个组件的z轴顺序，却有一个类似的功能——图层。就像PS中的图层，textual的图层可以让不同的组件区分其位置，哪怕是后面有新的组件，也能让先前的组件处于最上层。想要给组件设置图层，需要先理解两个样式的含义：图层顺序（`layers`）和所属图层（`layer`）。
+
+`layers`是图层顺序，需要在容器中设定。该样式采用空格分隔每个图层名，组成一个图层名的顺序列表。其中，最左边表示最低层，最右边表示最高层，比如`layers: box2 box1`中，box2最低，box1最高。如果是采用样式接口的形式，则需要把表示图层顺序的列表变成字符串元组，上面的样式示例就变成了`styles.layers = ('box2','box1')`。完整用法可以参考[官网文档](https://textual.textualize.io/styles/layers/)。
+
+所属图层`layer`是各个图层的命名，需要在对应的组件中设置，图层的名字来源于图层顺序。CSS中的样式名是`layer`，样式接口是`styles.layer`，完整用法可以参考[官网文档](https://textual.textualize.io/styles/layer/)。
+
+示例如下：
+
+myapp.py文件的内容如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static
+
+class MyApp(App):
+    CSS_PATH = 'myapp.tcss'
+    def on_mount(self):
+        self.widgets = [
+            Static('box1', classes='box1'),
+            Static('box2', classes='box2'),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+myapp.tcss文件的内容如下：
+
+```css
+Static {
+    width: 30;
+    height: 8;
+    color: auto;
+    content-align: center middle;
+}
+Screen {
+    layers: box2 box1;
+}
+.box1 {
+    layer: box1;
+    background: lightgreen;
+}
+.box2 {
+    layer: box2;
+    background: lightpink;
+    offset: 15 6;
+}
+```
+
+结果如下：
+
+![layers](textual.assets/layers.png)
+
+因为该示例涉及的CSS比较复杂，故示例只演示CSS中的写法，对应的样式接口写法就省略了。
+
+为了方便区分两个静态文本，代码将静态文本的内容居中，并给不同的静态文本组件设置了不同的背景颜色，这样就能看出哪个静态文本在上，哪个在下。需要注意的是，如果两个静态文本不在同一图层的话，它们在各自图层的位置是相同的（都在左上角）。因此，需要给在下面的静态文本设置偏移，使其与上面的静态文本错开，方便看到效果。
+
+说到偏移，这里就一并讲一下。
+
+偏移的样式名是`offset`，样式接口是`styles.offset`。偏移支持两个整数数字，分别表示水平方向（X轴方向）、垂直方向（Y轴方向）的偏移量。向右、向下为正，反之为负。在CSS中，这两个数字根据空格分隔来区分；在样式接口中，这两个数字需要组成整数元组，如`styles.offset = (5,2)`。
+
+需要注意的是，CSS中还支持`offset-x`和`offset-y`这两种对X轴（水平方向）、Y轴（垂直方向）单独设置偏移的样式，样式接口中则没有这两种属性，完整用法参考[官网文档](https://textual.textualize.io/styles/offset/)。另外，偏移除了支持固定的数字，还支持比例单位，但只能在对应方向上使用比例单位（`w`和`vw`只能用在X轴方向，`h`和`vh`只能用在Y轴方向），否则会导致单位计算出错。并且，偏移中的`w`和`h`含义将与`%`一样，都是表示以组件自身的大小为100%的长度。分数单位不支持，而且也没有合法含义。使用分数单位的效果，和没有单位的裸数字一样。
+
+设置了偏移的组件可以脱离原先的位置，平移到所在图层的其他位置，如下图所示：
+
+![offset](textual.assets/offset.png)
 
 #### 2.2.9 事件与消息
 
@@ -3460,6 +3645,12 @@ https://textual.textualize.io/widgets/
 
 
 ### 2.3 组件一览
+
+
+
+https://textual.textualize.io/widgets/
+
+toast
 
 
 
