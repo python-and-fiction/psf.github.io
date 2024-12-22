@@ -1379,7 +1379,7 @@ app.on_disconnect(lambda :print('disconnected!'))
 ui.run(native=True)
 ```
 
-##### 2.3.7.3 定时器ui.timer
+##### 2.3.7.3 定时器ui.timer和app.timer
 
 定时器可以根据给定的时间间隔，周期性执行指定函数。ui.timer有四个参数：浮点类型的时间间隔`interval`、可调用类型的执行操作`callback`、布尔类型的是否激活`active`、布尔类型的是否运行一次`once`。
 
@@ -1392,6 +1392,74 @@ ui.timer(interval=6.0,callback=lambda :ui.notify('Timer.'),active=True,once=Fals
 
 ui.run(native=True)
 ```
+
+以下的内容按理来说属于进阶部分，就算不学习，也能满足基础开发需要。但是官方将此部分内容与基础部分放在一起解释，为了方便有相关需求的读者学习，特地将该部分内容与基础合并，并且进阶部分也会同步增加。不理解、不需要此功能的读者可以暂时忽略，等学进阶部分时再学也可以。
+
+nicegui官方在2.9.0版本新增了app.timer定时器，虽然用法上和ui.timer一样，但其归属于app而不是ui，还是有所区别的。
+
+为了理解区别，需要先运行以下示例代码：
+
+```python3
+from nicegui import app, ui
+
+counter = {'value': 0}
+label = ui.element()
+timer = None
+
+with ui.element() as buttons:
+    button1 = ui.button('add label')
+    button2 = ui.button('delete buttons')
+
+def add_label():
+    timer = ui.timer(1,lambda :counter.update(value=counter['value']+1))
+    with label:
+        ui.label().bind_text_from(counter, 'value', lambda value: f'Count: {value}')
+
+def delete_buttons():
+    buttons.clear()
+    
+button1.on_click(add_label)
+button2.on_click(delete_buttons)
+
+ui.run(native=True)
+```
+
+![app_timer_1](nicegui.assets/app_timer_1.gif)
+
+示例代码源于nicegui官方仓库的一个问题，这里稍微简化了一下。问题作者想要让按钮创建一个定时更新显示内容的定时器，然后用另一个按钮删掉创建定时器的按钮。就是这样听起来很简单的操作，结果在删掉按钮时，工作定时器好像被一并“删掉”了。导致删掉按钮之后，原本应该继续执行的显示更新操作随之停止了。
+
+听起来很奇怪，像是一个问题，其实不是，一开始就没有必要让按钮创建定时器。定时器可以在按钮的响应函数之外创建，按钮只需启动（`activate`）、停止（`deactivate`）定时器即可。因为定时器（`ui.timer`）会自动关联创建定时器的UI组件，一般做法是在auto-index页创建定时器，定时器关联了auto-index页，而auto-index页一般不会被删掉（也不能删掉，会出问题），所以使用定时器不会出问题。假如是其他UI组件创建了定时器，删掉UI组件的同时会一并删掉定时器，这也就是问题的原因。
+
+上面的示例代码更换成常规用法也可以，解决方法也不难，不过，nicegui官方还是为此增加了一个独立于UI组件的定时器——app.timer，既是对此问题的解决方案，也是对后续有类似需求的功能实现。
+
+那么，上面的代码在基本不动的前提下，只需将`ui.timer`换成`app.timer`即可：
+
+```python3
+from nicegui import app, ui
+
+counter = {'value': 0}
+label = ui.element()
+timer = None
+
+with ui.element() as buttons:
+    button1 = ui.button('add label')
+    button2 = ui.button('delete buttons')
+
+def add_label():
+    timer = app.timer(1,lambda :counter.update(value=counter['value']+1))
+    with label:
+        ui.label().bind_text_from(counter, 'value', lambda value: f'Count: {value}')
+
+def delete_buttons():
+    buttons.clear()
+    
+button1.on_click(add_label)
+button2.on_click(delete_buttons)
+
+ui.run(native=True)
+```
+
+![app_timer_2](nicegui.assets/app_timer_2.gif)
 
 ##### 2.3.7.4 可刷新方法ui.refreshable
 
@@ -7045,6 +7113,93 @@ ui.run(native=True)
 ![ui_leaflet8](nicegui.assets/ui_leaflet8.gif)
 
 ### 3.15 杂项技巧【随时更新】
+
+#### 3.15.1 app.timer
+
+nicegui官方在2.9.0版本新增了app.timer定时器，虽然用法上和ui.timer一样，但其归属于app而不是ui，还是有所区别的。
+
+为了理解区别，需要先运行以下示例代码：
+
+```python3
+from nicegui import app, ui
+
+counter = {'value': 0}
+label = ui.element()
+timer = None
+
+with ui.element() as buttons:
+    button1 = ui.button('add label')
+    button2 = ui.button('delete buttons')
+
+def add_label():
+    timer = ui.timer(1,lambda :counter.update(value=counter['value']+1))
+    with label:
+        ui.label().bind_text_from(counter, 'value', lambda value: f'Count: {value}')
+
+def delete_buttons():
+    buttons.clear()
+    
+button1.on_click(add_label)
+button2.on_click(delete_buttons)
+
+ui.run(native=True)
+```
+
+![app_timer_1](nicegui.assets/app_timer_1.gif)
+
+示例代码源于nicegui官方仓库的一个问题，这里稍微简化了一下。问题作者想要让按钮创建一个定时更新显示内容的定时器，然后用另一个按钮删掉创建定时器的按钮。就是这样听起来很简单的操作，结果在删掉按钮时，工作定时器好像被一并“删掉”了。导致删掉按钮之后，原本应该继续执行的显示更新操作随之停止了。
+
+听起来很奇怪，像是一个问题，其实不是，一开始就没有必要让按钮创建定时器。定时器可以在按钮的响应函数之外创建，按钮只需启动（`activate`）、停止（`deactivate`）定时器即可。因为定时器（`ui.timer`）会自动关联创建定时器的UI组件，一般做法是在auto-index页创建定时器，定时器关联了auto-index页，而auto-index页一般不会被删掉（也不能删掉，会出问题），所以使用定时器不会出问题。假如是其他UI组件创建了定时器，删掉UI组件的同时会一并删掉定时器，这也就是问题的原因。
+
+上面的示例代码更换成常规用法也可以，解决方法也不难，不过，nicegui官方还是为此增加了一个独立于UI组件的定时器——app.timer，既是对此问题的解决方案，也是对后续有类似需求的功能实现。
+
+那么，上面的代码在基本不动的前提下，只需将`ui.timer`换成`app.timer`即可：
+
+```python3
+from nicegui import app, ui
+
+counter = {'value': 0}
+label = ui.element()
+timer = None
+
+with ui.element() as buttons:
+    button1 = ui.button('add label')
+    button2 = ui.button('delete buttons')
+
+def add_label():
+    timer = app.timer(1,lambda :counter.update(value=counter['value']+1))
+    with label:
+        ui.label().bind_text_from(counter, 'value', lambda value: f'Count: {value}')
+
+def delete_buttons():
+    buttons.clear()
+    
+button1.on_click(add_label)
+button2.on_click(delete_buttons)
+
+ui.run(native=True)
+```
+
+![app_timer_2](nicegui.assets/app_timer_2.gif)
+
+当然，有了app.timer这种独立于UI组件的定时器之后，以前那种将ui.timer放在ui.page之外，用来充当独立于页面的定时器的方法，就可以使用app.timer了：
+
+```python3
+from nicegui import app, ui
+
+counter = {'value': 0}
+app.timer(1.0, lambda: counter.update(value=counter['value'] + 1))
+
+@ui.page('/')
+def page():
+    ui.label().bind_text_from(counter, 'value', lambda value: f'Count: {value}')
+
+ui.run()
+```
+
+两种定时器在这种情景下都不会出问题，这里替换为新的定时器更多是为了区分定时器的作用范围。
+
+
 
 有些技巧是灵感乍现，实在找不到合适的分类，就写在了这里。内容和分类可能会因为后续更新而变动。
 
