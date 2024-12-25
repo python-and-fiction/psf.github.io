@@ -3616,11 +3616,692 @@ Screen {
 
 #### 2.2.9 事件与消息
 
+前面在textual程序的基本概念-事件一节中，提到了on_为前缀的事件响应方法是程序的基本组成。这一节，将详细介绍textual框架的消息系统。不过，在此之前，需要解释一下事件和消息的含义。
 
+很多时候，事件和消息被混在一起说，比如：消息的响应函数，事件的响应函数，指的是同一个响应函数。然而，事件和消息却是不同的概念，将响应函数与其关联可能结果一致，但还是有细微的差别。
 
-https://textual.textualize.io/events/
+事件是是一个动作发生的事实。点击按钮，会有按钮的点击事件发生；在文本框输入，会有输入事件发生。
 
+消息则是消息系统中其他成员知道一个动作的发生。听上去消息和事件差不多，其实是因为事件的发生往往伴随着消息的传播，所以二者不太容易分开说。如果涉及到响应操作，就能看出二者的区分了。
 
+假如要给一个事件设置一个响应操作，可以在创建组件时，同时给组件的特定事件关联响应操作。虽然这样的触发操作还是离不开消息，但可以将响应与具体组件直接关联。
+
+如果是给消息设置一个响应操作，则不需要等待组件创建，只需要结合消息系统的规定，创建一个对特定消息响应的操作即可。
+
+##### 2.2.9.1 消息队列
+
+textual对于消息的处理，采取的是消息队列机制，即先发出的消息先处理，按照排序处理，确保全部处理。
+
+结合下面的图片，可以很方便理解。
+
+假如用户在输入框内，按下一系列按键`T`、`e`、`x`、`t`，那输入框的按键事件响应函数（`on_key`）就会依次接收到这几个按键事件的消息：
+
+![message_1](textual.assets/message_1.png)
+
+然后，输入框的按键事件响应函数（`on_key`）就会依次处理这些信息，让输入框的内容依次增加按键内容，并显示出来：
+
+![message_2](textual.assets/message_2.png)
+
+直到消息队列被清空，响应函数停止运行，继续等待新的消息出现。当然，这个操作实际上很快，并没有描述中一步一步执行的感觉。
+
+##### 2.2.9.2 处理消息
+
+说到消息的处理程序——响应函数，就不得不讲一下textual的响应函数的写法。虽然读者已经在前面惊鸿一瞥，但函数的写法还是有门道的，并没有看上去那么简单。
+
+想要给一个消息或者事件编写响应函数，第一步要做的就是理解命名。前面说了事件和消息的区别，虽说开发过程中很容易混淆，但在这里还是要再次强调一下二者的差异，因为在textual中，给事件和消息创建响应函数，命名上有些许差异。
+
+以下图为例：
+
+![message_3](textual.assets/message_3.png)
+
+on_key是事件的响应函数，on_button_pressed则是消息的响应函数。从命名上就能看出事件和消息的区别。以下划线为分界点，事件的响应函数分为两部分：表示响应的前缀on和事件名称。消息的响应函数则是三部分：表示响应的前缀on、发出消息的组件类名和消息名称。
+
+需要注意的是，消息和事件的响应函数，需要将消息、事件、发出消息的组件类名全部转化为小写，并用下划线分隔才行。有些组件类名、消息、事件是大写每个字段首字母的驼峰命名，在响应函数中则需要改成以下划线划分字段的蛇形命名，比如：`ButtonA`（继承自Button的自定义类）的`Pressed`消息的响应函数，则要写成`on_button_a_pressed`。这里的`button_a`是对`ButtonA`的转化，里面的下划线并不参与响应函数的整体划分。
+
+虽然命名上事件的响应函数和消息的响应函数有所区别，但实际使用时二者差别不大。因为事件也是消息的派生类，下面几节要讲的消息特性，事件也一般具备（部分组件会防止特定事件的冒泡，比如Button的on_click响应函数，因此要具体组件具体分析）。
+
+事件和消息会基于继承关系向上传递，让父类一并响应（可以理解为事件和消息在继承体系中包含本身，向上传播，逐级响应）。
+
+事件和消息还会经过消息系统发送到外部，让没有派生关系的DOM上级组件的响应（可以理解为事件和消息在DOM结构中包含自身，向上传播，逐级响应，也就是后续要讲的冒泡机制）。
+
+textual支持的事件可以参考[官网文档](https://textual.textualize.io/events/)。消息则需要查询对应组件内部的消息类才能知道，比如：Button的[消息](https://textual.textualize.io/widgets/button/#messages)。
+
+以下是一个常规的响应函数的示例，其中的on_mount是App子类的事件响应函数，on_button_pressed则是App子类对DOM下级Button组件的消息响应函数。点击按钮，按钮的文字会变成`'button pressed'`：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            Button('Press')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_pressed(self):
+        self.widgets[1].label = 'button pressed'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_4](textual.assets/message_4.gif)
+
+响应函数除了只带一个表示实例对象的self参数，还可以额外带一个代表具体消息的消息参数。消息参数就是该响应函数所响应的消息，比如on_button_pressed，就可以再带一个Button.Pressed类型的消息参数，该类型参数支持一些属性，具体可以参考[官网文档](https://textual.textualize.io/widgets/button/#textual.widgets.Button.Pressed)，这里使用了代表按钮本身的`button`属性，这样，上个例子中原本要索引之后才能获取的按钮控件，就可以使用这个属性代替：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            Button('Press')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_pressed(self,e:Button.Pressed):
+        e.button.label = 'button pressed'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_4](textual.assets/message_4.gif)
+
+除了上面这种on_开头，只能使用规定函数名的响应函数，textual还提供了一种装饰器on，可以把任意函数包装为响应函数。
+
+使用`from textual import on`导入on装饰器。on装饰器的第一个位置参数是被包装函数响应的消息。比如，想要给Button.Pressed消息写一个响应函数，使用on装饰器的话，代码是这样的：
+
+```python3
+@on(Button.Pressed)
+def handle_button_pressed(self):
+    self.widgets[1].label = 'button pressed'
+```
+
+需要注意的是，on装饰器修饰的函数可以是任何与现有函数不重名的函数，这里的handle_button_pressed也不是规定的名称，只是为了方便理解而约定俗成的名称。
+
+以下示例展示了如何使用on装饰器定义不带参数的响应函数：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+from textual import on
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            Button('Press')
+        ]
+        self.mount_all(self.widgets)
+
+    @on(Button.Pressed)
+    def handle_button_pressed(self):
+        self.widgets[1].label = 'button pressed'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_4](textual.assets/message_4.gif)
+
+如果想给装饰器包装的响应函数带上消息参数，消息参数则要写到被包装的函数中，而不是on装饰器中：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+from textual import on
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            Button('Press')
+        ]
+        self.mount_all(self.widgets)
+
+    @on(Button.Pressed)
+    def handle_button_pressed(self,e:Button.Pressed):
+        e.button.label = 'button pressed'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_4](textual.assets/message_4.gif)
+
+on装饰器的第二个位置参数是使用选择器语法的筛选参数，支持通过选择器来筛选特定组件。
+
+以下面的代码为例，筛选参数指定了选择器`'.a'`，只响应样式类中有`'a'`的组件的Button.Pressed消息：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+from textual import on
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            Button('Press A',classes='a'),
+            Button('Press B',classes='b')
+        ]
+        self.mount_all(self.widgets)
+
+    @on(Button.Pressed,'.a')
+    def handle_button_pressed(self,e:Button.Pressed):
+        e.button.label = 'button pressed'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_5](textual.assets/message_5.gif)
+
+##### 2.2.9.3 默认行为
+
+上一节说事件和消息会基于继承关系向上传递，实际上是指事件和消息的响应函数被子类继承，哪怕子类再次定义了同名响应函数，也不会覆盖父类的响应函数。在子类执行响应函数之后，还会默认执行父类的响应函数。就和Python中手动执行`super().__init__()`一样，只不过在textual中，这个操作是默认的，不需要手动、显式执行。
+
+下面的示例中，通过编写有继承关系的子类，展示了这个特性。需要注意的是，自定义的类、组件首字母要大写，否则会报错。事件响应函数的示例如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class ButtonA(Button):
+    def on_click(self,e:Button.Pressed):
+        self.label += ' A'
+
+class ButtonB(ButtonA):
+    def on_click(self,e:Button.Pressed):
+        self.label += ' B'
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA'),
+            ButtonB('ButtonB')
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_6](textual.assets/message_6.gif)
+
+消息响应函数的示例如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class ButtonA(Button):
+    def on_button_pressed(self,e:Button.Pressed):
+        self.label += ' A'
+
+class ButtonB(ButtonA):
+    def on_button_pressed(self,e:Button.Pressed):
+        self.label += ' B'
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA'),
+            ButtonB('ButtonB')
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_6](textual.assets/message_6.gif)
+
+可以看到，ButtonA继承了Button之后，定义了一个在按钮文本追加字母A的操作；ButtonB继承了ButtonA之后，定义了一个在按钮文本追加字母B的操作。但在实际运行时，点击按钮ButtonB，却追加了字母B和A，这就是默认运行了父类ButtonA的响应操作。
+
+子类响应函数的默认行为很方便，可以免得继承父类之后，忘了调用父类方法，但同时也很烦人，尤其是父类已经实现响应函数的时候，想要修改一些父类的操作，会不可避免地再次执行父类的操作，无法真正覆盖父类方法。这时，就需要了解一下如何防止默认行为，来避免这个烦人的特性。
+
+运行消息参数的子方法prevent_default可以防止这个默认行为执行，该方法的完整用法可以参考[官网文档](https://textual.textualize.io/api/message/#textual.message.Message.prevent_default)。
+
+事件响应函数的示例如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class ButtonA(Button):
+    def on_click(self,e:Button.Pressed):
+        self.label += ' A'
+
+class ButtonB(ButtonA):
+    def on_click(self,e:Button.Pressed):
+        e.prevent_default(True)
+        self.label += ' B'
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA'),
+            ButtonB('ButtonB')
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_7](textual.assets/message_7.gif)
+
+消息响应函数的示例如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class ButtonA(Button):
+    def on_button_pressed(self,e:Button.Pressed):
+        self.label += ' A'
+
+class ButtonB(ButtonA):
+    def on_button_pressed(self,e:Button.Pressed):
+        e.prevent_default(True)
+        self.label += ' B'
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA'),
+            ButtonB('ButtonB')
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_7](textual.assets/message_7.gif)
+
+##### 2.2.9.4 冒泡机制
+
+事件和消息有一个名为bubble的属性，该属性设置为`True`的话，事件和消息会在响应函数执行完之后，传递给DOM中的上级组件，让上级组件响应事件和消息。这个过程就好像水下的气泡慢慢往上冒，所以也叫冒泡机制。
+
+以下面的代码为例，详解一下冒泡机制：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class ButtonA(Button):
+    def on_button_pressed(self,e:Button.Pressed):
+        self.label += ' A'
+
+class ButtonB(ButtonA):
+    def on_button_pressed(self,e:Button.Pressed):
+        e.prevent_default(True)
+        self.label += ' B'
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA'),
+            ButtonB('ButtonB')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_pressed(self,e:Button.Pressed):
+        self.widgets[0].update(e.button.label)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_9](textual.assets/message_9.gif)
+
+Button.Pressed消息的bubble属性为默认值`True`，因此该消息会沿着下图的DOM路径，一直冒泡到最上面的App子类MyApp。因此，在MyApp类中定义的响应函数on_button_pressed才会在ButtonA点击之后执行，将静态文本的内容设置为按钮的文本。
+
+![message_8](textual.assets/message_8.png)
+
+恰如有默认行为就有防止默认行为的方法，有冒泡自然也有防止冒泡的方法。防止冒泡有两种方法：
+
+-   如冒泡的定义所讲，将消息的bubble属性设置为`False`。
+-   消息的stop子方法可以防止消息冒泡，stop方法的完整用法可以参考[官网文档](https://textual.textualize.io/api/message/#textual.message.Message.stop)。
+
+两种方法的示例如下，通过在ButtonA的消息响应函数中防止消息冒泡，让MyApp中的响应函数不在响应ButtonA的消息：
+
+设置消息的bubble属性：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class ButtonA(Button):
+    def on_button_pressed(self,e:Button.Pressed):
+        e.bubble = False
+        self.label += ' A'
+
+class ButtonB(ButtonA):
+    def on_button_pressed(self,e:Button.Pressed):
+        e.prevent_default(True)
+        self.label += ' B'
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA'),
+            ButtonB('ButtonB')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_pressed(self,e:Button.Pressed):
+        self.widgets[0].update(e.button.label)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+使用消息的stop方法：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class ButtonA(Button):
+    def on_button_pressed(self,e:Button.Pressed):
+        e.stop()
+        self.label += ' A'
+
+class ButtonB(ButtonA):
+    def on_button_pressed(self,e:Button.Pressed):
+        e.prevent_default(True)
+        self.label += ' B'
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA'),
+            ButtonB('ButtonB')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_pressed(self,e:Button.Pressed):
+        self.widgets[0].update(e.button.label)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+结果如下：
+
+![message_10](textual.assets/message_10.gif)
+
+读者可能觉得冒泡有点像上一节讲到的默认行为——子类的响应函数也会执行父类的响应函数，其实二者还是有区别的：冒泡只是对DOM生效，DOM中的上级会响应下级的消息；父类和子类之间没有冒泡，只有子类执行父类响应函数的默认行为。如果将防止默认行为的代码换成防止冒泡的代码，就会发现父类的响应函数依然会在子类中执行：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+
+class ButtonA(Button):
+    def on_button_pressed(self,e:Button.Pressed):
+        e.stop()
+        self.label += ' A'
+
+class ButtonB(ButtonA):
+    def on_button_pressed(self,e:Button.Pressed):
+        e.stop()
+        self.label += ' B'
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA'),
+            ButtonB('ButtonB')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_pressed(self,e:Button.Pressed):
+        self.widgets[0].update(e.button.label)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+##### 2.2.9.5 自定义消息
+
+预定义的消息和事件总归是数量有限的，功能上不一定满足需求。所以，textual还支持自定义消息。
+
+想要自定义消息，最简单的方法就是继承textual的消息类。先用`from textual.message import Message`导入消息类，在自定义的组件类内，创建一个内部类来继承消息类。
+
+需要注意的是，自定义的消息类首字母要大写，否则会报错。
+
+此时，代码如下：
+
+```python3
+class ButtonA(Button):
+    class ClickedOnce(Message):
+		pass
+```
+
+一个简单的自定义消息类已经创建好，下一步就是将自定义消息发送到消息系统。发送消息的方法是组件类子方法post_message，该方法的参数是消息类的实例对象，完整用法参考[官网文档](https://textual.textualize.io/api/message_pump/#textual.message_pump.MessagePump.post_message)。为了能让发送消息的操作响应点击操作，需要将该方法的执行代码放到点击事件（完整用法参考[官网文档](https://textual.textualize.io/events/click/)）的响应函数中，现在，代码如下：
+
+```python3
+class ButtonA(Button):
+    class ClickedOnce(Message):
+        pass
+    def on_click(self):
+        self.post_message(self.ClickedOnce())
+```
+
+至此，一个发送自定义消息的自定义组件类已经完成。
+
+接下来，就是检验自定义消息能不能正常响应的时候。为了方便验证自定义消息有没有被发送到消息系统中，该消息的响应函数写在MyApp类内，只有自定义消息正常冒泡，响应函数才能执行。
+
+需要注意的是，响应函数需要对使用驼峰命名法（大写每个字段首字母）的消息名进行转换，改用蛇形命名法（全小写，使用下划线分隔字段）。所以，响应函数的名字是on_button_a_clicked_once。完整示例代码如下：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+from textual.message import Message
+
+class ButtonA(Button):
+    class ClickedOnce(Message):
+        pass
+    def on_click(self):
+        self.post_message(self.ClickedOnce())
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_a_clicked_once(self,e:ButtonA.ClickedOnce):
+        self.widgets[0].update('customed message')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+如果代码无误，点击按钮之后，静态文本的内容会更新：
+
+![message_11](textual.assets/message_11.gif)
+
+自定义消息也支持传入额外的参数，此时自定义消息可以传递一些信息给响应函数：
+
+```python3
+class ButtonA(Button):
+    class ClickedOnce(Message):
+        def __init__(self, text:str):
+            self.text = text
+            super().__init__()
+    def on_click(self):
+        self.post_message(self.ClickedOnce(f'{self.label} posted customed message.'))
+```
+
+需要注意的是，因为发送消息时传入额外的参数实际上是给消息类的初始化函数传入额外的参数，因此需要在自定义消息类中创建支持额外参数的初始化参数。消息类的初始化函数不支持默认调用父类的初始化函数，因此需要手动调用父类的初始化函数。至于额外的参数，上面的代码只是传递给消息对象的text属性。
+
+这样，在响应函数中就可以使用消息参数的text属性：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button
+from textual.message import Message
+
+class ButtonA(Button):
+    class ClickedOnce(Message):
+        def __init__(self, text:str):
+            self.text = text
+            super().__init__()
+    def on_click(self):
+        self.post_message(self.ClickedOnce(f'{self.label} posted customed message.'))
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            ButtonA('ButtonA')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_a_clicked_once(self,e:ButtonA.ClickedOnce):
+        self.widgets[0].update(e.text)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_12](textual.assets/message_12.gif)
+
+##### 2.2.9.5 阻止消息
+
+前面介绍了如何防止DOM上级执行响应函数（防止消息冒泡），也介绍了防止子类默认执行父类的响应函数。但是，如果响应函数的操作导致另一个组件的响应函数执行，该如何防止？
+
+先看下面的问题示例：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button,Input
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            Input(placeholder='Input here'),
+            Button('Press')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_pressed(self):
+        self.widgets[1].value = 'button pressed'
+
+    def on_input_changed(self):
+        self.widgets[0].update('input changed')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_13](textual.assets/message_13.gif)
+
+正常来说，只要输入框的内容改变时，静态文本就会改变。因此，通过点击按钮改变输入框的内容，也会让静态文本改变，这是正常现象。
+
+但是，现在就是不想点击按钮也触发输入框的响应函数，同时还要让在输入框正常输入时可以触发响应函数，该怎么办？
+
+设置一个中间变量，当按钮改变输入框内容时设置为`True`，输入框的响应函数执行时，判断这个变量不为`True`才正常执行？
+
+听起来很靠谱，那就写一下代码：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button,Input
+
+class MyApp(App):
+    button_change = False
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            Input(placeholder='Input here'),
+            Button('Press')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_pressed(self):
+        self.button_change = True
+        self.widgets[1].value = 'button pressed'
+
+    def on_input_changed(self):
+        if not self.button_change:
+            self.widgets[0].update('input changed')
+        self.button_change = False
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_14](textual.assets/message_14.gif)
+
+方案可行，不过，操作就伴随着事件，也就会发出消息，有时候还想这种复合操作的解决方案更简单点。那么，组件的prevent就可以让这种操作变得更加直观。给该方法传入消息类型作为参数，返回的是阻止消息的上下文，使用Python的关键字`with`进入该上下文，就可以避免触发指定消息。
+
+这样，上面的解决方案就可以变得更加优雅，不需要让两个响应函数都去关注一个状态变量。这也是textual官方推荐的做法：
+
+```python3
+from textual.app import App
+from textual.widgets import Static,Button,Input
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            Input(placeholder='Input here'),
+            Button('Press')
+        ]
+        self.mount_all(self.widgets)
+
+    def on_button_pressed(self):
+        input = self.query_one(Input)
+        with input.prevent(Input.Changed):
+            input.value = 'button pressed'
+
+    def on_input_changed(self):
+        self.widgets[0].update('input changed')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![message_14](textual.assets/message_14.gif)
 
 #### 2.2.10 输入
 
@@ -3743,3 +4424,49 @@ Header = HeaderWithIcon
 
 
 rich相关的样式：https://rich.readthedocs.io/en/latest/markup.html 和 https://rich.readthedocs.io/en/latest/style.html#styles
+
+
+
+事件与消息
+
+on装饰器支持额外的关键字参数，用选择器匹配消息的属性组件：
+
+-   ListView的Highlighted和Selected消息支持item
+-   RadioSet的Changed消息支持pressed
+-   TabbedContent的TabActivated消息支持pane
+-   Tabs的TabMessage继承消息（包括TabActivated、TabDisabled、TabEnabled、TabHidden、TabShown）支持tab
+
+https://textual.textualize.io/api/message/#textual.message.Message.ALLOW_SELECTOR_MATCH
+
+示例使用了https://textual.textualize.io/widgets/radioset/#textual.widgets.RadioSet.Changed.ALLOW_SELECTOR_MATCH
+
+```python3
+from textual.app import App
+from textual.widgets import Static, RadioSet, RadioButton
+from textual import on
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Events'),
+            RadioSet(
+                RadioButton('a', classes='a'),
+                RadioButton('b', classes='b'),
+                RadioButton('c', classes='c')
+            ),
+        ]
+        self.mount_all(self.widgets)
+
+    @on(RadioSet.Changed, pressed='.b')
+    def handdle_radio_set_changed(self, e: RadioSet.Changed):
+        e.pressed.label = 'button pressed'
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+（动图）
+
+
+
