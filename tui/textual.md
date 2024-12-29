@@ -4305,9 +4305,173 @@ if __name__ == '__main__':
 
 #### 2.2.10 输入
 
+和textual程序相关的交互外设是键盘和鼠标，对程序来说，如何正确处理它们产生的输入事件就是如何正确处理用户的交互行为。因此，本节主要学习的就是键盘和鼠标事件——也可以理解为用户的输入事件。
+
+##### 2.2.10.1 键盘输入
+
+为了配合学习textual的按键事件，下面的演示程序将会帮助到读者：
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog
+from textual import events
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            RichLog()
+        ]
+        self.mount_all(self.widgets)
+    
+    def on_key(self,e:events.Key):
+        self.query_one(RichLog).write(e)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+运行上面的程序之后，依次按下`q`、`ctrl`+`w`和`tab`，将会看到终端输出以下内容：
+
+![key_1](textual.assets/key_1.png)
+
+RichLog组件可以将给定的内容输出到终端并让内容按指定的语法高亮，很适合直观分析输出到终端的内容。程序将按键事件（按键事件的完整文档参考[官网](https://textual.textualize.io/api/events/#textual.events.Key)）的内容传递给RichLog，这样就可以在终端中看到按键事件的具体格式。
+
+除了上面要求的按键，读者也可以自己尝试更多按键，学习更多按键的属性。需要注意的是，终端类型的不同，可以生效的按键也不同：有的终端会拦截部分快捷键，有些组合按键可能不会在程序中显示或者生效，不代表textual框架不处理那些组合按键。
+
+一般来说，一个按键事件会包含以下部分属性：
+
+-   key属性，字符串类型，表示被按下的按键的标识符。如果是常规的字符（字母的大小写、数字、符号），这个属性就是对应的字符，比如上面的'q'；如果是组合按键（F1到F12、ctrl、alt、shift及其与其他可以单次组合使用的任意组合），这个属性就是组合按键的表示名字，比如'ctrl+w'；如果是功能按键，就是功能按键的名字，比如'tab'。
+
+-   character属性，字符串类型，如果按下的按键可以用一个unicode字符表示（常规可打印的字符和转义字符），那该属性就是这个字符，否则（没有对应转义字符的组合键和功能键）该属性就是`None`。需要注意的是，很多按键代表的转义字符也是一个字符（比如'\t'和‘\x17’，不能光看表示出来的字符个数），但不能打印出来，所以下面要讲的is_printable属性为`False`的，不一定没有character属性。
+
+-   name属性，字符串类型，有点像key属性，但key属性那种字符串在python中不能全部用于变量表示，所以name属性可以理解为转化为python中合法变量名的key属性（即将加号替换为下划线，大写字母用'upper\_'加小写字母表示）。name属性在下面定义按键事件的响应方法（'key\_'为前缀，加对应按键或组合键的name属性，表示响应该按键或组合键的响应函数）时会用到。
+
+-   is_printable属性，布尔类型，表示该按键或组合键的character属性是不是可打印的。即character属性能不能打印出来，None和转义字符为不可打印的类型，也可以在python中调用对应字符的isprintable方法来判断，比如`'\t'.isprintable()`。
+
+-   aliases属性，字符串列表类型，表示按键的别名（key属性不同但实际上是一个按键的其他按键）。如上面图片所示，有些按键还有别名属性，表示该按键和列表中代表其他key属性的按键无法区分，在程序中实际上被当成同一个按键处理，其别名按键的key属性以该别名所属的按键事件的key属性为唯一值。其name属性则可以基于别名转化，name属性只能出现其中一个或者优先使用该别名所属的按键事件的name属性。下表中脱出字符表示法表示的按键只需两个按键（^表示ctrl键；大写字母表示的是键盘按键，不是指使用shift加对应字母输入的大写英文；部分符号需要同时按下shift的，则表示shift键加对应按键）、其意义有专门按键的，一般都有别名属性（表中的退格和删除没有别名属性，而是被当成同一个按键backspace，但character属性分别为'\x08'和'\x7f'）：
+
+    | 二进制    | 十进制 | 十六进制 | 缩写 | Unicode 表示法 | 脱出字符 表示法 | 名称／意义                          |
+    | --------- | ------ | -------- | ---- | -------------- | --------------- | ----------------------------------- |
+    | 0000 0000 | 0      | 00       | NUL  | ␀              | ^@              | 空字符（Null）                      |
+    | 0000 0001 | 1      | 01       | SOH  | ␁              | ^A              | 标题开始                            |
+    | 0000 0010 | 2      | 02       | STX  | ␂              | ^B              | 本文开始                            |
+    | 0000 0011 | 3      | 03       | ETX  | ␃              | ^C              | 本文结束                            |
+    | 0000 0100 | 4      | 04       | EOT  | ␄              | ^D              | 传输结束                            |
+    | 0000 0101 | 5      | 05       | ENQ  | ␅              | ^E              | 请求                                |
+    | 0000 0110 | 6      | 06       | ACK  | ␆              | ^F              | 确认回应                            |
+    | 0000 0111 | 7      | 07       | BEL  | ␇              | ^G              | 响铃                                |
+    | 0000 1000 | 8      | 08       | BS   | ␈              | ^H              | 退格                                |
+    | 0000 1001 | 9      | 09       | HT   | ␉              | ^I              | 水平定位符号                        |
+    | 0000 1010 | 10     | 0A       | LF   | ␊              | ^J              | 换行键                              |
+    | 0000 1011 | 11     | 0B       | VT   | ␋              | ^K              | 垂直定位符号                        |
+    | 0000 1100 | 12     | 0C       | FF   | ␌              | ^L              | 换页键                              |
+    | 0000 1101 | 13     | 0D       | CR   | ␍              | ^M              | Enter键                             |
+    | 0000 1110 | 14     | 0E       | SO   | ␎              | ^N              | 取消变换（Shift out）               |
+    | 0000 1111 | 15     | 0F       | SI   | ␏              | ^O              | 启用变换（Shift in）                |
+    | 0001 0000 | 16     | 10       | DLE  | ␐              | ^P              | 跳出数据通讯                        |
+    | 0001 0001 | 17     | 11       | DC1  | ␑              | ^Q              | 设备控制一（XON 激活软件速度控制）  |
+    | 0001 0010 | 18     | 12       | DC2  | ␒              | ^R              | 设备控制二                          |
+    | 0001 0011 | 19     | 13       | DC3  | ␓              | ^S              | 设备控制三（XOFF 停用软件速度控制） |
+    | 0001 0100 | 20     | 14       | DC4  | ␔              | ^T              | 设备控制四                          |
+    | 0001 0101 | 21     | 15       | NAK  | ␕              | ^U              | 确认失败回应                        |
+    | 0001 0110 | 22     | 16       | SYN  | ␖              | ^V              | 同步用暂停                          |
+    | 0001 0111 | 23     | 17       | ETB  | ␗              | ^W              | 区块传输结束                        |
+    | 0001 1000 | 24     | 18       | CAN  | ␘              | ^X              | 取消                                |
+    | 0001 1001 | 25     | 19       | EM   | ␙              | ^Y              | 连接介质中断                        |
+    | 0001 1010 | 26     | 1A       | SUB  | ␚              | ^Z              | 替换                                |
+    | 0001 1011 | 27     | 1B       | ESC  | ␛              | ^[              | 退出键                              |
+    | 0001 1100 | 28     | 1C       | FS   | ␜              | ^\              | 文件分区符                          |
+    | 0001 1101 | 29     | 1D       | GS   | ␝              | ^]              | 组群分隔符                          |
+    | 0001 1110 | 30     | 1E       | RS   | ␞              | ^^              | 记录分隔符                          |
+    | 0001 1111 | 31     | 1F       | US   | ␟              | ^_              | 单元分隔符                          |
+    | 0111 1111 | 127    | 7F       | DEL  | ␡              | ^?              | 删除（Backspace）                   |
+
+    可能读者对表格中脱出字符的表达比较好奇，其实脱出字符的英文是escape code，对应的相关知识可以参考这个[链接](https://handwiki.org/wiki/ANSI_escape_code)，这里就不做扩展了。
+
+除了前面提到过的on_key方法可以响应按键事件，textual还提供了一种key_开头、后接按键name属性的按键响应方法。
+
+key\_开头的响应方法和一般的事件响应方法一样，支持的参数也一样，因此，将上面示例中的on\_key替换为key\_space之后，原本可以响应任何按键的程序，就变成只响应空格键的程序：
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog
+from textual import events
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            RichLog()
+        ]
+        self.mount_all(self.widgets)
+    
+    def key_space(self,e:events.Key):
+        self.query_one(RichLog).write(e)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![key_2](textual.assets/key_2.png)
+
+虽然指定按键名的响应函数简单、方便，但在学了快捷键[绑定](https://textual.textualize.io/guide/input/#bindings)和[动作](https://textual.textualize.io/guide/actions/)之后，使用绑定来指定快捷键功能会更直观、好用。后续有快捷键需求的地方，也推荐读者优先使用绑定。
+
+##### 2.2.10.2 输入焦点
+
+能获得焦点（can_focus属性为`True`）的组件，在获得焦点（非禁用状态下，tab切换或者被点击）时，会独占按键事件。使用组件的[focus方法](https://textual.textualize.io/api/widget/#textual.widget.Widget.focus)可以切换焦点到当前组件。组件在获得、失去焦点时，会有[focus事件](https://textual.textualize.io/events/focus/)、[blur事件](https://textual.textualize.io/events/blur/)发生，可以按需创建对应事件的响应函数。
+
+以下面的代码为例，通过让KeyLogger类继承RichLog类，并在子类内创建on\_key响应函数，这样响应函数就变成了自定义组件的内部函数，只有自定义组件获得焦点时才能响应按键操作。而在App子类内，通过给自定义组件的focus伪类设置边框，让组件的激活（获得焦点）状态变得明显。这样，就可以清楚看到，只有组件获得焦点时才能响应按键，没有焦点时无法响应：
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog
+from textual import events
+
+class KeyLogger(RichLog):
+    def on_key(self, e:events.Key):
+        self.write(e)
+
+class MyApp(App):
+    CSS = '''
+    KeyLogger:focus {
+        border: solid yellow;
+    }
+    '''
+    def on_mount(self):
+        self.widgets = [
+            KeyLogger(),
+            KeyLogger(),
+            KeyLogger(),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![key_3](textual.assets/key_3.gif)
+
+##### 2.2.10.3 快捷键绑定
 
 
-#### 2.2.11 行动
+
+
+
+
+
+##### 2.2.10.4 鼠标输入
+
+虽然textual是个TUI框架，但它还是提供了处理鼠标输入的方法。
+
+
+
+
+
+
+
+#### 2.2.11 动作
 
 
 
@@ -4467,6 +4631,12 @@ if __name__ == '__main__':
 ```
 
 （动图）
+
+
+
+
+
+Screen绑定了tab键，所以在App子类中没法绑定tab键的响应事件，同时也不建议自己绑定tab。
 
 
 
