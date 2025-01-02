@@ -4455,21 +4455,297 @@ if __name__ == '__main__':
 
 ##### 2.2.10.3 快捷键绑定
 
+前面在介绍指定按键的响应函数时，提到过快捷键绑定更直观、好用，本节要学习的就是快捷键绑定。和前面介绍的在App子类中嵌入CSS类似，快捷键绑定也是通过给App子类或者自定义组件类添加BINDINGS属性来实现。该属性是一个列表，列表的每个元素都是一个快捷键绑定定义或者绑定对象。当按下一个按键或者按键组合，程序就会在依次当前获得焦点的组件、DOM上层组件中由下至上、App子类的BINDINGS属性中匹配的快捷键绑定。
 
+先说快捷键绑定定义。绑定定义很简单，是一个三元素或者两元素的元组，其中两元素元组就是三元素元组省略了第三个元素。三元素元组的三个元素分别是：
 
+-   表示快捷键的字符串，比如`'ctrl+w'`，就是ctrl键加上w键。除了绑定单个按键或者按键组合，用英文逗号分隔的话，可以绑定多个按键或者按键组合，比如`'ctrl+w, ctrl+e'`。
+-   快捷键所要执行动作的字符串，比如`'write_something("ctrl+w from binding tuple")'`。字符串看起来像是python代码，实际上也是。其中的函数名是[动作](https://textual.textualize.io/guide/actions/)函数的函数名去掉其action_前缀之后的名字，表示按下快捷键会执行该动作函数。下一节会详细介绍动作的定义和用法，这里不展开介绍。
+-   表示快捷键含义的字符串，比如`'write something in RichLog'`，可以省略，但省略之后，该快捷键不会在页脚显示。
 
+这样，只需定义好动作，就很简单地用绑定定义创建一个快捷键绑定：
 
+```python3
+from textual.app import App
+from textual.widgets import RichLog, Footer
 
+class MyApp(App):
+    BINDINGS = [
+        ('ctrl+w', 'write_something("ctrl+w from binding tuple")', 'write something in RichLog'),
+    ]
+
+    def on_mount(self):
+        self.widgets = [
+            RichLog(),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+
+    def action_write_something(self, text: str = 'None'):
+        self.query_one(RichLog).write(text)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![binding_1](textual.assets/binding_1.png)
+
+上面的示例除了之前演示按键事件内容用的RichLog，还加了一个页脚组件。其中，页脚组件会显示当前App子类中定义的快捷键。当然，如果绑定定义用的不是三元素元组而是两元素元组，页脚上就不会显示定义的快捷键绑定，但该快捷键依然有效：
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog, Footer
+
+class MyApp(App):
+    BINDINGS = [
+        ('ctrl+w', 'write_something("ctrl+w from binding tuple")'),
+    ]
+
+    def on_mount(self):
+        self.widgets = [
+            RichLog(),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+
+    def action_write_something(self, text: str = 'None'):
+        self.query_one(RichLog).write(text)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![binding_2](textual.assets/binding_2.png)
+
+相比于绑定定义只有最多三个可以定义的元素，绑定对象比绑定定义支持更多功能，如果有更多快捷键定义的需求，可以使用绑定对象代替绑定定义，绑定对象的完整用法可以参考[官网文档](https://textual.textualize.io/api/binding/#textual.binding.Binding)。
+
+使用绑定对象之前，需要先导入绑定类：
+
+```python3
+from textual.binding import Binding
+```
+
+绑定类支持的参数比较多，前三个参数和绑定定义一致，可以不使用关键字的形式传入，只需将绑定定义解包或者按照位置对应传入即可，以下是用绑定对象完全实现绑定定义同等效果的示例：
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog, Footer
+from textual.binding import Binding
+
+class MyApp(App):
+    BINDINGS = [
+        Binding('ctrl+w', 'write_something("ctrl+w from binding tuple")', 'write something in RichLog')
+        # 或者 Binding(*('ctrl+w', 'write_something("ctrl+w from binding tuple")', 'write something in RichLog'))
+    ]
+
+    def on_mount(self):
+        self.widgets = [
+            RichLog(),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+
+    def action_write_something(self, text: str = 'None'):
+        self.query_one(RichLog).write(text)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+当然，既然绑定对象支持的参数很多，功能更强大，那就有必要使用关键字传入每一个参数，依次讲解。先看示例：
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog, Footer
+from textual.binding import Binding
+
+class MyApp(App):
+    BINDINGS = [
+        Binding(
+            key='ctrl+w',
+            action='write_something("ctrl+w from binding class")',
+            description='write something in RichLog',
+            show=True,
+            key_display='^w',
+            priority=False,
+            tooltip='press ctrl with w',
+            id=None,
+            system=False
+        )
+    ]
+
+    def on_mount(self):
+        self.widgets = [
+            RichLog(),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+
+    def action_write_something(self, text: str):
+        self.query_one(RichLog).write(text)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+绑定对象支持以下参数：
+
+-   key参数，字符串类型，表示绑定的快捷键，可以是单个按键或者按键组合，也可以是多个按键或者按键组合，使用英文逗号分隔。比如`'ctrl+w'`、`'ctrl+w, ctrl+e'`。
+
+-   action参数，字符串类型，表示该快捷键执行的动作。比如`'write_something("ctrl+w from binding tuple")'`。字符串看起来像是python代码，实际上也是。其中的函数名是[动作](https://textual.textualize.io/guide/actions/)函数的函数名去掉其action_前缀之后的名字，表示按下快捷键会执行该动作函数。下一节会详细介绍动作的定义和用法，这里不展开介绍。
+
+-   description参数，字符串类型，表示该快捷键的含义。比如`'write something in RichLog'`。可以不指定或者设置为`None`，但这样操作之后，该快捷键不会在页脚显示。
+
+-   show参数，布尔类型，表示该快捷键是否在页脚内显示，默认为`True`。
+
+-   key_display参数，字符串类型，表示该快捷键在页脚内显示的按键是什么，默认是^表示ctrl，可以用其他内容替换默认的符号表示。参数示例为`'^w'`或者`'Ctrl W'`，默认值为`None`，即取App.get_key_display方法（参数是绑定对象）的返回结果。如果指定了id参数和App子类的keymap映射，且映射会修改绑定对象的key参数，那key_display参数会被忽略。
+
+-   priority参数，布尔类型，表示该快捷键是不是优先生效的。对于不同DOM层级组件内定义的同名快捷键，遵循离组件越近越优先生效的原则。如果该参数为True，则优先级比该参数为False（默认值）的高。该参数都为True的，则遵循近者优先的原则。
+
+-   tooltip参数，字符串类型，表示该快捷键的工具提示，鼠标悬停在页脚可以弹出。打开按键面板的话，该内容会低亮显示在按键含义后。参数示例为`'press ctrl with w'`。
+
+-   id参数，字符串类型，默认为`None`，表示keymap的ID，用于App子类的keymap映射。该ID建议是唯一的，即一个快捷键对应一个ID，但不强制要求唯一性。如果App子类设置了keymap（使用set_keymap方法或者update_keymap方法设置），则会使用该ID当做keymap的key，获取到的value当作新的快捷键，用来代替原来设置的key参数。keymap映射其实就是字典，字典的key是ID，字典的value是对应ID的新的快捷键。keymap相关的参数和方法可用于动态修改快捷键。示例如下，通过设置keymap将快捷键'ctrl+w'修改为'ctrl+e'：
+
+    ```python3
+    class MyApp(App):
+        BINDINGS = [
+            Binding(
+                key='ctrl+w',
+                action='write_something("ctrl+w from binding class")',
+                description='write something in RichLog',
+                id='id_w',
+            )
+        ]
+    
+        def on_mount(self):
+            self.set_keymap({'id_w':'ctrl+e'})
+            self.widgets = [
+                RichLog(),
+                Footer()
+            ]
+            self.mount_all(self.widgets)
+    
+        def action_write_something(self, text: str):
+            self.query_one(RichLog).write(text)
+    
+    if __name__ == '__main__':
+        app = MyApp()
+        app.run()
+    ```
+
+-   system参数，布尔类型，默认为`False`，表示该快捷键是不是系统快捷键（即不需要特别提示就知道怎么用的快捷键）。如果为`True`，该快捷键会从按键面板（按ctrl+p调出快捷命令面板后，再点击'Show keys and help panel'即可看到）中移除。但还是会在页脚中显示，建议同时设置show参数为`False`。
 
 ##### 2.2.10.4 鼠标输入
 
-虽然textual是个TUI框架，但它还是提供了处理鼠标输入的方法。
+虽然textual是个TUI框架，但它还是提供了处理鼠标输入的方法。因此，在textual中，有多种鼠标事件可以响应，来满足程序处理鼠标输入的要求。
 
+不过，在正式学习鼠标事件之前，需要先了解一下鼠标事件的重要属性——鼠标位置。在textual中，与鼠标位置相关的坐标系有两种：绝对坐标系和相对坐标系。两种坐标系的X轴和Y轴的方向一致，向右为X轴正方向，向下为Y轴正方向。其中，绝对坐标系就是以Screen组件左上角为原点，来确定鼠标位置的方式；相对坐标系就是以鼠标激活的组件左上角为原点，来确定鼠标位置的方式。原点所在的字符坐标为(0,0)，沿着正方向每增加一个字符，对应方向的坐标加一，即可得到鼠标所在位置的字符的坐标，也就是鼠标的位置。如下图所示：
 
+![mouse_1](textual.assets/mouse_1.png)
 
+textual支持以下基本鼠标事件：
 
+-   Click事件，当鼠标按键完成一次点击（按下然后松开）时触发。完整介绍可以参考[官网文档](https://textual.textualize.io/events/click/)。该事件除了具备基本鼠标事件属性（下面会详细介绍，这里不展开）外，还有一个chain属性。chain属性是整数类型，表示在能够检测到连续点击的间隔内，有多少次点击操作是连续的。该属性的值就是连击的数量，也就是常说的双击、三击甚至更多的连击。
+-   MouseDown事件，当鼠标按键按下时触发，完整介绍可以参考[官网文档](https://textual.textualize.io/events/mouse_down/)。该事件具备基本鼠标事件属性（下面会详细介绍，这里不展开），没有额外属性。但是该事件的widget属性、control属性不会显示为鼠标下的组件，而是Screen组件，即`None`。
+-   MouseUp事件，当鼠标按键松开时触发，完整介绍可以参考[官网文档](https://textual.textualize.io/events/mouse_up/)。该事件具备基本鼠标事件属性（下面会详细介绍，这里不展开），没有额外属性。但是该事件的widget属性、control属性不会显示为鼠标下的组件，而是Screen组件，即`None`。
+-   MouseMove事件，当鼠标移动时触发，完整介绍可以参考[官网文档](https://textual.textualize.io/events/mouse_move/)。该事件具备基本鼠标事件属性（下面会详细介绍，这里不展开），没有额外属性。
+-   Enter事件，当鼠标进入组件时触发，完整介绍可以参考[官网文档](https://textual.textualize.io/events/enter/)。该事件不具备基本鼠标事件属性（因为继承自Event类，而不是其他鼠标事件的基类——MouseEvent类），只具备node属性和node属性的别名——control属性（这里的control属性与基本鼠标事件属性中的control属性不同，不要混淆）。大部分情况下node属性和基本鼠标事件属性的control属性相同，表示鼠标下的组件；但滚动条、命令面板等会在node属性中显示，并且Screen会在node属性中显示为`Screen(id='_default')`而不是基本鼠标事件属性中control属性的`None`。
+-   Leave事件，当鼠标离开组件时触发，完整介绍可以参考[官网文档](https://textual.textualize.io/events/leave/)。该事件不具备基本鼠标事件属性，具备的属性和Enter事件相同。
+-   MouseScrollDown事件，当鼠标滚轮向下滚动时触发，完整介绍可以参考[官网文档](https://textual.textualize.io/events/mouse_scroll_down/)。该事件具备基本鼠标事件属性（下面会详细介绍，这里不展开），没有额外属性。但是该事件的widget属性、control属性不会显示为鼠标下的组件，而是Screen组件，即`None`。
+-   MouseScrollUp事件，当鼠标滚轮向上滚动时触发，完整介绍可以参考[官网文档](https://textual.textualize.io/events/mouse_scroll_up/)。该事件具备基本鼠标事件属性（下面会详细介绍，这里不展开），没有额外属性。但是该事件的widget属性、control属性不会显示为鼠标下的组件，而是Screen组件，即`None`。
 
+基本鼠标事件（MouseEvent类）的属性有：
 
+-   widget属性，组件类实例，表示鼠标下的组件。
+-   control属性，同widget属性。
+-   x属性，整数类型，表示相对坐标系（原点为widget属性指代的组件的原点）中鼠标位置的x坐标。
+-   y属性，整数类型，表示相对坐标系（原点为widget属性指代的组件的原点）中鼠标位置的y坐标。
+-   offset属性，由整数类型的子成员x和整数类型的子成员y组成的命名元组，可以通过offset.x得到x属性的值，可以通过offset.y得到y属性的值。该属性也可以赋予给样式接口的offset属性或者与整数元组进行四则运算再赋予。
+-   screen_x属性，整数类型，表示绝对坐标系（原点为Screen组件的原点）中鼠标位置的x坐标。
+-   screen_y属性，整数类型，表示绝对坐标系（原点为Screen组件的原点）中鼠标位置的y坐标。
+-   screen_offset属性，由整数类型的子成员x和整数类型的子成员y组成的命名元组，可以通过screen_offset.x得到screen_x属性的值，可以通过screen_offset.y得到screen_y属性的值。该属性也可以赋予给样式接口的offset属性或者与整数元组进行四则运算再赋予。
+-   delta_x属性，整数类型，表示当前消息中鼠标位置的x坐标相较于上条消息中鼠标位置的x坐标的变化量。
+-   delta_y属性，整数类型，表示当前消息中鼠标位置的y坐标相较于上条消息中鼠标位置的y坐标的变化量。
+-   delta属性，由整数类型的子成员x和整数类型的子成员y组成的命名元组，可以通过delta.x得到delta_x属性的值，可以通过delta.y得到delta_y属性的值。该属性也可以赋予给样式接口的offset属性或者与整数元组进行四则运算再赋予。
+-   button属性，整数类型，表示鼠标当前按下的按钮。0为没有按钮按下，1为左键，2为中键，3为右键。
+-   shift属性，布尔类型，表示在当前鼠标事件发生时，shift键是否被按下，`True`表示被按下。需要注意的是，shift键加鼠标按键可能会被终端优先级更高的响应捕获，不一定在textual中生效。
+-   meta属性，布尔类型，表示在当前鼠标事件发生时，meta键（Mac的meta键也就是Win的alt键）是否被按下，`True`表示被按下。
+-   ctrl属性，布尔类型，表示在当前鼠标事件发生时，ctrl键是否被按下，`True`表示被按下。
+-   style属性，rich框架的Style类实例，表示鼠标下内容的Rich样式（textual基于rich框架，因此终端显示样式就是Rich样式，该样式主要指颜色、字体等内容）。
+
+textual提供的鼠标事件繁多，除了Click事件前面有过使用，其他事件基本没有示例。这里只提供MouseMove事件的示例，其余事件的用法，读者可以参考教程自行摸索，这里就不一一介绍了。示例中，通过将MouseMove事件的screen_offset属性，通过样式接口赋予给原本位置在(0,0)的静态文本的offset属性，实现了静态文本跟随鼠标的效果。同时，MouseMove事件的消息参数也会原本展示在RichLog中：
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog,Static
+from textual import events
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Textual'),
+            RichLog(),
+        ]
+        self.mount_all(self.widgets)
+        self.query_one(RichLog).styles.height = '50%'
+
+    def on_mouse_move(self, e: events.MouseMove):
+        self.query_one(RichLog).write(e)
+        self.query_one(Static).offset = e.screen_offset
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![mouse_2](textual.assets/mouse_2.gif)
+
+除了基本鼠标事件外，组件还有两个与鼠标相关的事件——MouseCapture事件和MouseRelease事件。与之相关的是组件的两个与鼠标焦点相关的方法——capture_mouse（捕获鼠标，完整用法参考[官网文档](https://textual.textualize.io/api/widget/#textual.widget.Widget.capture_mouse)）与release_mouse（释放鼠标，完整用法参考[官网文档](https://textual.textualize.io/api/widget/#textual.widget.Widget.release_mouse)）。捕获鼠标可以让鼠标锁定到调用捕获方法的组件上，相当于让组件强制获得鼠标焦点；释放鼠标则可以让鼠标恢复，不再锁定到特定组件。
+
+捕获鼠标与释放鼠标时会触发对应的事件：
+
+-   MouseCapture事件，当组件执行参数为`True`的capture_mouse方法时触发，完整介绍可以参考[官网文档](https://textual.textualize.io/events/mouse_capture/)。
+-   MouseRelease事件，当组件执行执行参数为`False`的capture_mouse方法或者release_mouse方法时触发，完整介绍可以参考[官网文档](https://textual.textualize.io/events/mouse_release/)。
+
+MouseCapture事件和MouseRelease事件常用的属性是mouse_position（鼠标位置）属性，即鼠标被捕获时或者被释放时的鼠标位置（相对坐标，但其当做原点的组件被固定为Screen组件，所以该位置可以理解为绝对坐标。），是由整数类型的子成员x和整数类型的子成员y组成的命名元组，可以通过mouse_position.x获取到x坐标的值，可以通过mouse_position.y获取到y坐标的值。
+
+以下示例中，按下c键，MouseLog（继承自RichLog，增加了MouseCapture事件和MouseRelease事件的响应函数）会执行捕获方法；按下r键，MouseLog会执行释放方法。按下不同的按键，可以看到MouseLog输出不同的内容：
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog,Static
+from textual import events
+
+class MouseLog(RichLog):
+    def on_mouse_capture(self,e:events.MouseCapture):
+        self.write(e)
+    def on_mouse_release(self,e:events.MouseRelease):
+        self.write(e)
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('Textual'),
+            MouseLog(),
+        ]
+        self.mount_all(self.widgets)
+    
+    def on_key(self,e:events.Key):
+        if e.key == 'c':
+            self.query_one(MouseLog).capture_mouse()
+        if e.key == 'r':
+            self.query_one(MouseLog).release_mouse()
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![mouse_3](textual.assets/mouse_3.gif)
 
 #### 2.2.11 动作
 
@@ -4503,25 +4779,109 @@ toast
 
 ## 3 高阶技巧
 
-https://textual.textualize.io/reference/
+官方参考手册：https://textual.textualize.io/reference/
 
-https://textual.textualize.io/api/
+官方API手册：https://textual.textualize.io/api/
 
 ### 3.1 高阶知识
 
-开发者工具的console和log相关部分
+本节主要介绍前面介绍过的模块中，一些没有提及的高阶知识。
 
-​	run和serve的端口参数`--port`，同名不同义，修改serve命令调试端口的技巧
+#### 3.1.1 开发者工具的高阶知识
 
-基本概念
+##### 3.1.1.1 console命令的选项
 
-​	退出
+先说textual的log功能，
+
+单独的log方法
+
+`from textual import log`
+
+```python3
+def on_mount(self) -> None:
+    log("Hello, World")  # simple string
+    log(locals())  # Log local variables
+    log(children=self.children, pi=3.141592)  # key/values
+    log(self.tree)  # Rich renderables
+```
+
+
+
+组件的log方法
+
+```python3
+from textual.app import App
+
+class LogApp(App):
+
+    def on_load(self):
+        self.log("In the log handler!", pi=3.141529)
+
+    def on_mount(self):
+        self.log(self.tree)
+
+if __name__ == "__main__":
+    LogApp().run()
+```
+
+
+
+配合logging使用的LogHandler
+
+https://textual.textualize.io/api/logging/#textual.logging.TextualHandler
+
+```python3
+import logging
+from textual.app import App
+from textual.logging import TextualHandler
+
+logging.basicConfig(
+    level="NOTSET",
+    handlers=[TextualHandler()],
+)
+
+class LogApp(App):
+    """Using logging with Textual."""
+
+    def on_mount(self) -> None:
+        logging.debug("Logged via TextualHandler")
+
+if __name__ == "__main__":
+    LogApp().run()
+```
+
+
+
+
+
+再说console的选项：-v可以开启详细日志，-x可以排除指定类型的日志信息。
+
+（写个示例解释，配上截图）
+
+##### 3.1.1.2 run命令与serve命令组合
+
+run和serve命令都可以添加`--dev`来开启调试模式，让程序将调试内容输出到打开的console中。但是，serve命令中为了方便修改对外服务地址而做的选项让serve命令有些与众不同：console命令、run命令和serve命令都支持端口参数`--port`，run命令和serve命令都支持主机参数`--host`，然而同名不同义，这也就导致serve命令的调试端口和调试主机不能直接修改。
+
+倒不是没有解决方案，首先要知道run命令和serve命令的`-c`选项支持嵌套子命令，serve命令不用此选项也支持嵌套子命令，而serve命令除了支持双中划线开头的长选项，还支持单中划线的短选项（`-p`和`-h`）。所以，利用嵌套子命令的方法将二者组合使用，让run命令修改调试端口和调试主机，可以间接实现修改serve命令的调试端口和调试主机。
+
+以serve命令监听`127.0.0.2:8080`、console命令监听`127.0.0.1:8888`、程序文件为`main.py`为例，有以下方法：
+
+-   run命令为主命令，serve命令为嵌套子命令：
+    -   嵌套子命令为字符串的情况下，字符串内的参数与字符串外的参数互相完全不干扰。字符串外遵循run命令的要求，字符串内遵循serve命令的要求。则命令为`textual run --dev --host 127.0.0.1 --port 8888 -c 'textual serve main.py --host 127.0.0.2 --port 8080'`或者`textual run --dev --host 127.0.0.1 --port 8888 -c 'textual serve main.py -h 0127.0.0.2 -p 8080'`。
+    -   嵌套子命令为裸命令（非字符串）的情况下，嵌套子命令的参数会被run命令优先使用，此时嵌套子命令只能使用短选项。则命令为`textual run --dev --host 127.0.0.1 --port 8888 -c textual serve main.py -h 127.0.0.2 -p 8080`或者`textual run --dev -c textual serve main.py -h 127.0.0.2 -p 8080 --host 127.0.0.1 --port 8888 `。
+-   serve命令为主命令，run命令为嵌套子命令时，无论是否使用`-c`选项，嵌套子命令只能是字符串，所以，修改调试端口和调试主机的选项只能随run命令添加到字符串内，字符串外修改serve命令的端口和主机的选项可以基于serve命令要求自由放置，长选项短选项均可。则命令为`textual serve --port 8080 --host 127.0.0.2 -c 'textual run --dev main.py --host 127.0.0.1 --port 8888'`。
+
+#### 3.1.2 基本概念中的高阶知识
+
+##### 3.1.2.1 退出之后
 
 ​		程序退出也有参数技巧，退出run循环之后，实际上还能执行代码，可以在run方法之后，接受textual程序的返回值，来判断程序是不是正常退出。
 
-​	挂起
+##### 	3.1.2.2 挂起
 
-样式
+
+
+#### 3.1.3 样式的高阶知识
 
 ​	颜色类（from textual.color import Color），Color.parse其实还可以转换ansi颜色，比如`Color.parse('ansi_red')`
 
@@ -4552,46 +4912,11 @@ ANSI_COLORS = [
 
 
 
-反应性reactivity
-
-执行者worker
-
-调色盘
-
-给Header添加参数来隐藏icon：
-
-```python3
-from textual.widgets import Header
-from textual.widgets._header import HeaderTitle, HeaderClock, HeaderClockSpace, HeaderIcon
-
-class HeaderWithIcon(Header):
-    def __init__(self, show_clock: bool = False, show_icon: bool = True, *, name: str | None = None, id: str | None = None, classes: str | None = None, icon: str | None = None, time_format: str | None = None):
-        super().__init__(show_clock, name=name, id=id, classes=classes, icon=icon, time_format=time_format)
-        self._show_icon = show_icon
-        self.header_icon = HeaderIcon()
-        self.header_icon.visible = self._show_icon    
-
-    def compose(self):
-        self.header_icon.data_bind(Header.icon)
-        yield self.header_icon
-        yield HeaderTitle()
-        yield (
-            HeaderClock().data_bind(Header.time_format)
-            if self._show_clock
-            else HeaderClockSpace()
-        )
-Header = HeaderWithIcon
-```
 
 
+#### 3.1.4 事件与消息的高阶知识
 
-
-
-rich相关的样式：https://rich.readthedocs.io/en/latest/markup.html 和 https://rich.readthedocs.io/en/latest/style.html#styles
-
-
-
-事件与消息
+on装饰器的高阶知识
 
 on装饰器支持额外的关键字参数，用选择器匹配消息的属性组件：
 
@@ -4634,9 +4959,96 @@ if __name__ == '__main__':
 
 
 
+tab键的隐形绑定
+
+为什么不能在App子类tab键的响应函数？即无法让App子类的key_tab成功执行。
+
+Screen绑定了tab键，所以在App子类中没法绑定tab键的响应事件，同时也不建议自己绑定tab。但可以在更靠近组件的自定义类中创建tab键的响应函数。
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog
+from textual import events
+
+class KeyLogger(RichLog):
+    def key_tab(self, e:events.Key):
+        self.write(e)
+
+class MyApp(App):
+    CSS = '''
+    KeyLogger:focus {
+        border: solid yellow;
+    }
+    '''
+    def on_mount(self):
+        self.widgets = [
+            KeyLogger(),
+            KeyLogger(),
+            KeyLogger(),
+        ]
+        self.mount_all(self.widgets)
+    def key_tab(self, e:events.Key):
+        self.write(e)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
 
 
-Screen绑定了tab键，所以在App子类中没法绑定tab键的响应事件，同时也不建议自己绑定tab。
+
+
+
+
+
+### 3.2 高阶模块
+
+本节主要介绍前面没有提到过的高阶模块。
+
+#### 3.2.1 反应性reactivity
+
+
+
+#### 3.2.2 执行者worker
+
+
+
+#### 3.2.3 调色盘——快捷命令面板
+
+给Header添加参数来隐藏icon：
+
+```python3
+from textual.widgets import Header
+from textual.widgets._header import HeaderTitle, HeaderClock, HeaderClockSpace, HeaderIcon
+
+class HeaderWithIcon(Header):
+    def __init__(self, show_clock: bool = False, show_icon: bool = True, *, name: str | None = None, id: str | None = None, classes: str | None = None, icon: str | None = None, time_format: str | None = None):
+        super().__init__(show_clock, name=name, id=id, classes=classes, icon=icon, time_format=time_format)
+        self._show_icon = show_icon
+        self.header_icon = HeaderIcon()
+        self.header_icon.visible = self._show_icon    
+
+    def compose(self):
+        self.header_icon.data_bind(Header.icon)
+        yield self.header_icon
+        yield HeaderTitle()
+        yield (
+            HeaderClock().data_bind(Header.time_format)
+            if self._show_clock
+            else HeaderClockSpace()
+        )
+Header = HeaderWithIcon
+```
+
+
+
+#### 3.2.4 textual依赖的rich
+
+rich相关的样式：https://rich.readthedocs.io/en/latest/markup.html 和 https://rich.readthedocs.io/en/latest/style.html#styles
+
+
+
+
 
 
 
