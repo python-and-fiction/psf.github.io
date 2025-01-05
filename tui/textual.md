@@ -4459,7 +4459,7 @@ if __name__ == '__main__':
 
 先说快捷键绑定定义。绑定定义很简单，是一个三元素或者两元素的元组，其中两元素元组就是三元素元组省略了第三个元素。三元素元组的三个元素分别是：
 
--   表示快捷键的字符串，比如`'ctrl+w'`，就是ctrl键加上w键。除了绑定单个按键或者按键组合，用英文逗号分隔的话，可以绑定多个按键或者按键组合，比如`'ctrl+w, ctrl+e'`。
+-   表示快捷键的字符串，使用按键触发的按键事件的key属性表示对应的按键，比如`'ctrl+w'`，就是ctrl键加上w键。除了绑定单个按键或者按键组合，用英文逗号分隔的话，可以绑定多个按键或者按键组合，比如`'ctrl+w, ctrl+e'`。
 -   快捷键所要执行动作的字符串，比如`'write_something("ctrl+w from binding tuple")'`。字符串看起来像是python代码，实际上也是。其中的函数名是[动作](https://textual.textualize.io/guide/actions/)函数的函数名去掉其action_前缀之后的名字，表示按下快捷键会执行该动作函数。下一节会详细介绍动作的定义和用法，这里不展开介绍。
 -   表示快捷键含义的字符串，比如`'write something in RichLog'`，可以省略，但省略之后，该快捷键不会在页脚显示。
 
@@ -4611,6 +4611,10 @@ if __name__ == '__main__':
 -   id参数，字符串类型，默认为`None`，表示keymap的ID，用于App子类的keymap映射。该ID建议是唯一的，即一个快捷键对应一个ID，但不强制要求唯一性。如果App子类设置了keymap（使用set_keymap方法或者update_keymap方法设置），则会使用该ID当做keymap的key，获取到的value当作新的快捷键，用来代替原来设置的key参数。keymap映射其实就是字典，字典的key是ID，字典的value是对应ID的新的快捷键。keymap相关的参数和方法可用于动态修改快捷键。示例如下，通过设置keymap将快捷键'ctrl+w'修改为'ctrl+e'：
 
     ```python3
+    from textual.app import App
+    from textual.widgets import RichLog, Footer
+    from textual.binding import Binding
+    
     class MyApp(App):
         BINDINGS = [
             Binding(
@@ -4749,25 +4753,572 @@ if __name__ == '__main__':
 
 #### 2.2.11 动作
 
+前面的章节已经或多或少提到过、用过动作——以action_开头的函数，本节将详细介绍一下动作的创建与使用。
 
+##### 2.2.11.1 创建动作函数
 
-#### 2.2.12 组件
+创建动作函数没有什么特别，只是函数名上需要使用action_为前缀，只有这样，前缀之后的内容才能用在快捷键绑定和嵌入链接中。
 
+和普通函数一样，动作函数虽然是以action_为前缀，但其依然可以当作普通函数使用。只是普通函数不能像动作函数一样用于快捷键绑定和嵌入链接中。下面的示例就展示了动作函数当作普通函数使用时，与普通函数一样：
 
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits
+from textual import events
 
-https://textual.textualize.io/widgets/
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('press n to update time'),
+            Digits(f'{datetime.now().time():%T}')
+        ]
+        self.mount_all(self.widgets)
 
+    def action_now(self):
+        self.query_one(Digits).update(f'{datetime.now().time():%T}')
+    
+    def on_key(self,e:events.Key):
+        if e.key == 'n':
+            self.action_now()
 
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
 
-#### 2.2.13 动画
+![action_1](textual.assets/action_1.png)
 
+按下n键，数字时钟会更新为当前时间。
 
+##### 2.2.11.2 使用动作函数——run_action
 
-#### 2.2.14 屏幕
+只是把动作函数当成普通函数使用的话，那就没必要创建动作函数了。多了个action_前缀，命名上不自由，还浪费敲击键盘的时间。所以，既然创建了动作函数，那就要学习textual中动作函数的正确用途。
 
+不过，在此之前，需要学习一下使用动作函数时的语法规则。
 
+先看示例：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits
+from textual import events
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('press n to update time'),
+            Digits(f'{datetime.now().time():%T}')
+        ]
+        self.mount_all(self.widgets)
+
+    def action_now(self,text:str=''):
+        self.query_one(Digits).update(f'{text} {datetime.now().time():%T}')
+    
+    async def on_key(self,e:events.Key):
+        if e.key == 'n':
+            await self.run_action('app.now("Time is")')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+示例基于上节的实例，使用了run_action方法来运行动作，而不是直接调用动作函数。不过，该方法是一个异步方法，因此响应函数需要加上`async`关键字，并在调用此方法的代码前加上`await`关键字，这样代码才能成功运行。
+
+相信读者已经看到，用来运行动作的方法的参数是一个字符串，而这个字符串很像是python代码。没错，这就是正确执行动作的方式，在前面介绍快捷键绑定时已经有过惊鸿一瞥。在textual中，动作就是像这样被放在字符串中按需执行。就以上面示例中的字符串为例，介绍一下执行动作时的基本语法：
+
+![action_2](textual.assets/action_2.png)
+
+英文句号分隔、放在最前面的是命名空间，表明要执行的动作是在哪里定义的。其实，这里不加命名空间也可以正常运行，不加命名空间的话就是在动作的定义位置找，示例中执行的动作是在当前App类或者子类中定义的，相当于命名空间是app。加了命名空间的话，执行动作时就会去对应的命名空间中找动作。
+
+命名空间有三种：
+
+-   `app`表示动作在当前App类（或者子类）中定义。
+-   `screen` 表示动作在当前Screen组件中定义。
+-   `focused` 表示动作在当前获得焦点的组件中定义。需要注意的是，也有可能当前没有获得焦点的组件，那么在此命名空间下执行动作就不会成功。
+-   无表示动作在动作执行处所属的类中定义。
+
+紧接着命名空间（如果有的话）的就是动作名。动作名很简单，就是动作函数名去掉action_前缀，用于表示执行的是哪个动作函数。
+
+动作函数除了表示实例对象的self参数外，还会定义其他参数，那在执行时，就可以传入额外的参数。不过，需要注意的是，因为传入的参数是在字符串内，所以对传入的参数类型有限制：不能传入变量，只能传入基本python数据类型的常量，即字符串、字典、列表、元组、数字等。另外，如果执行动作时不需要传入参数，那执行动作字符串可以省略动作名之后的括号，上面的字符串就可以变成`'app.now'`，效果等同于`'app.now()'`。
+
+##### 2.2.11.3 使用动作函数——快捷键绑定
+
+既然是使用按键，那就不得不提前面学过的快捷键绑定。前面介绍过，绑定定义的第二元素和绑定对象的action参数就是要执行的动作。因此`'app.now("Time is")'`这个要执行的动作，是要和n键绑定，那定义一个快捷键绑定也是轻车熟路。快捷键绑定也是动作最常用的方式：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits
+
+class MyApp(App):
+    BINDINGS = [
+        ('n','app.now("Time is")','Update time')
+    ]
+    def on_mount(self):
+        self.widgets = [
+            Static('press n to update time'),
+            Digits(f'{datetime.now().time():%T}')
+        ]
+        self.mount_all(self.widgets)
+
+    def action_now(self,text:str=''):
+        self.query_one(Digits).update(f'{text} {datetime.now().time():%T}')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![action_1](textual.assets/action_1.png)
+
+##### 2.2.11.4 使用动作函数——Button的action参数
+
+前面介绍消息的时候，通过扩展Button类，实现了自定义消息的按钮，并通过响应自定义消息来响应按钮的操作。其实，按钮的使用并不需要那么复杂，哪怕不扩展按钮，直接响应按钮的点击消息（Button.Clicked）也比本节要介绍的方法复杂。
+
+在创建按钮的时候，给按钮的action参数传入动作，即可实现点击按钮时，执行特定的动作。
+
+比如上两节的例子，可以完全抛弃按键响应函数和快捷键绑定，将`'app.now("Time is")'`传给按钮的action参数，这样就不用添加额外的文本来解释快捷键了：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Digits,Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Digits(f'{datetime.now().time():%T}'),
+            Button('Update',action='app.now("Time is")'),
+        ]
+        self.mount_all(self.widgets)
+
+    def action_now(self,text:str=''):
+        self.query_one(Digits).update(f'{text} {datetime.now().time():%T}')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![action_3](textual.assets/action_3.png)
+
+需要注意的是，传动作给Button的action参数时，不带命名空间的话，默认命名空间并不是Button，而是其DOM上级组件。下面示例中，点击第一个按钮，执行动作的是Screen组件，因此Screen组件下的所有按钮都被禁用了。如果先点击第二个按钮，那只有第二个按钮被禁用。读者需要注意差异：
+
+```python3
+from textual.app import App
+from textual.widgets import Button
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Button('No namespace',action='toggle("disabled")'),# 注意，这里执行的toggle实际上是DOM上级组件即Screen组件的toggle，因为Button的默认命名空间是DOM上级组件
+            Button('Focused namespace',action='focused.toggle("disabled")'),
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+##### 2.2.11.5 使用动作函数——嵌入链接
+
+在介绍嵌入链接前，先看示例代码：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            Static('[b]click[/b] [@click=app.now("Time is")]me[/] to update time'),
+            Digits(f'{datetime.now().time():%T}')
+        ]
+        self.mount_all(self.widgets)
+
+    def action_now(self,text:str=''):
+        self.query_one(Digits).update(f'{text} {datetime.now().time():%T}')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![action_4](textual.assets/action_4.png)
+
+示例中，静态文本的部分文字变得像网页中的超链接一样可以点击，这种可以点击的文字就叫嵌入链接。嵌入链接可以在任何文字中创建，哪怕是已经支持点击的按钮也可以创建嵌入链接。
+
+嵌入链接也是执行动作的一种方式，就好像HTML标签语言，textual的文本可以使用类似的标记标签（功能源自rich框架，完整用法参考[官网文档](https://rich.readthedocs.io/en/latest/markup.html)）。不过，textual对标记标签进行了扩展，使得原本只是改变文本样式的标记标签可以点击。
+
+在下面的代码中，字符串内的`[b]`相当于HTML中的`<b>`标签，因此，标签需要对应的闭合标签，才能让配对的标签之间的内容变成对应的样式：
+
+```python3
+Static('[b]click[/b] [@click=app.now("Time is")]me[/] to update time')
+```
+
+同样的，`[@click=app.now("Time is")]me[/]`中也有配对的标签，不过此标签是一个可以点击的标签，就好像HTML中的超链接一样，其中的`@click`就是接收鼠标点击操作的意思，与之类似的还有`@mouse.up`、`@mouse.down`，则分别接收鼠标按键抬起、按下的操作。标签内的等号之后，对应的就是鼠标点击时执行的动作，也就是真正使用动作函数的部分。这里使用的执行动作的语法与run_action中支持的语法一致，就不详细介绍了。
+
+不过需要注意的是，嵌入链接不是组件，没法获取焦点，与获取焦点有关的动作或者事件，嵌入链接本身并不支持；而静态文本和部分组件也不能获取焦点，点击其中的嵌入链接不会让其获得焦点。因此，嵌入链接中的focused命名空间不是指嵌入链接所在的组件，依然是焦点实际所在的组件。
+
+说一个与动作无关的内容，那就是嵌入链接的样式。嵌入链接是textual的特性功能，不能与rich框架的标记标签混用，也就是说不支持通过标记标签改变嵌入链接的样式（比如颜色）。如果想要改变某个组件内的嵌入链接的样式，只能通过CSS（完整文档参考[官网](https://textual.textualize.io/styles/links/)）修改。嵌入链接主要支持以下样式：
+
+| 样式类型                                                     | 含义                                                    |
+| :----------------------------------------------------------- | :------------------------------------------------------ |
+| [`link-background`](https://textual.textualize.io/styles/links/link_background/) | 链接文本的背景颜色。                                    |
+| [`link-background-hover`](https://textual.textualize.io/styles/links/link_background_hover/) | 鼠标悬停在链接文本上时的背景颜色。                      |
+| [`link-color`](https://textual.textualize.io/styles/links/link_color/) | 链接文本的文本颜色。                                    |
+| [`link-color-hover`](https://textual.textualize.io/styles/links/link_color_hover/) | 鼠标悬停在链接文本上时的文本颜色。                      |
+| [`link-style`](https://textual.textualize.io/styles/links/link_style/) | 链接文本上的文本样式，比如设置underline就是添加下划线。 |
+| [`link-style-hover`](https://textual.textualize.io/styles/links/link_style_hover/) | 鼠标悬停在链接文本上时的文本样式。                      |
+
+下面的示例演示了如何修改嵌入链接的文本颜色：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits
+
+class MyApp(App):
+    CSS='''
+    Static{
+        link-color: ansi_red;
+    }
+    '''
+    def on_mount(self):
+        self.widgets = [
+            Static(' [b red]click[/b red] [@click=app.now("Time is")]me[/] to update time'),
+            Digits(f'{datetime.now().time():%T}')
+        ]
+        self.mount_all(self.widgets)
+
+    def action_now(self,text:str=''):
+        self.query_one(Digits).update(f'{text} {datetime.now().time():%T}')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![action_5](textual.assets/action_5.png)
+
+##### 2.2.11.6 使用动作函数——预定义的动作函数
+
+除了自己定义动作函数，textual还在部分类内预先定义了一些可以直接使用的动作函数。以App类为例，类内定义了不少动作函数（完整列表可以参考[官网文档](https://textual.textualize.io/api/app/)），可以直接使用，常用的有这些：
+
+-   [action_add_class](https://textual.textualize.io/api/app/#textual.app.App.action_add_class)，给选择器匹配的组件添加指定的样式类。函数有两个参数：字符串类型的selector参数，表示选择器；字符串类型的class_name参数，表示样式类名。
+-   [action_back](https://textual.textualize.io/api/app/#textual.app.App.action_back)，返回之前的屏幕，并弹出当前屏幕。如果之前的屏幕被弹出，则无法返回之前的屏幕。并且这个弹出操作不会导致问题（下面介绍的`action_pop_screen`在弹出最后一个屏幕时会报错）。屏幕的用法会在后面的章节介绍，这里不详细解释。
+-   [action_bell](https://textual.textualize.io/api/app/#textual.app.App.action_bell)，让终端播放一次提示音（就是那种命令出现问题时的提示音）。
+-   [action_focus_next](https://textual.textualize.io/api/app/#textual.app.App.action_focus_next)，让按照获取焦点的顺序、应该下一个获得焦点的组件获得焦点。
+-   [action_focus_previous](https://textual.textualize.io/api/app/#textual.app.App.action_focus_previous)，让按照获取焦点的顺序、上一个获得焦点的组件获得焦点，如果当前焦点在第一个组件上，那执行此动作会变成排在最后的组件获得焦点。
+-   [action_focus](https://textual.textualize.io/api/app/#textual.app.App.action_focus)，让与给定ID匹配的组件获得焦点。函数只有一个字符串类型widget_id参数，表示组件的ID，也就是创建组件时传入的id参数。
+-   [action_pop_screen](https://textual.textualize.io/api/app/#textual.app.App.action_pop_screen)，弹出当前屏幕，并激活当前屏幕下的屏幕。需要注意的是，此动作在弹出最后一个屏幕时会报错。
+-   [action_push_screen](https://textual.textualize.io/api/app/#textual.app.App.action_push_screen)，在当前屏幕上放置新的屏幕，并激活新的屏幕。函数支持一个字符串类型的screen参数，表示要新屏幕的名字（执行install_screen方法时name参数的值，或者SCREENS属性字典中对应屏幕对象的键值）。
+-   [action_quit](https://textual.textualize.io/api/app/#textual.app.App.action_quit)，退出程序。
+-   [action_remove_class](https://textual.textualize.io/api/app/#textual.app.App.action_remove_class)，从选择器匹配的组件中移除指定的样式类。函数有两个参数：字符串类型的selector参数，表示选择器；字符串类型的class_name参数，表示样式类名。
+-   [action_screenshot](https://textual.textualize.io/api/app/#textual.app.App.action_screenshot)，将当前屏幕的显示内容保存为SVG格式的图片。函数有两个参数：字符串类型的filename参数，表示图片文件的文件名，默认是自动生成的值（`程序的标题_时间.svg`）；字符串类型的path参数，表示图片文件所在目录的路径，默认是系统定义的用户下载目录
+-   [action_simulate_key](https://textual.textualize.io/api/app/#textual.app.App.action_simulate_key)，模拟按下特定的按键。函数有一个字符串类型的key参数，传入对应按键触发的按键事件的key属性表示要模拟的按键。
+-   [action_suspend_process](https://textual.textualize.io/api/app/#textual.app.App.action_suspend_process)，挂起当前程序的进程并放到后台。需要注意的是，只有Linux和Unix类系统支持挂起操作，Windows和Textual Web（textual提供的将textual程序云端化的服务）运行的textual程序不支持此操作。
+-   [action_switch_mode](https://textual.textualize.io/api/app/#textual.app.App.action_switch_mode)，切换到指定模式。函数有一个字符串类型的mode参数，表示要切换到的模式名。模式名是MODES属性字典中对应屏幕对象的键值。模式是互不影响的、保存当前屏幕堆叠状态的快照，MODES属性字典中对应模式名的屏幕对象表示对应模式的初始屏幕。
+-   [action_switch_screen](https://textual.textualize.io/api/app/#textual.app.App.action_switch_screen)，切换到指定屏幕。函数支持一个字符串类型的screen参数，表示切换到的屏幕的名字。
+-   [action_toggle_class](https://textual.textualize.io/api/app/#textual.app.App.action_toggle_class)，给选择器匹配的组件切换指定的样式类的状态（没有就添加，有就删除）。函数有两个参数：字符串类型的selector参数，表示选择器；字符串类型的class_name参数，表示样式类名。
+-   [action_toggle_dark](https://textual.textualize.io/api/app/#textual.app.App.action_toggle_dark)，在内置的黑暗主题（textual-dark）、明亮主题（textual-light）之间切换。需要注意的是，不管当前主题是什么主题，此动作只会根据当前主题的dark属性（是否为黑暗主题），切换到内置的黑暗主题（当前主题不为黑暗主题时切换）、明亮主题（当前主题为黑暗主题时切换），不会切换回原来设置的其他主题。如果需要切换为自定义的黑暗主题、明亮主题，请不要使用此动作，并自定义切换的动作函数或者方法。
+
+Screen组件预定义的动作可以参考[接口文档](https://textual.textualize.io/api/screen/)；其他组件如Button的预定义动作，则需要参考对应的[组件文档](https://textual.textualize.io/widgets/button/)。
+
+##### 2.2.11.7 动态管理动作
+
+在介绍本节内容前，先看以下示例：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits,Footer
+
+class MyApp(App):
+    BINDINGS = [
+        ('n','app.now("Running")','Turn on'),
+        ('m','app.now("Paused")','Turn off'),
+    ]
+    def on_mount(self):
+        self.widgets = [
+            Static('Paused'),
+            Digits(f'{datetime.now().time():%T}'),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+
+    def action_now(self,text:str=''):
+        self.query_one(Static).update(f'{text}')
+        self.query_one(Digits).update(f'{datetime.now().time():%T}')
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+示例代码基于前面的示例修改。前面的示例是按下按键才会更新时间显示，有点不太方便，可要是一直让时间更新显示，又有点分散注意力。因此，代码中设置了两个快捷键：n键让时间持续更新显示，相当于打开时钟；m键让时间暂停更新显示，相当于关闭时钟。
+
+当然，这一节不会完整实现此功能，只是将静态文本更新为"Running"、"Paused"来表明时钟的运行状态，方便下一节添加定时器时使用。
+
+代码看上去没有问题，不过，在实际操作的时候，程序的表现有点瑕疵：
+
+![action_6](textual.assets/action_6.gif)
+
+虽然已经是'Running'的时候再点开启不会出问题，但两个快捷键都亮着，难免让用户摸不着头脑。要是可以点击开启之后，让开启的快捷键禁用，用户就不会点错、误解了。
+
+在textual中，不用费心单独调用禁用快捷键的方法，只需实现[check_action](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.check_action)方法，并根据需求返回特定的值，就可以让指定的动作和快捷键处于需要的状态。
+
+实现check_action方法时，方法会接收三个参数：
+
+-   self参数，表示实例对象。
+-   action参数，字符串类型，表示被检查的动作名（即动作函数去掉前缀后的部分）。
+-   parameters参数，元组，表示执行动作时传给动作函数的额外参数。
+
+check_action方法会在动作执行时，对该动作进行检查，按照参数的要求传入动作名和传给动作的额外参数。根据此时函数返回的值，该方法会让对应的动作和绑定该动作的快捷键变成特定状态：
+
+-   返回`True`，页脚正常显示快捷键，快捷键可以响应。
+-   返回`False`，页脚隐藏快捷键，并且快捷键无法响应。
+-   返回`None`，页脚禁用快捷键（即快捷键显示的颜色变淡），并且快捷键无法响应。
+
+知道check_action方法的作用之后，那只需在App子类内实现此方法，让动作名为'now'时，判断传递动作函数的额外参数：与当前静态文本的内容不同就返回`True`；相同则返回`False`或者`None`。如果动作名不是'now'，一律返回`True`。这样就可以实现当前可用快捷键只能切换状态。
+
+按这个思路走，代码如下：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits,Footer
+
+class MyApp(App):
+    BINDINGS = [
+        ('n','app.now("Running")','Turn on'),
+        ('m','app.now("Paused")','Turn off'),
+    ]
+    def on_mount(self):
+        self.widgets = [
+            Static('Paused'),
+            Digits(f'{datetime.now().time():%T}'),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+
+    def action_now(self,text:str=''):
+        self.query_one(Static).update(f'{text}')
+        self.query_one(Digits).update(f'{datetime.now().time():%T}')
+
+    def check_action(self, action, parameters):
+        if action == 'now':
+            return parameters[0] != self.query_one(Static).renderable
+            # 或者return parameters[0] != self.query_one(Static).renderable or None
+        return True
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![action_7](textual.assets/action_7.gif)
+
+功能是实现了，但操作起来有点不对劲，需要不停切换来刷新出正确的快捷键。
+
+这个时候可以调用[refresh_bindings方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.refresh_bindings)立刻刷新绑定，不然页脚的快捷键只有在触发界面更新时才能更新显示：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits,Footer
+
+class MyApp(App):
+    BINDINGS = [
+        ('n','app.now("Running")','Turn on'),
+        ('m','app.now("Paused")','Turn off'),
+    ]
+    def on_mount(self):
+        self.widgets = [
+            Static('Paused'),
+            Digits(f'{datetime.now().time():%T}'),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+
+    def action_now(self,text:str=''):
+        self.refresh_bindings()
+        self.query_one(Static).update(f'{text}')
+        self.query_one(Digits).update(f'{datetime.now().time():%T}')
+
+    def check_action(self, action, parameters):
+        if action == 'now':
+            return parameters[0] != self.query_one(Static).renderable
+        return True
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![action_8](textual.assets/action_8.gif)
+
+前面的例子中就可以使用此方法实现动态替换快捷键：
+
+```python3
+from textual.app import App
+from textual.widgets import RichLog, Footer
+from textual.binding import Binding
+
+class MyApp(App):
+    BINDINGS = [
+        Binding(
+            key='ctrl+w',
+            action='write_something("ctrl+w from binding class")',
+            description='write something in RichLog',
+            id='id_w',
+        )
+    ]
+
+    def on_mount(self):
+        self.widgets = [
+            RichLog(),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+
+    def action_write_something(self, text: str):
+        self.set_keymap({'id_w':'ctrl+e'})
+        self.refresh_bindings()
+        self.query_one(RichLog).write(text)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+#### 2.2.12 定时器
+
+上节中想要通过按钮切换时间的暂停、运行状态，可是，不设置定时器更新时间的话，就没法真的实现此功能。因此，特地去官网找了一下定时器的用法，可惜官网没有单独设置章节，只提供了API文档。但定时器功能在UI程序中很常用，所以单独开辟此章节，整合textual中定时器的使用教程。
+
+定时器对象支持的用法参考[官网文档](https://textual.textualize.io/api/timer/)，定时器对象常用的方法有：pause（暂停）、reset（复位）、resume（继续）、stop（通知）。都是简单直观的方法，就不做太多介绍。
+
+不过，创建定时器对象一般不用导入定时器类来自己创建，而是调用App子类对象或者组件的set_timer方法（完整用法参考[官网文档](https://textual.textualize.io/api/message_pump/#textual.message_pump.MessagePump.set_timer)）或者set_interval方法（完整用法参考[官网文档](https://textual.textualize.io/api/message_pump/#textual.message_pump.MessagePump.set_interval)）。这两个方法都会返回定时器对象，并且都在创建完定时器对象之后立刻启动定时器，但二者的用途、支持参数略有差异。
+
+先说用途。set_timer方法返回的定时器只能运行一次，不会一直按时间间隔要求运行。set_interval方法返回的定时器会一直按时间间隔要求运行，只有达到指定的重复次数才会停止；如果没有指定重复次数、重复次数为`None`、`0`、任意等效为`False`的值，则定时器会一直循环执行。
+
+set_timer方法支持的参数：
+
+-   self参数，表示调用此方法的实例，不需要传入。因此方法是由实例对象调用，因此这个参数实际上只在定义中有。只有在扩展组件类或者App类时，才会接触到此参数，只是直接使用方法不需要关注。
+-   delay参数，浮点类型，表示过多长时间之后执行定时器指定的操作，单位秒。
+-   callback参数，可调用类型，表示定时器要执行的操作。如果要执行的操作需要带上参数，则要用lambda表达式代替，比如`lambda :do("something")`。
+-   name参数，字符串类型，表示定时器的名字，一般用于调试。从这个参数开始（包括这个参数），参数就全是关键字参数了。也就是只能通过关键字传入，不能缺少参数名而按照位置对应。
+-   pause参数，布尔类型，表示创建完定时器，是否让定时器立即开始计时，即创建完的定时器是不是暂停状态。默认为`False`，即创建完就开始计时。
+
+set_interval方法支持的参数：
+
+-   self参数，表示调用此方法的实例，不需要传入。因此方法是由实例对象调用，因此这个参数实际上只在定义中有。只有在扩展组件类或者App类时，才会接触到此参数，只是直接使用方法不需要关注。
+-   interval参数，浮点类型，表示每过多长时间执行一次定时器指定的操作，单位秒。
+-   callback参数，可调用类型，表示定时器要执行的操作。如果要执行的操作需要带上参数，则要用lambda表达式代替，比如`lambda :do("something")`。
+-   name参数，字符串类型，表示定时器的名字，一般用于调试。从这个参数开始（包括这个参数），参数就全是关键字参数了。也就是只能通过关键字传入，不能缺少参数名而按照位置对应。
+-   repeat参数，整数类型，表示定时器重复的次数。默认为0，即无数次。如果该参数指定为`None`或者等效为`False`的值，都表示定时器重复无数次。
+-   pause参数，布尔类型，表示创建完定时器，是否让定时器立即开始计时，即创建完的定时器是不是暂停状态。默认为`False`，即创建完就开始计时。
+
+回到本节的开头，本节是为了让时间自动更新而生，所以，本节的示例代码就是实现这一目标，补全缺失的功能。
+
+为了让开关时间更新功能的操作不再割裂，这里将开关操作的快捷键统一为n键。当然，定时器需要循环执行更新时间的操作，为了不让这个操作消耗太多性能，就单独定义一个更新时间的函数——update_time。原本更新静态文本的动作有切换开关状态的作用，这里就把动作函数改名为action_switch_time（快捷键绑定、check_action中的动作名也要修改），并在函数中增加判断当前状态，然后启停定时器的代码。最关键的添加定时器的代码则放在on_mount中，并且让定时器默认为暂停状态。成品代码如下：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits,Footer
+
+class MyApp(App):
+    BINDINGS = [
+        ('n','app.switch_time("Running")','Turn on'),
+        ('n','app.switch_time("Paused")','Turn off'),
+    ]
+    def on_mount(self):
+        self.widgets = [
+            Static('Paused'),
+            Digits(f'{datetime.now().time():%T}'),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+        self.timer = self.set_interval(1,self.update_time,pause=True,repeat=0)
+
+    def action_switch_time(self,text:str=''):
+        self.refresh_bindings()
+        self.query_one(Static).update(f'{text}')
+        self.query_one(Digits).update(f'{datetime.now().time():%T}')
+        if text == 'Running':
+            self.timer.resume()
+        else:
+            self.timer.pause()
+
+    def update_time(self):
+        self.query_one(Digits).update(f'{datetime.now().time():%T}')
+
+    def check_action(self, action, parameters):
+        if action == 'switch_time':
+            return parameters[0] != self.query_one(Static).renderable
+        return True
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
+
+![timer_1](textual.assets/timer_1.gif)
+
+最后补充一个不推荐但可能需要的用法，就是使用Timer类来创建定时器。此用法需要手动调用开始方法——_start方法，而且需要通过关键字传递要执行的操作和repeat参数（为`None`表示循环执行）：
+
+```python3
+from datetime import datetime
+from textual.app import App
+from textual.widgets import Static,Digits,Footer
+from textual.timer import Timer
+
+class MyApp(App):
+    BINDINGS = [
+        ('n','app.switch_time("Running")','Turn on'),
+        ('n','app.switch_time("Paused")','Turn off'),
+    ]
+    def on_mount(self):
+        self.widgets = [
+            Static('Paused'),
+            Digits(f'{datetime.now().time():%T}'),
+            Footer()
+        ]
+        self.mount_all(self.widgets)
+        self.timer = Timer(self,1,self.update_time,pause=True,repeat=None)
+        self.timer._start()
+
+    def action_switch_time(self,text:str=''):
+        self.refresh_bindings()
+        self.query_one(Static).update(f'{text}')
+        self.query_one(Digits).update(f'{datetime.now().time():%T}')
+        if text == 'Running':
+            self.timer.resume()
+        else:
+            self.timer.pause()
+
+    def update_time(self):
+        self.query_one(Digits).update(f'{datetime.now().time():%T}')
+
+    def check_action(self, action, parameters):
+        if action == 'switch_time':
+            return parameters[0] != self.query_one(Static).renderable
+        return True
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
 
 ### 2.3 组件一览
+
+常用组件和组件的常用功能、示例
 
 
 
@@ -5042,11 +5593,38 @@ Header = HeaderWithIcon
 
 
 
-#### 3.2.4 textual依赖的rich
+
+
+
+
+#### 3.2.4 组件
+
+
+
+https://textual.textualize.io/widgets/
+
+
+
+#### 3.2.5 动画
+
+
+
+#### 3.2.6 屏幕
+
+
+
+
+
+#### 3.2.7 textual依赖的rich
 
 rich相关的样式：https://rich.readthedocs.io/en/latest/markup.html 和 https://rich.readthedocs.io/en/latest/style.html#styles
 
 
+
+```python3
+from rich import print
+print("[bold red]alert![/bold red] Something happened")
+```
 
 
 
