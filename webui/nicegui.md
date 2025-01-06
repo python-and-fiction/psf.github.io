@@ -207,9 +207,9 @@ VUE官方文档：https://cn.vuejs.org/guide/introduction
 
 #### 2.1.1 nicegui的`Hello World!`
 
-如果你能看到这里，证明你有学好nicegui的基础和能力，并不畏惧上一节提到的那么多基础知识。那么，就用一段简单的`Hello World!`代码开启nicegui的入门之旅。
+如果你能看到这里，证明你有学好nicegui的基础和能力，并不畏惧上一节提到的那么多基础知识。那么，就用一段简单的Hello World代码开启nicegui的入门之旅。
 
-使用VSCode在项目文件夹下的`src\chinese_guide_of_nicegui_for_beginner`内，新建以`py`为后缀的python代码文件，复制以下代码到代码文件中，保存。
+使用VSCode在项目文件夹下的`src\chinese_guide_of_nicegui_for_beginner`内，新建以`.py`为后缀的python代码文件，复制以下代码到代码文件中并保存：
 
 ```python3
 from nicegui import ui
@@ -227,7 +227,7 @@ ui.run(native=True)
 
 <img src="nicegui.assets/hello_world.png" alt="hello_world" style="zoom:50%;" />
 
-从`Hello World!`示例可以看到，基于nicegui的python程序寥寥三行代码，除去导入语句和必不可少的`ui.run`，主体只有一行代码，就能实现一个完整的交互过程，足见nicegui的强大、简洁。后续教程中很多例子都可以做到几行代码实现不错的效果，这也是nicegui大受欢迎的原因。
+从示例可以看到，基于nicegui的python程序寥寥三行代码，除去导入语句和必不可少的`ui.run`，主体只有一行代码，就能实现一个完整的交互过程，足见nicegui的强大、简洁。后续教程中很多例子都可以做到几行代码实现不错的效果，这也是nicegui大受欢迎的原因。
 
 ### 2.2 nicegui的基本结构
 
@@ -298,7 +298,7 @@ ui.run(native=True)
 
 ##### 2.3.1.1 ui.label
 
-文本标签，用法很简单，通过传入一个字符串类型的参数`text`，让网页显示字符串内的文字。注意，虽然参数支持多行文字，但是输出只能一行，需要原样输出多行文字的话，可以使用下面介绍的`ui.html`，将`tag`设置为`pre`。
+文本标签，用法很简单，通过传入一个字符串类型的参数`text`，让网页显示字符串内的文字。注意，虽然参数支持多行文字，但是输出只能一行，需要原样输出多行文字的话，可以使用下面介绍的ui.html，将tag参数设置为`'pre'`。
 
 ```python3
 from nicegui import ui
@@ -322,7 +322,7 @@ ui.run(native=True)
 
 `text`参数，字符串类型，表示超链接显示什么文字。
 
-`target`参数，字符串类型、`page function`、`ui.element`类型，表示超链接跳转到什么位置，这里只介绍字符串类型用法，其他类型可以自行探索或者后续需要用到的时候补充。字符串类型参数表示超链接跳转的url地址，可以使用协议开头的完整地址，也可以使用省略主机的绝对路径、相对路径。
+`target`参数，字符串类型、`page function`类型、`ui.element`类型，表示超链接跳转到什么位置，这里只介绍字符串类型用法，其他类型可以自行探索或者后续需要用到的时候补充。字符串类型参数表示超链接跳转的url地址，可以使用协议开头的完整地址，也可以使用省略主机的绝对路径、相对路径。
 
 `new_tab`参数，布尔类型，默认为`False`，表示要不要在新建标签页中打开超链接。
 
@@ -330,7 +330,7 @@ ui.run(native=True)
 
 通用元素，也是nicegui大部分界面控件的基类。很多控件都是通过继承这个类来调用自定义标签、JavaScript代码实现。通过继承实现自定义控件、修改默认风格属于高级用法，这里只说基本用法。
 
-`tag`参数，字符串类型，默认为`div`，表示生成的元素用什么标签，实际使用时可以根据需要修改为其他HTML标签或者Quasar标签。代码如下：
+`tag`参数，字符串类型，默认为`'div'`，表示生成的元素用什么HTML标签，实际使用时可以根据需要修改为其他HTML标签或者Quasar标签。代码如下：
 
 ```python3
 from nicegui import ui
@@ -341,7 +341,7 @@ with ui.element('div').classes('p-2 bg-blue-100'):
 ui.run(native=True)
 ```
 
-`move`方法，将控件移动到指定控件之内，默认为`default`slot，也可以传递`target_slot`参数，指定slot。代码如下：
+`move`方法，将控件移动到指定控件之内，默认为`'default'`slot，也可以给`target_slot`参数传入slot name来指定slot。代码如下：
 
 ```python3
 from nicegui import ui
@@ -362,7 +362,7 @@ ui.run(native=True)
 
 ##### 2.3.1.4 ui.markdown和ui.html
 
-与`ui.label`类似，`ui.markdown`和`ui.html`，都可以用来展示文本，只是后两者支持markdown语法和HTML语法，因为markdown语法支持一部分HTML的标签，可以看到放在`ui.markdown`里的HTML标签也能被解析。以下是三种控件解析同一内容的代码：
+与ui.label类似，ui.markdown和ui.html，都可以用来展示文本，只是后两者支持markdown语法和HTML语法，因为markdown语法支持一部分HTML的标签，可以看到放在ui.markdown里的HTML标签也能被解析。以下是三种控件解析同一内容的代码：
 
 ```python3
 from nicegui import ui
@@ -378,7 +378,7 @@ ui.html(content)
 ui.run(native=True)
 ```
 
-此外，`ui.html`还支持传入字符串类型参数`tag`给基类`ui.element`，用于修改生成`ui.html`用的标签，比如：
+此外，ui.html还支持传入字符串类型参数`tag`给基类ui.element，用于修改生成ui.html用的标签，比如：
 
 ```python3
 from nicegui import ui
@@ -408,13 +408,13 @@ ui.run(native=True)
 
 `text`参数，字符串类型，表示显示在按钮上的文字，如果是英文的话，默认全部大写。该参数默认只支持字符串类型，但是整数和小数可以直接使用，其他类型需要先转换为字符串类型才能传入。
 
-`color`参数，字符串类型或者None，表示按钮的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让按钮变成默认颜色），默认为'primary'，即和主题颜色一致。
+`color`参数，字符串类型或者`None`，表示按钮的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让按钮变成默认颜色），默认为`'primary'`，即和主题颜色一致。
 
-`icon`参数，字符串类型，表示按钮额外显示的图标，支持传入字符串类型的图标名，具体名字会在`ui.icon`中介绍，这里不做详细介绍。
+`icon`参数，字符串类型，表示按钮额外显示的图标，支持传入字符串类型的图标名，具体名字会在ui.icon中介绍，这里不做详细介绍。
 
-`on_click`参数，可调用类型，表示点击按钮调用的函数，可以使用`lambda`表达式，也可以使用函数名。
+`on_click`参数，可调用类型，表示点击按钮调用的函数，可以使用lambda表达式，也可以使用函数名。
 
-如果觉得对按钮传入参数来自定义按钮内容的方法太死板，也可以使用以下语法，使用`with`来进入按钮的`default slot`，随意组合按钮内的内容：
+如果觉得对按钮传入参数来自定义按钮内容的方法太死板，也可以使用以下语法，使用上下文管理器关键字`with`来进入按钮的default slot（默认插槽），随意组合按钮内的内容：
 
 ```python3
 from nicegui import ui
@@ -428,7 +428,7 @@ ui.run(native=True)
 
 ![button](nicegui.assets/ui_button.png)
 
-对于`on_click`参数、后续会涉及到的on开头的`on_*`参数、on开头的`on_*`方法和`on`方法里的callback或者handler参数，均为可调用类型参数，既可以在创建控件时定义lambda表达式，也可以提前定义。对于复杂一点逻辑操作，应该定义函数而不是lambda表达式，比如：
+对于`on_click`参数、后续会涉及到的on开头的参数、on开头的方法和on方法（函数名就是`on`）里的`callback`参数或者`handler`参数，均为可调用类型参数，既可以在创建控件时定义lambda表达式，也可以提前定义。对于复杂一点逻辑操作，应该定义函数而不是lambda表达式，比如：
 
 ```python3
 from nicegui import ui
@@ -443,7 +443,7 @@ ui.button('Click me!',on_click=test)
 ui.run(native=True)
 ```
 
-对于button等控件而言，除了支持通过传参创建响应动作，还支持调用对应的`on_*`方法（比如on_click）创建，这个方法极大提高了响应动作的灵活性，上面的例子就可以借助这个方法调整函数定义与按钮创建的先后顺序，代码如下：
+对于button等控件而言，除了支持通过传参创建响应动作，还支持调用对应的on开头方法（比如`on_click`）创建，这个方法极大提高了响应动作的灵活性，上面的例子就可以借助这个方法调整函数定义与按钮创建的先后顺序，代码如下：
 
 ```python3
 from nicegui import ui
