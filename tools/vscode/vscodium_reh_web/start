@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+./bin/codium-server --server-data-dir ./.vscode-server  --user-data-dir ./data --telemetry-level off --without-connection-token --accept-server-license-terms --host 0.0.0.0  --port 8000

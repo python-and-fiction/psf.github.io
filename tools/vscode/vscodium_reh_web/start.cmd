@@ -1,0 +1,2 @@
+@echo off
+bin\codium-server.cmd --server-data-dir %~dp0.vscode-server  --user-data-dir %~dp0data --telemetry-level off --without-connection-token --accept-server-license-terms --host 0.0.0.0  --port 8000
