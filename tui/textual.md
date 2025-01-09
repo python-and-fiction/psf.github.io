@@ -2619,9 +2619,9 @@ if __name__ == '__main__':
 
 ![query_4](textual.assets/query_4.png)
 
-[query_exactly_one方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.query_exactly_one)：
+[`query_exactly_one`方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.query_exactly_one)：
 
-和query_one方法几乎一样，只是query_exactly_one方法的选择器语法只能匹配一个结果，一旦匹配得到多个结果就会报错。其他的报错和参数支持情况一样。
+和`query_one`方法几乎一样，只是`query_exactly_one`方法的选择器语法只能匹配一个结果，一旦匹配得到多个结果就会报错。其他的报错和参数支持情况一样。
 
 示例代码如下：
 
@@ -2646,9 +2646,9 @@ if __name__ == '__main__':
 
 ![query_4](textual.assets/query_4.png)
 
-[query_children方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.query_children)：
+[`query_children`方法](https://textual.textualize.io/api/dom_node/#textual.dom.DOMNode.query_children)：
 
-query_children方法用法和query方法基本一样，唯一不同的是，query_children方法只能查询调用该方法的组件的直接子级（即文档对象模型中组件的对外箭头，直接指向的其他组件）。所以，下面的示例中，调用该方法的不是`self`，而是`self.screen`（屏幕组件）：
+`query_children`方法用法和`query`方法基本一样，唯一不同的是，`query_children`方法只能查询调用该方法的组件的直接子级（即文档对象模型中组件的对外箭头，直接指向的其他组件）。所以，下面的示例中，调用该方法的不是`self`，而是`self.screen`（屏幕组件）：
 
 ```python3
 from textual.app import App
@@ -2674,7 +2674,7 @@ if __name__ == '__main__':
 
 ![query_5](textual.assets/query_5.png)
 
-因为该方法返回的是DOMQuery对象，那些DOMQuery对象支持的方法一样可以用。
+因为该方法返回的是`DOMQuery`对象，那些`DOMQuery`对象支持的方法一样可以用。
 
 #### 2.2.8 布局
 
@@ -5604,6 +5604,40 @@ if __name__ == '__main__':
 ```
 
 
+
+剪贴板操作——复制与粘贴
+
+访问只读属性`self.app.clipboard`可以获取到程序内剪贴板的内容。
+
+实现`on_paste`方法，可以响应`ctrl+v`的粘贴操作操作。消息参数的`text`属性就是（系统的剪贴板）粘贴的内容。`ctrl+v`是唯一可以获取到系统剪贴板的方法，没有其他非按键响应方法可以获取。
+
+调用`self.app.copy_to_clipboard`方法，可以将字符串内容粘贴到剪贴板（程序内的和系统的）。
+
+```python3
+from textual.app import App
+from textual.widgets import Button,Input
+
+class ButtonA(Button):
+    BINDINGS = [('ctrl+w','copy')]
+    def on_paste(self,e):
+        self.app.copy_to_clipboard( e.text if e.text else 'No Text' )
+        self.notify(f'"{self.app.clipboard}" pasted!')
+    def action_copy(self):
+        self.app.copy_to_clipboard(str(self.label))
+        self.notify(f'"{self.app.clipboard}" copied!')
+
+class MyApp(App):
+    def on_mount(self):
+        self.widgets = [
+            ButtonA('Copy/Paste',tooltip='ctrl+w to copy, ctrl+v to paste.'),
+            Input(placeholder='Paste here')
+        ]
+        self.mount_all(self.widgets)
+
+if __name__ == '__main__':
+    app = MyApp()
+    app.run()
+```
 
 
 

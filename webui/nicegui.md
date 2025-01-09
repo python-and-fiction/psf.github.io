@@ -2,25 +2,25 @@
 
 
 
-# nicegui的中文入门教程
+# NiceGUI的中文入门教程
 
 [TOC]
 
 ## 0 前言
 
-对于python语言的使用者来说，[nicegui](https://nicegui.io/)是一款优秀的WebUI、GUI框架，只需学习一定量的前端知识，就能使用nicegui快速搭建出美观的UI界面。但是，由于官方作者不提供系统性的入门、中文教程，很多中文初学者望而却步。于是，本教程应运而生。
+对于Python语言的使用者来说，[NiceGUI](https://nicegui.io/)是一款优秀的WebUI、GUI框架，只需学习一定量的前端知识，就能使用NiceGUI快速搭建出美观的UI界面。但是，由于官方作者不提供系统性的入门、中文教程，很多中文初学者望而却步。于是，本教程应运而生。
 
 本教程旨在用中文提供官方文档没有的系统性入门教程，并将部分社区讨论问题汉化、简化，方便中文学习者尽快上手并解决常见难题。虽然教程的名字叫入门教程，但本教程并没有停留在翻译官网文档的阶段，能够解决常见问题的高阶技巧也有。对于官方提供的各个控件的详细API，本教程并不会照本宣科，而是在提供思路之后，由读者自行查阅。正所谓“授人以鱼不如授人以渔”，掌握方法比掌握结果更有效。
 
 ## 1 环境准备
 
-本章主要介绍运行和开发nicegui程序的环境准备，包括虚拟环境的建立、开发工具的选择、如何自托管文档。
+本章主要介绍运行和开发NiceGUI程序的环境准备，包括虚拟环境的建立、开发工具的选择、如何自托管文档。
 
 ### 1.1 运行环境
 
 为了保证最佳开发体验，所有的环境准备优先使用Windows系统，使用Linux、Mac的话，请自己根据系统变通。
 
-首先，需要准备python解释器和pip。其中，Python解释器是运行后续代码、工具的基础，只需到官网安装最新稳定版（当前为3.12.*）即可；pip是Python官方的包管理工具，安装解释器时务必勾选此选项，如果没有勾选或者想要后续单独安装pip，可以到[pypi](https://pypi.org/)官方查看安装方法，这里不在赘述。
+首先，需要准备P解释器和pip。其中，Python解释器是运行后续代码、工具的基础，只需到官网安装最新稳定版（当前为3.12.*）即可；pip是Python官方的包管理工具，安装解释器时务必勾选此选项，如果没有勾选或者想要后续单独安装pip，可以到[pypi](https://pypi.org/)官方查看安装方法，这里不在赘述。
 
 环境管理工具有pdm和poetry，使用以下命令全部安装：
 
@@ -28,11 +28,11 @@
 pip install pdm poetry
 ```
 
-环境管理工具是快捷管理python运行环境的工具，可以创建出独立的python运行环境，各个运行环境内安装的软件包不会干扰其他环境，也不会影响到默认的python环境。
+环境管理工具是快捷管理Python运行环境的工具，可以创建出独立的Python运行环境，各个运行环境内安装的软件包不会干扰其他环境，也不会影响到默认的Python环境。
 
 pdm是一款国人创建的环境管理工具，语法简单，操作方便，因此教程采用此工具。
 
-poetry也是一款环境管理工具，是nicegui官方仓库采用的，可以基于官方源代码自己编译安装包，也用于后续自托管文档，因此需要安装。
+poetry也是一款环境管理工具，是NiceGUI官方仓库采用的，可以基于官方源代码自己编译安装包，也用于后续自托管文档，因此需要安装。
 
 但是，poetry的检查依赖速度比pdm慢太多，故这里采用pdm作为学习工具，如果读者有能力，可以只使用poetry。
 
@@ -71,7 +71,7 @@ PS E:\PSF\git\chinese_guide_of_nicegui_for_beginner>
 
 过程为交互式，需要自己输入之后回车才能继续，不输入直接回车则采用默认。
 
-`Please select (0):`为选择python版本，pdm会自动识别当前电脑安装的所有python解释器，部分工具（如gcc）也会自带python解释器，需要正确选择自己安装的、可以直接运行pip命令的python解释器，这一步根据实际情况选择，一般默认第一个，可以直接回车。
+`Please select (0):`为选择Python版本，pdm会自动识别当前电脑安装的所有Python解释器，部分工具（如gcc）也会自带Python解释器，需要正确选择自己安装的、可以直接运行pip命令的Python解释器，这一步根据实际情况选择，一般默认第一个，可以直接回车。
 
 `Project name (chinese_guide_of_nicegui_for_beginner):`为设置项目名称，通常为当前文件夹名字，可以自己输入来修改。这个不会修改当前文件夹名字，只会影响项目描述文件中的项目名称和后续创建的源代码文件夹名称。这里可以直接回车。
 
@@ -81,7 +81,7 @@ PS E:\PSF\git\chinese_guide_of_nicegui_for_beginner>
 
 `License(SPDX name) (MIT):`、`Author name (): `、`Author email ():`分别是许可协议、作者名字、作者邮箱地址，了解、知道的可以修改，不清楚或者不想写的可以直接回车。
 
-`Python requires('*' to allow any) (==3.12.*):`为python的版本要求，如果后续要用低版本或者高版本python运行，这里需要修改，否则此项目会限制python的版本。这个后续可以自己了解，这里直接回车即可。
+`Python requires('*' to allow any) (==3.12.*):`为Python的版本要求，如果后续要用低版本或者高版本Python运行，这里需要修改，否则此项目会限制Python的版本。这个后续可以自己了解，这里直接回车即可。
 
 至此，基础环境已经准备完毕，可以得到以下目录结构：
 
@@ -98,9 +98,9 @@ chinese_guide_of_nicegui_for_beginner
 
 `./src/chinese_guide_of_nicegui_for_beginner/`下存放项目的源代码，后续的代码操作（创建修改）均在此目录。此外，项目根目录下有`pyproject.toml`（项目描述文件）和`README.md`（自述文件），本教程不涉及手动修改。
 
-#### 1.1.2 nicegui运行环境
+#### 1.1.2 NiceGUI运行环境
 
-基础环境初始化完毕之后，项目还不能直接运行基于nicegui框架的代码，因为基础环境还没有安装nicegui。因此，需要在项目根目录下使用以下命令安装：
+基础环境初始化完毕之后，项目还不能直接运行基于NiceGUI框架的代码，因为基础环境还没有安装NiceGUI。因此，需要在项目根目录下使用以下命令安装：
 
 ```shell
 pdm add nicegui
@@ -116,7 +116,7 @@ pip install nicegui
 
 如果后续项目中需要使用其他库，可以使用`pdm add 库对应的pip安装命令中的名字`来添加到项目环境中。
 
-对于调试使用nicegui的程序，通常在native mode下比较方便，因此，建议安装`pywebview`来增加native mode的支持，命令是：
+对于调试使用NiceGUI的程序，通常在native mode下比较方便，因此，建议安装`pywebview`来增加native mode的支持，命令是：
 
 ```shell
 pdm add pywebview
@@ -134,7 +134,7 @@ pip install pywebview
 
 ### 1.2 开发工具
 
-[VSCode](https://code.visualstudio.com/)或者[PyCharm](https://www.jetbrains.com/pycharm/download/)，其中VSCode比PyCharm轻量，但需要手动安装python插件，而PyCharm自带插件，操作简单。这里推荐使用VSCode，比较流畅，如果是使用PyCharm，后续操作根据VSCode对应即可。
+[VSCode](https://code.visualstudio.com/)或者[PyCharm](https://www.jetbrains.com/pycharm/download/)，其中VSCode比PyCharm轻量，但需要手动安装Python插件，而PyCharm自带插件，操作简单。这里推荐使用VSCode，比较流畅，如果是使用PyCharm，后续操作根据VSCode对应即可。
 
 对于VSCode，建议安装以下插件：
 
@@ -164,7 +164,7 @@ https://github.com/zauberzeug/nicegui/archive/refs/heads/main.zip
 
 下载压缩包之后解压，结果一样。对于GItHub难以访问的问题，可以自行搜索GitHub加速的方法。
 
-使用以下命令进入nicegui的源代码文件夹，并执行安装操作：
+使用以下命令进入NiceGUI的源代码文件夹，并执行安装操作：
 
 ```shell
 cd nicegui
@@ -177,7 +177,7 @@ poetry install
 poetry run python .\main.py
 ```
 
-_注意：如果不使用poetry创建的虚拟环境运行，而是使用全局python运行的话，首先要安装nicegui库，然后根据提示安装缺失的库（自托管文件需要的部分依赖不会随nicegui自动安装），并且在源码根目录执行`python main.py`_。
+注意：如果不使用poetry创建的虚拟环境运行，而是使用全局Python运行的话，首先要安装NiceGUI库，然后根据提示安装缺失的库（自托管文件需要的部分依赖不会随NiceGUI自动安装），并且在源码根目录执行`python main.py`。
 
 关掉终端就可以关闭服务器，下次运行这条命令就可以直接开启自托管的官网文档，无需再次安装。
 
@@ -185,31 +185,31 @@ _注意：如果不使用poetry创建的虚拟环境运行，而是使用全局p
 
 ## 2 入门基础
 
-本章主要介绍nicegui的基础知识，系统性了解nicegui的基本结构，在自学nicegui、查阅官网文档时有方向。
+本章主要介绍NiceGUI的基础知识，系统性了解NiceGUI的基本结构，在自学NiceGUI、查阅官网文档时有方向。
 
-### 2.1 认识nicegui
+### 2.1 认识NiceGUI
 
-nicegui 是一个开源的python库，可以搭建运行在浏览器的图形界面，也就是WebUI，也可以理解为和网站一样。nicegui的学习过程并不难，但不意味着你可以零基础入门。对于开发nicegui的开发者而言，python的基础是必须的；如果掌握python不常用语法和用法更好，后续在使用nicegui的过程中，可以很方便理解一些为了达成效果而使用的骚操作。尽管大部分python的学习者是零基础入门，除了转全栈、爬虫的开发者，后续学习过程中很少接触前端（HTML、CSS、JavaScript），但还是在使用nicegui之前，要有学习前端的心理准备。nicegui为了方便python工程师快速搭建图形界面，专注于python代码本身，做了不少前端细节的隐藏。不过，默认的样式不一定符合预期效果，为了达成效果，还是需要了解一些前端知识，才能让界面完全符合心意。
+NiceGUI是一个开源的Python库，可以搭建运行在浏览器的图形界面，也就是WebUI，也可以理解为和网站一样。NiceGUI的学习过程并不难，但不意味着你可以零基础入门。对于开发NiceGUI的开发者而言，Python的基础是必须的；如果掌握Python不常用语法和用法更好，后续在使用NiceGUI的过程中，可以很方便理解一些为了达成效果而使用的骚操作。尽管大部分Python的学习者是零基础入门，除了转全栈、爬虫的开发者，后续学习过程中很少接触前端（HTML、CSS、JavaScript），但还是在使用NiceGUI之前，要有学习前端的心理准备。NiceGUI为了方便Python工程师快速搭建图形界面，专注于Python代码本身，做了不少前端细节的隐藏。不过，默认的样式不一定符合预期效果，为了达成效果，还是需要了解一些前端知识，才能让界面完全符合心意。
 
-nicegui的底层使用了fastapi作为运行服务器，Quasar作为前端框架，支持tailwindcss的CSS语法，因为Quasar的内部使用VUE搭建，nicegui也不可避免地用到了VUE的语法。因此，对于想要用好nicegui的开发者，在后续使用nicegui的过程中，需要对上述提到的项目有一定了解。想要对后端部分定制、修改的，需要了解fastapi以及其基于的其他组件；想要让界面美化、随心的，需要掌握Quasar、tailwindcss基础；对于有能力和需求完全定制界面的，则需要掌握VUE基础。
+NiceGUI的底层使用了FastAPI作为运行服务器，Quasar作为前端框架，支持TailWindCSS的CSS语法，因为Quasar的内部使用VUE搭建，NiceGUI也不可避免地用到了VUE的语法。因此，对于想要用好NiceGUI的开发者，在后续使用NiceGUI的过程中，需要对上述提到的项目有一定了解。想要对后端部分定制、修改的，需要了解FastAPI以及其基于的其他组件；想要让界面美化、随心的，需要掌握Quasar、TailWindCSS基础；对于有能力和需求完全定制界面的，则需要掌握VUE基础。
 
 相关链接：
 
-nicegui官方文档：https://nicegui.io/documentation
+NiceGUI官方文档：https://nicegui.io/documentation
 
-fastapi官方文档：https://fastapi.tiangolo.com/zh/
+FastAPI官方文档：https://fastapi.tiangolo.com/zh/
 
 Quasar官方文档：https://quasar.dev/docs
 
-tailwindcss官方文档：https://tailwindcss.com/
+TailWindCSS官方文档：https://tailwindcss.com/
 
 VUE官方文档：https://cn.vuejs.org/guide/introduction
 
-#### 2.1.1 nicegui的`Hello World!`
+#### 2.1.1 NiceGUI的`Hello World!`
 
-如果你能看到这里，证明你有学好nicegui的基础和能力，并不畏惧上一节提到的那么多基础知识。那么，就用一段简单的Hello World代码开启nicegui的入门之旅。
+如果你能看到这里，证明你有学好NiceGUI的基础和能力，并不畏惧上一节提到的那么多基础知识。那么，就用一段简单的Hello World代码开启NiceGUI的入门之旅。
 
-使用VSCode在项目文件夹下的`src\chinese_guide_of_nicegui_for_beginner`内，新建以`.py`为后缀的python代码文件，复制以下代码到代码文件中并保存：
+使用VSCode在项目文件夹下的`src\chinese_guide_of_nicegui_for_beginner`内，新建以`.py`为后缀的Python代码文件，复制以下代码到代码文件中并保存：
 
 ```python3
 from nicegui import ui
@@ -219,7 +219,7 @@ ui.button('Say Hi',on_click=lambda :ui.notify('Hello World!'))
 ui.run(native=True)
 ```
 
-注意vscode的右下角，务必确保使用的是`venv`下的python解释器，如果不是，点击右下角`3.12.4{'.venv'}`对应位置，选择输入解释器路径-查找，选择`.venv\Scripts\`下的`python.exe`。
+注意vscode的右下角，务必确保使用的是`venv`下的Python解释器，如果不是，点击右下角`3.12.4{'.venv'}`对应位置，选择输入解释器路径-查找，选择`.venv\Scripts\`下的`python.exe`。
 
 <img src="nicegui.assets/hello_world_vscode.png" alt="hello_world_vscode" style="zoom:50%;" />
 
@@ -227,13 +227,13 @@ ui.run(native=True)
 
 <img src="nicegui.assets/hello_world.png" alt="hello_world" style="zoom:50%;" />
 
-从示例可以看到，基于nicegui的python程序寥寥三行代码，除去导入语句和必不可少的`ui.run`，主体只有一行代码，就能实现一个完整的交互过程，足见nicegui的强大、简洁。后续教程中很多例子都可以做到几行代码实现不错的效果，这也是nicegui大受欢迎的原因。
+从示例可以看到，基于NiceGUI的Python程序寥寥三行代码，除去导入语句和必不可少的`ui.run`，主体只有一行代码，就能实现一个完整的交互过程，足见NiceGUI的强大、简洁。后续教程中很多例子都可以做到几行代码实现不错的效果，这也是NiceGUI大受欢迎的原因。
 
-### 2.2 nicegui的基本结构
+### 2.2 NiceGUI的基本结构
 
 #### 2.2.1 图形界面的基础概念
 
-在正式学习nicegui之前，需要先对图形界面有个基础的理解。
+在正式学习NiceGUI之前，需要先对图形界面有个基础的理解。
 
 一般来说，搭建图形界面需要理解三个概念：控件、布局、交互。
 
@@ -255,19 +255,19 @@ ui.run(native=True)
 
 此外，基于图形界面框架的特性，后端的处理逻辑以及数据的传递也是交互的一部分。在函数内，对于控件的控制，如何做到符合要求，毕竟有的框架、编程语言不支持没有定义或者声明函数就调用，而有的语言不支持声明函数。如果需要让控件显示的文本与另一个控件的文本一致，如何处理数据同步过程也需要技巧。
 
-#### 2.2.2 nicegui与基础概念的对应
+#### 2.2.2 NiceGUI与基础概念的对应
 
-对图形界面有基础的理解之后，下面就可以根据nicegui与基础概念的对应，进一步理解nicegui的设计理念。
+对图形界面有基础的理解之后，下面就可以根据NiceGUI与基础概念的对应，进一步理解NiceGUI的设计理念。
 
-在`Hello World!`示例中，使用了导入语句`from nicegui import ui`导入了`ui`，顾名思义，ui就是用户界面，这也是nicegui调用控件的模块，也可以调用布局。具体的控件和布局用法可以参考下一节[nicegui中不得不学的功能](#2.3 nicegui中不得不学的功能)，下一节将选取一些nicegui中常用、不好理解的功能重点讲解。
+在`Hello World!`示例中，使用了导入语句`from nicegui import ui`导入了`ui`，顾名思义，ui就是用户界面，这也是NiceGUI调用控件的模块，也可以调用布局。具体的控件和布局用法可以参考下一节[NiceGUI中不得不学的功能](#2.3 NiceGUI中不得不学的功能)，下一节将选取一些NiceGUI中常用、不好理解的功能重点讲解。
 
-因为nicegui是基于Quasar这个Web框架做的python调用绑定，因此，nicegui的交互部分，很大程度与Web结合。在Web设计中，基于CSS实现的美化效果，基于JavaScript的event做的事件响应，都能在nicegui中看到。所以，如果用好nicegui，对Web三件套HTML、CSS、JavaScript的学习不可避免。此外，因为nicegui与Quasar这个Web框架的深度集成的关系，Quasar中的属性、slot、事件也需要掌握，才能让交互设计更加得心应手。
+因为NiceGUI是基于Quasar这个Web框架做的Python调用绑定，因此，NiceGUI的交互部分，很大程度与Web结合。在Web设计中，基于CSS实现的美化效果，基于JavaScript的event做的事件响应，都能在NiceGUI中看到。所以，如果用好NiceGUI，对Web三件套HTML、CSS、JavaScript的学习不可避免。此外，因为NiceGUI与Quasar这个Web框架的深度集成的关系，Quasar中的属性、slot、事件也需要掌握，才能让交互设计更加得心应手。
 
 关于美化，下一节中的[外观美化](#2.3.7 外观美化)将会详细介绍，也可以查阅对应的官方文档。事件的学习，可以参阅下一节的[事件和执行](#2.3.8 事件和执行)，也可以查阅对应的官方文档。
 
-### 2.3 nicegui中不得不学的功能
+### 2.3 NiceGUI中不得不学的功能
 
-以下是官网文档对于nicegui提供的功能做了大致的划分，本教程将会对每个部分中不好掌握、需要重点学习的控件、功能进行剖析：
+以下是官网文档对于NiceGUI提供的功能做了大致的划分，本教程将会对每个部分中不好掌握、需要重点学习的控件、功能进行剖析：
 
 1.   文本控件：https://nicegui.io/documentation/section_text_elements
 
@@ -328,7 +328,7 @@ ui.run(native=True)
 
 ##### 2.3.1.3 `ui.element`
 
-通用元素，也是nicegui大部分界面控件的基类。很多控件都是通过继承这个类来调用自定义标签、JavaScript代码实现。通过继承实现自定义控件、修改默认风格属于高级用法，这里只说基本用法。
+通用元素，也是NiceGUI大部分界面控件的基类。很多控件都是通过继承这个类来调用自定义标签、JavaScript代码实现。通过继承实现自定义控件、修改默认风格属于高级用法，这里只说基本用法。
 
 `tag`参数，字符串类型，默认为`'div'`，表示生成的元素用什么HTML标签，实际使用时可以根据需要修改为其他HTML标签或者Quasar标签。代码如下：
 
@@ -394,7 +394,7 @@ ui.run(native=True)
 
 ##### 2.3.2.1 `ui.button`
 
-按钮作是网页交互设计中最常见的基本元素，在移动互联网没有普及之前，使用鼠标点击为主要交互方式的时代，除了用于跳转网页的超链接，按钮就是网页中用的最多的可交互元素。在nicegui中，按钮控件可以传入位置参数`text`，关键字参数`on_click`、`color`和`icon`。
+按钮作是网页交互设计中最常见的基本元素，在移动互联网没有普及之前，使用鼠标点击为主要交互方式的时代，除了用于跳转网页的超链接，按钮就是网页中用的最多的可交互元素。在NiceGUI中，按钮控件可以传入位置参数`text`，关键字参数`on_click`、`color`和`icon`。
 
 以下代码就是一个定义了基本交互的按钮，点击会弹出一个通知提示：
 
@@ -458,7 +458,7 @@ ui.run(native=True)
 
 ##### 2.3.2.2 `ui.input`
 
-输入框，大概是网页中仅次于按钮和超链接，用得最多的控件。HTML中输入框的变体很多，在nicegui中，输入框的参数也很多，基于输入框扩展的控件也多，使用输入框的逻辑设计、注意事项一样很多。不过，在这一节，针对输入框的学习并不会那么深入，只要能掌握常用的参数和基础的方法，那些疑难点会放到进阶和需要的时候细讲，以免一时不好理解而记混。
+输入框，大概是网页中仅次于按钮和超链接，用得最多的控件。HTML中输入框的变体很多，在NiceGUI中，输入框的参数也很多，基于输入框扩展的控件也多，使用输入框的逻辑设计、注意事项一样很多。不过，在这一节，针对输入框的学习并不会那么深入，只要能掌握常用的参数和基础的方法，那些疑难点会放到进阶和需要的时候细讲，以免一时不好理解而记混。
 
 以下代码定义了一个名字输入框和密码输入框，并在输入名字的时候，自动弹出通知显示名字和密码：
 
@@ -475,7 +475,7 @@ ui.run(native=True)
 
 `label`参数，字符串类型，直译的话是标签，表示显示在输入框上方的文本，但不是输入的文本，如果输入的内容是空的，点击输入的之前会显示在输入框内，点击之后会移动到输入框上方。
 
-`value`参数，字符串类型，表示输入框内的内容，也就是输入框的值。对于后续介绍的以及其他支持交互输入的控件，都会有这么一个参数、属性、相关方法，来设置控件的值，这一点上，nicegui的设计倒是很统一。
+`value`参数，字符串类型，表示输入框内的内容，也就是输入框的值。对于后续介绍的以及其他支持交互输入的控件，都会有这么一个参数、属性、相关方法，来设置控件的值，这一点上，NiceGUI的设计倒是很统一。
 
 `on_change`参数，可调用类型，表示输入框的值变化时执行的函数。
 
@@ -524,7 +524,7 @@ ui.run(native=True)
 
 ##### 2.3.3.1 `ui.image`和`ui.interactive_image`
 
-点开一个网页，最抓人眼球的是什么内容？没错，是图片。既然用nicegui设计网页，没有图片元素怎么行？在nicegui中，有两种显示图片的控件：`ui.image`和`ui.interactive_image`。前者可以简单理解为显示图片的简单标签，后者是基于前者扩展了很多交互功能的plus版本。两者的第一个参数都是`source`，支持字符串类型的本地图像路径、网络图像路径，或者base64编码的图像本身，这个没什么难点，这里不做细讲，接下来要重点讲的是`ui.interactive_image`的其他参数的用法，因为这个控件有时候比看似简单的`ui.image`更加好用。
+点开一个网页，最抓人眼球的是什么内容？没错，是图片。既然用NiceGUI设计网页，没有图片元素怎么行？在NiceGUI中，有两种显示图片的控件：`ui.image`和`ui.interactive_image`。前者可以简单理解为显示图片的简单标签，后者是基于前者扩展了很多交互功能的plus版本。两者的第一个参数都是`source`，支持字符串类型的本地图像路径、网络图像路径，或者base64编码的图像本身，这个没什么难点，这里不做细讲，接下来要重点讲的是`ui.interactive_image`的其他参数的用法，因为这个控件有时候比看似简单的`ui.image`更加好用。
 
 先看一段代码：
 
@@ -878,7 +878,7 @@ ui.run(native=True)
 
 盖房子不是把砖简单地垒砌，做图形界面一样不是简单地添加控件，美观、简洁的布局除了让图形界面整体风格更加整齐，也让用户使用时更加方便、快捷，这才是图形界面的意义。在掌握了一定数量的常用控件之后，在继续深入学习其他控件之前，是时候了解一下NiceGUI支持的布局控件了。
 
-在NiceGUI中，有一个概念非常重要，那就是上下文。前面代码中使用的`with`——python的上下文管理器关键字，在NiceGUI中，就是进入某个控件的上下文，也就意味着后续添加控件的操作都是在这个控件的上下文内。直观感受的话，就是后续添加的控件都在这个控件内部。
+在NiceGUI中，有一个概念非常重要，那就是上下文。前面代码中使用的`with`——Python的上下文管理器关键字，在NiceGUI中，就是进入某个控件的上下文，也就意味着后续添加控件的操作都是在这个控件的上下文内。直观感受的话，就是后续添加的控件都在这个控件内部。
 
 以代码为例：
 
@@ -960,9 +960,9 @@ ui.run(native=True)
 
 <img src="nicegui.assets/ui_space.png" alt="ui_space" style="zoom:67%;" />
 
-##### 2.3.4.3 ui.separator
+##### 2.3.4.3 `ui.separator`
 
-用ui.space可以填充空白，但是有读者担心，目的是达到了，能不能画条线在末尾的控件前，用来区分一下这个位置的控件与其他位置控件的区别？没问题，ui.separator就是用来干这个的，不管是水平还是垂直，都可以。代码如下：
+用`ui.space`可以填充空白，但是有读者担心，目的是达到了，能不能画条线在末尾的控件前，用来区分一下这个位置的控件与其他位置控件的区别？没问题，`ui.separator`就是用来干这个的，不管是水平还是垂直，都可以。代码如下：
 
 ```python3
 from nicegui import ui
@@ -982,9 +982,9 @@ ui.run(native=True)
 
 ![ui_separator](nicegui.assets/ui_separator.png)
 
-##### 2.3.4.4 ui.menu和ui.context_menu
+##### 2.3.4.4 `ui.menu`和`ui.context_menu`
 
-有用过图形程序的读者看到前面的内容，肯定联想到，ui.separator好像菜单里面用来分割退出功能与其他功能的分割符，NiceGUI有没有菜单？当然也有，普通的点击菜单ui.menu和右键菜单ui.context_menu。两个菜单的语法一致，只是触发方式不同。菜单的内部一般使用ui.menu_item当菜单项，一般可以当做按钮处理，因为它们的触发操作都是传给点击事件。
+有用过图形程序的读者看到前面的内容，肯定联想到，`ui.separator`好像菜单里面用来分割退出功能与其他功能的分割符，NiceGUI有没有菜单？当然也有，普通的点击菜单`ui.menu`和右键菜单`ui.context_menu`。两个菜单的语法一致，只是触发方式不同。菜单的内部一般使用`ui.menu_item`当菜单项，一般可以当做按钮处理，因为它们的触发操作都是传给点击事件。
 
 下面的代码给'menu'按钮创建点击菜单和右键菜单，可以分别用鼠标左击和右击查看弹出的菜单的异同，除了菜单内文字为了作出区分专门修改了之外，菜单的布局和样式一模一样，因此两种菜单可以很方便复用相同的内容：
 
@@ -1014,9 +1014,9 @@ ui.run(native=True)
 
 <img src="nicegui.assets/ui_menu.png" alt="ui_menu" style="zoom:67%;" />
 
-##### 2.3.4.5 ui.tooltip
+##### 2.3.4.5 `ui.tooltip`（2025.01.08更新）
 
-ui.tooltip可以给控件添加一种光标悬停之后弹出的提示。一般是在给定控件的上下文添加，也可以用给定控件的`tooltip`方法来添加，代码如下：
+`ui.tooltip`可以给控件添加一种光标悬停之后弹出的提示。一般是在给定控件的上下文添加，也可以用给定控件的`tooltip`方法来添加，代码如下：
 
 ```python3
 from nicegui import ui
@@ -1030,7 +1030,7 @@ button.tooltip('I like this')
 ui.run(native=True)
 ```
 
-但是要注意，如果想要美化ui.tooltip，只能给上下文添加的ui.tooltip美化，如果是用`tooltip`方法添加的，则不能美化。因为`tooltip`方法返回的是控件本身，而不是tooltip。可以看到，下面代码的`tooltip`方法后添加的美化，在按钮本身生效了，实际上按钮的tooltip并没有改变颜色：
+但是要注意，如果想要美化`ui.tooltip`，只能给上下文添加的`ui.tooltip`美化，如果是用`tooltip`方法添加的，则不能美化。因为`tooltip`方法返回的是控件本身，而不是`tooltip`。可以看到，下面代码的`tooltip`方法后添加的美化，在按钮本身生效了，实际上按钮的`tooltip`并没有改变颜色：
 
 ```python3
 from nicegui import ui
@@ -1046,9 +1046,43 @@ ui.run(native=True)
 
 ![ui_tooltip](nicegui.assets/ui_tooltip.png)
 
-##### 2.3.4.6 ui.notify
+如果想要获取到控件`tooltip`方法设置的`tooltip`，可以遍历控件来获取控件内部的其他控件，再判断控件是不是需要的类型：
 
-通知提示控件，在前面[ui.button](#2.3.2.1 ui.button)中已经用过，虽然简单传递一个字符串参数的用法很好用，但是到这一节结束都不说一下的话，实在是对不起读者。毕竟，这个控件的参数可不止看上去那么少，隐藏在其中的参数也很有用。
+```python3
+from nicegui import ui
+
+with ui.button(icon='thumb_up'):
+    ui.tooltip('I like this').classes('bg-green')
+
+button = ui.button(icon='thumb_up')
+button.tooltip('I like this')
+for i in button:
+    if isinstance(i,ui.tooltip):
+        i.classes('bg-green')
+
+ui.run(native=True)
+```
+
+如果使用后续会学到的`ElementFilter`方法，也可以简单快捷地设置控件内部的`tooltip`：
+
+```python3
+from nicegui import ui,ElementFilter
+
+with ui.button(icon='thumb_up'):
+    ui.tooltip('I like this').classes('bg-green')
+
+button = ui.button(icon='thumb_up')
+button.tooltip('I like this')
+
+with button:
+    ElementFilter(kind=ui.tooltip,local_scope=True).classes('bg-green')
+
+ui.run(native=True)
+```
+
+##### 2.3.4.6 `ui.notify`
+
+通知提示控件，在前面[`ui.button`](#2.3.2.1 `ui.button`)中已经用过，虽然简单传递一个字符串参数的用法很好用，但是到这一节结束都不说一下的话，实在是对不起读者。毕竟，这个控件的参数可不止看上去那么少，隐藏在其中的参数也很有用。
 
 代码如下：
 
@@ -1098,11 +1132,11 @@ ui.run(native=True)
 
 #### 2.3.5 属性绑定和数据控件
 
-##### 2.3.5.1 binding
+##### 2.3.5.1 `binding`
 
-在[ui.slider和ui.knob](#2.3.2.3 ui.slider和ui.knob)一节中，为了让ui.slider和ui.knob联动，使用了`bind_value`方法来实现，现在是时候详细了解了。
+在[`ui.slider`和`ui.knob`](#2.3.2.3 `ui.slider`和`ui.knob`)一节中，为了让ui.slider和ui.knob联动，使用了`bind_value`方法来实现，现在是时候详细了解了。
 
-对于大部分控件来说，都有几个可以bind（绑定）的属性，以ui.button为例，有`icon`、`text`、`visibility`、`enabled`几个属性可以绑定。在下面的代码中，就将ui.button这四个属性绑定到ui.select上，可以手动选择每个ui.select的值，让按钮实时发生变化：
+对于大部分控件来说，都有几个可以bind（绑定）的属性，以`ui.button`为例，有`icon`、`text`、`visibility`、`enabled`几个属性可以绑定。在下面的代码中，就将`ui.button`这四个属性绑定到ui.select上，可以手动选择每个`ui.select`的值，让按钮实时发生变化：
 
 ```python3
 from nicegui import ui
@@ -1126,7 +1160,7 @@ ui.run(native=True)
 
 `target_object`参数，任意对象，是被绑定的对象。
 
-`target_name`参数，字符串类型，是被绑定对象的属性名，以被绑定的ui.select为例，它的值就对应`value`属性。
+`target_name`参数，字符串类型，是被绑定对象的属性名，以被绑定的`ui.select`为例，它的值就对应`value`属性。
 
 `forward`参数和`backward`参数，可调用类型，是正向绑定和反向绑定的转换函数。因为绑定是双向的，除了在目标值改变的时候同步过来，本身的值改变还要同步过去，是两个方向的操作。两个参数的默认值都是`lambda x:x`，意思是双向传递过程不改变值，如果有需要，可以修改这两个参数，在传递的时候实现数据的转换和映射的改变。
 
@@ -1154,13 +1188,13 @@ ui.run(native=True)
 
 ![ui_binding2](nicegui.assets/ui_binding2.gif)
 
-代码中做了两个反向绑定和一个正向绑定到ui.button。实际操作的话就会发现，因为两个反向绑定的控件都是单向绑定，任意操作其中一个反向绑定的控件，都只会影响到ui.button和正向绑定的控件，不会影响到另一个反向绑定的控件。对于正向绑定的控件，只有ui.button的`text`发生变化之后，正向绑定的控件才会发生变化，只是操作正向绑定的控件，ui.button和两个反向绑定的控件不会受影响。
+代码中做了两个反向绑定和一个正向绑定到`ui.button`。实际操作的话就会发现，因为两个反向绑定的控件都是单向绑定，任意操作其中一个反向绑定的控件，都只会影响到`ui.button`和正向绑定的控件，不会影响到另一个反向绑定的控件。对于正向绑定的控件，只有`ui.button`的`text`发生变化之后，正向绑定的控件才会发生变化，只是操作正向绑定的控件，`ui.button`和两个反向绑定的控件不会受影响。
 
-##### 2.3.5.2 ui.linear_progress和ui.circular_progress
+##### 2.3.5.2 `ui.linear_progress`和`ui.circular_progress`
 
-前面[ui.slider和ui.knob](#2.3.2.3 ui.slider和ui.knob)介绍过滑动条和旋钮，肯定有聪明的读者想用这两个控件做条形进度条和环形进度条，但是，这一节的标题已经表明，有专门的进度条控件，使用滑动条和旋钮充当进度条就未免有些画蛇添足。更关键的是，滑动条和旋钮接受用户输入，如果想避免用户输入影响数据展示，还要将控件禁用，具体样式又要做诸多调整，很不方便。然而，进度条控件没有这些弊端，使用起来更加简单。显然，这一节要介绍的进度条控件更适合展示进度。
+前面[`ui.slider`和`ui.knob`](#2.3.2.3 `ui.slider`和`ui.knob`)介绍过滑动条和旋钮，肯定有聪明的读者想用这两个控件做条形进度条和环形进度条，但是，这一节的标题已经表明，有专门的进度条控件，使用滑动条和旋钮充当进度条就未免有些画蛇添足。更关键的是，滑动条和旋钮接受用户输入，如果想避免用户输入影响数据展示，还要将控件禁用，具体样式又要做诸多调整，很不方便。然而，进度条控件没有这些弊端，使用起来更加简单。显然，这一节要介绍的进度条控件更适合展示进度。
 
-ui.linear_progress和ui.circular_progress分别是线性进度条和环形进度条，样子看上去就像滑动条和旋钮，但与滑动条和旋钮不同，这两个控件不支持交互输入，只接受数据输入，所以，要想实现简单的交互演示，需要用到上一节的bind方法，这里用的是`bind_value_from`。当然，如果有其他控件作为该控件的下游，还可以使用`bind_value_to`串联下去。
+`ui.linear_progress`和`ui.circular_progress`分别是线性进度条和环形进度条，样子看上去就像滑动条和旋钮，但与滑动条和旋钮不同，这两个控件不支持交互输入，只接受数据输入，所以，要想实现简单的交互演示，需要用到上一节的bind方法，这里用的是`bind_value_from`。当然，如果有其他控件作为该控件的下游，还可以使用`bind_value_to`串联下去。
 
 ```python3
 from nicegui import ui
@@ -1174,7 +1208,7 @@ ui.run(native=True)
 
 ![ui_progress](nicegui.assets/ui_progress.gif)
 
-##### 2.3.5.3 ui.spinner
+##### 2.3.5.3 `ui.spinner`
 
 spinner直译的话是陀螺，在实际使用中，其实是加载中常见的动画图标，这里就称之为加载动画控件。
 
@@ -1190,9 +1224,9 @@ ui.run(native=True)
 
 ![ui_spinner](nicegui.assets/ui_spinner.png)
 
-ui.spinner有`type`、`size`、`color`、`thickness`四个参数，分别是字符串类型的动画类型、字符串类型的整体尺寸大小、字符串类型的颜色和浮点类型的厚度（这个只有`type`为`default`时生效）。
+`ui.spinner`有`type`、`size`、`color`、`thickness`四个参数，分别是字符串类型的动画类型、字符串类型的整体尺寸大小、字符串类型的颜色和浮点类型的厚度（这个只有`type`为`default`时生效）。
 
-下面的代码展示了所有动画类型的ui.spinner，读者可以根据需要选择合适的ui.spinner：
+下面的代码展示了所有动画类型的`ui.spinner`，读者可以根据需要选择合适的`ui.spinner`：
 
 ```python3
 from nicegui import ui
@@ -1213,9 +1247,9 @@ ui.run(native=True)
 
 ![ui_spinner](nicegui.assets/ui_spinner.gif)
 
-##### 2.3.5.4 ui.code
+##### 2.3.5.4 `ui.code`
 
-如果想要在网页上显示有语法高亮的代码块，除了截图之外，惯用的做法是将代码放到代码块里。在NiceGUI中，ui.code就是用来展示代码的。ui.code有两个字符串参数，`content`参数是代码主体，`language`参数是代码的语言类型。
+如果想要在网页上显示有语法高亮的代码块，除了截图之外，惯用的做法是将代码放到代码块里。在NiceGUI中，`ui.code`就是用来展示代码的。`ui.code`有两个字符串参数，`content`参数是代码主体，`language`参数是代码的语言类型。
 
 ```python3
 from nicegui import ui
@@ -1234,13 +1268,13 @@ ui.run(native=True)
 
 ![ui_code](nicegui.assets/ui_code.png)
 
-用于数据展示的控件还有很多，比如：表格ui.table，树形图ui.tree，基于AG Grid的ui.aggrid，用于绘制图表ui.echart、ui.highchart、ui.pyplot、ui.line_plot、ui.plotly，展示3D模型的ui.scene等。因为用法稍微有点复杂，有能力的读者可以自己了解或者等基础学完之后学习后续的进阶教程，这里就不做讲解了。
+用于数据展示的控件还有很多，比如：表格`ui.table`，树形图`ui.tree`，基于AG Grid的`ui.aggrid`，用于绘制图表`ui.echart`、`ui.highchart`、`ui.pyplot`、`ui.line_plot`、`ui.plotly`，展示3D模型的`ui.scene`等。因为用法稍微有点复杂，有能力的读者可以自己了解或者等基础学完之后学习后续的进阶教程，这里就不做讲解了。
 
 #### 2.3.6 外观美化
 
-哪怕控件的默认样式好看，总有人觉得厌烦，调整颜色、大小、排列方式，或者一点小小的位移，都能让人眼前一亮。可是，对于前端来说的改变很小，需要涉及到的经验、代码很多，不去深入学习的话似乎很难达到效果。好在有NiceGUI，它的前端样式可以使用tailwindcss，提前定义的一系列样式省去不少麻烦。当然，它也提供了多种自定义的接口，也没有因为降低难度而限制了前端的自由。
+哪怕控件的默认样式好看，总有人觉得厌烦，调整颜色、大小、排列方式，或者一点小小的位移，都能让人眼前一亮。可是，对于前端来说的改变很小，需要涉及到的经验、代码很多，不去深入学习的话似乎很难达到效果。好在有NiceGUI，它的前端样式可以使用TailWindCSS，提前定义的一系列样式省去不少麻烦。当然，它也提供了多种自定义的接口，也没有因为降低难度而限制了前端的自由。
 
-##### 2.3.6.1 需要记住具体名字的props、classes、style方法
+##### 2.3.6.1 需要记住具体名字的`props`、`classes`、`style`方法
 
 在掌握便利的工具之前，先辛苦一下，学点需要基础知识、但以后会很有用的方法。
 
@@ -1262,15 +1296,15 @@ ui.run(native=True)
 
 `props`方法，设置的是HTML标签的属性，对于NiceGUI基于的Quasar来说，标签属性有不少是决定显示效果的，因此，在NiceGUI中，可以用这个方法设置对应底层组件的属性。就代码案例而言，具体属性名可以参考https://quasar.dev/vue-components/button ，属性值参考 https://quasar.dev/style/sass-scss-variables 。
 
-`classes`方法，设置的是HTML标签的类（class）名，NiceGUI支持tailwindcss，因此，`classes`方法可以使用tailwindcss预定义的类，也可以使用自定义的CSS类。就代码案例而言，具体类名可以参考https://tailwindcss.com/docs/background-color  。
+`classes`方法，设置的是HTML标签的类（class）名，NiceGUI支持TailWindCSS，因此，`classes`方法可以使用TailWindCSS预定义的类，也可以使用自定义的CSS类。就代码案例而言，具体类名可以参考https://tailwindcss.com/docs/background-color  。
 
 `style`方法，设置的是HTML标签的CSS属性，可以直接给组件设置CSS属性，如果有一定前端基础的话，可以使用该方法充分自定义，没有相关基础也没关系，上面的两个方法提供了丰富的预定义功能，学习难度也不高。就代码案例而言，具体语法可以参考 https://developer.mozilla.org/en-US/docs/Web/CSS/background-color 。
 
-##### 2.3.6.2 好记一点的tailwindcss属性和Tailwind对象
+##### 2.3.6.2 好记一点的`tailwindcss`属性和`Tailwind`对象
 
-tailwindcss官网提供了搜索功能，但总归需要一定的时间学习，更别说网络不好或者没网的时候，没法打开官网搜索。当然，也有方法自托管tailwindcss的文档，但有一定难度，也不符合NiceGUI的宗旨。
+TailWindCSS官网提供了搜索功能，但总归需要一定的时间学习，更别说网络不好或者没网的时候，没法打开官网搜索。当然，也有方法自托管TailWindCSS的文档，但有一定难度，也不符合NiceGUI的宗旨。
 
-因此，NiceGUI后续推出了tailwindcss属性和Tailwind对象。无需死记硬背tailwindcss，也不需要反复查询官网，直接使用`tailwindcss`属性或者使用`Tailwind`对象，会有自动提示，只要有一点英语基础，很容易找到对应的tailwindcss类名。
+因此，NiceGUI后续推出了`tailwindcss`属性和`Tailwind`对象。无需死记硬背TailWindCSS，也不需要反复查询官网，直接使用`tailwindcss`属性或者使用`Tailwind`对象，会有自动提示，只要有一点英语基础，很容易找到对应的TailWindCSS类名。
 
 比如：
 
@@ -1296,11 +1330,11 @@ ui.run(native=True)
 
 在开发工具中调用控件的`tailwindcss`属性或者创建` Tailwind()`对象之后，再输入`.`，就会弹出子方法提示，选择对应的子方法之后，再输入引号，会进一步弹出参数的提示。
 
-##### 2.3.6.3 暗黑模式ui.dark_mode
+##### 2.3.6.3 暗黑模式`ui.dark_mode`
 
-现在很多网站支持暗黑模式，方便访问者光线不佳时浏览网页，让网页没那么刺眼。NiceGUI中，也有一个控件可以快速切换暗黑模式，实现同样的效果，那就是ui.dark_mode。
+现在很多网站支持暗黑模式，方便访问者光线不佳时浏览网页，让网页没那么刺眼。NiceGUI中，也有一个控件可以快速切换暗黑模式，实现同样的效果，那就是`ui.dark_mode`。
 
-以下代码用ui.dark_mode创建了一个暗黑模式的控件，默认值为`False`，并且创建了一个模式切换的响应函数，会在模式切换时弹出通知，通过点击下方的两个按钮，可以直接启用、禁用暗黑模式：
+以下代码用`ui.dark_mode`创建了一个暗黑模式的控件，默认值为`False`，并且创建了一个模式切换的响应函数，会在模式切换时弹出通知，通过点击下方的两个按钮，可以直接启用、禁用暗黑模式：
 
 ```python3
 from nicegui import ui
@@ -1313,11 +1347,11 @@ ui.button('Light', on_click=dark.disable)
 ui.run(native=True)
 ```
 
-##### 2.3.6.4 设置主题颜色ui.colors
+##### 2.3.6.4 设置主题颜色`ui.colors`
 
-前面讲了如何给单个控件设置颜色的方法，肯定有读者担心了，如果想要修改主题颜色，还需要每个控件修改一次或者添加一下主题类，会不会很麻烦？其实，这个操作也有简单的方法，ui.colors可以直接设置整个程序的主题颜色，直接影响所有控件。因为Quasar提供了一系列预先定义好的类名，这些名字用在NiceGUI的控件颜色中，通过ui.colors可以修改这些类名的具体值。类名可以参考https://quasar.dev/style/theme-builder 。
+前面讲了如何给单个控件设置颜色的方法，肯定有读者担心了，如果想要修改主题颜色，还需要每个控件修改一次或者添加一下主题类，会不会很麻烦？其实，这个操作也有简单的方法，`ui.colors`可以直接设置整个程序的主题颜色，直接影响所有控件。因为Quasar提供了一系列预先定义好的类名，这些名字用在NiceGUI的控件颜色中，通过`ui.colors`可以修改这些类名的具体值。类名可以参考https://quasar.dev/style/theme-builder 。
 
-以下面的代码为例，`primary`就是各个控件主要的颜色，通过ui.colors将`primary`修改为`#555`，上一节中的按钮默认颜色就变成灰色了：
+以下面的代码为例，`primary`就是各个控件主要的颜色，通过`ui.colors`将`primary`修改为`#555`，上一节中的按钮默认颜色就变成灰色了：
 
 ```python3
 from nicegui import ui
@@ -1351,7 +1385,7 @@ ui.run(native=True)
 
 ##### 2.3.7.1 通用事件
 
-大部分控件都有预定义事件监听，比如，ui.button的on_click点击事件监听，在传参或者调用方法时定义。除了这种已经定义的事件监听，每个控件还支持通过on方法创建任意事件监听，比如使用on方法创建点击事件监听，也可以创建鼠标进入、离开的事件监听。正如下面的代码所示：
+大部分控件都有预定义事件监听，比如，`ui.button`的`on_click`点击事件监听，在传参或者调用方法时定义。除了这种已经定义的事件监听，每个控件还支持通过`on`方法创建任意事件监听，比如使用`on`方法创建点击事件监听，也可以创建鼠标进入、离开的事件监听。正如下面的代码所示：
 
 ```python3
 from nicegui import ui
@@ -1364,9 +1398,9 @@ ui.button('D').on('mouseleave',lambda: ui.notify('You left the button D.'))
 ui.run(native=True)
 ```
 
-##### 2.3.7.2 常用事件app.on\_\*
+##### 2.3.7.2 常用事件`app.on_*`
 
-如果想要针对浏览器端的连接、关闭，服务器端的启动、关闭，添加事件监听，就要导入app模块。app.on_connect、app.on_disconnect可以监听浏览器端的连接、关闭；app.on_startup、app.on_shutdown可以监听服务器端的启动、关闭。代码如下：
+如果想要针对浏览器端的连接、关闭，服务器端的启动、关闭，添加事件监听，就要导入`app`模块。`app.on_connect`、`app.on_disconnect`可以监听浏览器端的连接、关闭；`app.on_startup`、`app.on_shutdown`可以监听服务器端的启动、关闭。代码如下：
 
 ```python3
 from nicegui import ui,app
@@ -1379,9 +1413,9 @@ app.on_disconnect(lambda :print('disconnected!'))
 ui.run(native=True)
 ```
 
-##### 2.3.7.3 定时器ui.timer和app.timer
+##### 2.3.7.3 定时器`ui.timer`和`app.timer`
 
-定时器可以根据给定的时间间隔，周期性执行指定函数。ui.timer有四个参数：浮点类型的时间间隔`interval`、可调用类型的执行操作`callback`、布尔类型的是否激活`active`、布尔类型的是否运行一次`once`。
+定时器可以根据给定的时间间隔，周期性执行指定函数。`ui.timer`有四个参数：浮点类型的时间间隔`interval`、可调用类型的执行操作`callback`、布尔类型的是否激活`active`、布尔类型的是否运行一次`once`。
 
 代码如下：
 
@@ -1395,7 +1429,7 @@ ui.run(native=True)
 
 以下的内容按理来说属于进阶部分，就算不学习，也能满足基础开发需要。但是官方将此部分内容与基础部分放在一起解释，为了方便有相关需求的读者学习，特地将该部分内容与基础合并，并且进阶部分也会同步增加。不理解、不需要此功能的读者可以暂时忽略，等学进阶部分时再学也可以。
 
-nicegui官方在2.9.0版本新增了app.timer定时器，虽然用法上和ui.timer一样，但其归属于app而不是ui，还是有所区别的。
+NiceGUI官方在2.9.0版本新增了`app.timer`定时器，虽然用法上和`ui.timer`一样，但其归属于`app`而不是`ui`，还是有所区别的。
 
 为了理解区别，需要先运行以下示例代码：
 
@@ -1426,11 +1460,11 @@ ui.run(native=True)
 
 ![app_timer_1](nicegui.assets/app_timer_1.gif)
 
-示例代码源于nicegui官方仓库的一个问题，这里稍微简化了一下。问题作者想要让按钮创建一个定时更新显示内容的定时器，然后用另一个按钮删掉创建定时器的按钮。就是这样听起来很简单的操作，结果在删掉按钮时，工作定时器好像被一并“删掉”了。导致删掉按钮之后，原本应该继续执行的显示更新操作随之停止了。
+示例代码源于NiceGUI官方仓库的一个问题，这里稍微简化了一下。问题作者想要让按钮创建一个定时更新显示内容的定时器，然后用另一个按钮删掉创建定时器的按钮。就是这样听起来很简单的操作，结果在删掉按钮时，工作定时器好像被一并“删掉”了。导致删掉按钮之后，原本应该继续执行的显示更新操作随之停止了。
 
 听起来很奇怪，像是一个问题，其实不是，一开始就没有必要让按钮创建定时器。定时器可以在按钮的响应函数之外创建，按钮只需启动（`activate`）、停止（`deactivate`）定时器即可。因为定时器（`ui.timer`）会自动关联创建定时器的UI组件，一般做法是在auto-index页创建定时器，定时器关联了auto-index页，而auto-index页一般不会被删掉（也不能删掉，会出问题），所以使用定时器不会出问题。如果是其他UI组件创建了定时器，删掉创建定时器的UI组件，同时会一并删掉定时器，这也就是问题的原因。
 
-上面的示例代码更换成常规用法也可以，解决方法也不难，不过，nicegui官方还是为此增加了一个独立于UI组件的定时器——app.timer，既是对此问题的解决方案，也是对后续有类似需求的功能实现。
+上面的示例代码更换成常规用法也可以，解决方法也不难，不过，NiceGUI官方还是为此增加了一个独立于UI组件的定时器——`app.timer`，既是对此问题的解决方案，也是对后续有类似需求的功能实现。
 
 那么，上面的代码在基本不动的前提下，只需将`ui.timer`换成`app.timer`即可：
 
@@ -1463,7 +1497,7 @@ ui.run(native=True)
 
 ##### 2.3.7.4 UI更新和可刷新方法`ui.refreshable`（2025.01.08更新）
 
-一般来说，当修改控件的属性时，nicegui会尝试更新控件的显示状态，比如标签的文本、输入框的内容、控件的`style`/`classes`/`props `属性等。当然，如果某些修改不会触发UI刷新，那就要调用控件的`update`方法来更新控件显示。如果需要更新的控件比较多，也可以使用`ui`的`update`方法，该方法可以传入多个控件，一次性完成每个控件的更新，不用重复调用每个控件`update`方法的代码。
+一般来说，当修改控件的属性时，NiceGUI会尝试更新控件的显示状态，比如标签的文本、输入框的内容、控件的`style`/`classes`/`props `属性等。当然，如果某些修改不会触发UI刷新，那就要调用控件的`update`方法来更新控件显示。如果需要更新的控件比较多，也可以使用`ui`的`update`方法，该方法可以传入多个控件，一次性完成每个控件的更新，不用重复调用每个控件`update`方法的代码。
 
 以下面的代码为例，如果不调用`update`方法，加载动画控件不会因为显示为新的大小：
 
@@ -1508,7 +1542,7 @@ ui.button('A+1',on_click=clicked)
 ui.run(native=True)
 ```
 
-定义了一个字符串列表`a`，用于存储字符串。函数`row_ui`会根据a的内容创建相同数目的ui.label。然而，按钮'A+1'要执行的函数里，会执行一次给`a`追加一个`'A'`，也就是说，每点一次按钮，`a`里的`'A'`就会多一个。可是，即便函数`clicked`里已经添加了`row.update()`来刷新`ui.row`，每次点击按钮，屏幕上的`ui.label`并不会增加。
+定义了一个字符串列表`a`，用于存储字符串。函数`row_ui`会根据a的内容创建相同数目的`ui.label`。然而，按钮'A+1'要执行的函数里，会执行一次给`a`追加一个`'A'`，也就是说，每点一次按钮，`a`里的`'A'`就会多一个。可是，即便函数`clicked`里已经添加了`row.update()`来刷新`ui.row`，每次点击按钮，屏幕上的`ui.label`并不会增加。
 
 问题出在哪里？稍安勿躁，先修改一下代码，用`@ui.refreshable`装饰一下函数`row_ui`，然后将函数`clicked`里的`row.update()`换成`row_ui.refresh()`，再看看按钮点击的效果：
 
@@ -1542,11 +1576,11 @@ ui.run(native=True)
 
 一般来说，为了快捷创建有规律的控件而使用迭代方法，需要根据数据变化刷新显示，都要用`ui.refreshable`来重新绘制。当然，没有控件数量变化的时候也有需要使用`ui.refreshable`来重新绘制的情况，读者在遇到时见机行事。毕竟重新绘制比触发刷新的性能开销大，非必要的情况，还是不要制造需要重新绘制的情况。
 
-##### 2.3.7.5 运行JavaScript代码ui.run_javascript
+##### 2.3.7.5 运行JavaScript代码`ui.run_javascript`
 
 NiceGUI既然是基于Web的UI，免不了与网页三剑客HTML、CSS、JavaScript打交道。前面提到过HTML的标签，也讲过了CSS的美化语法，JavaScript如何执行却没说过。现在，终于到了与JavaScript交互的时候。
 
-ui.run_javascript可以运行任意JavaScript代码，方便在Python无法处理的时候，补充使用JavaScript的方法。当然，JavaScript毕竟是一门设计时就很仓促的语言，时至今日，哪怕ES标准正在解决JavaScript留下的烂摊子，也避免不了JavaScript糟糕的历史包袱。对于各位读者来说，非必要还是别执行JavaScript代码，但是这个执行的方法，不能不会。
+`ui.run_javascript`可以运行任意JavaScript代码，方便在Python无法处理的时候，补充使用JavaScript的方法。当然，JavaScript毕竟是一门设计时就很仓促的语言，时至今日，哪怕ES标准正在解决JavaScript留下的烂摊子，也避免不了JavaScript糟糕的历史包袱。对于各位读者来说，非必要还是别执行JavaScript代码，但是这个执行的方法，不能不会。
 
 ```python3
 from nicegui import ui
@@ -1560,19 +1594,19 @@ ui.run(native=True)
 
 #### 2.3.8 网站页面
 
-##### 2.3.8.1 ui.page
+##### 2.3.8.1 `ui.page`
 
 在继续下面的内容前，各位需要了解一个NiceGUI的概念——page页面。前面讲了不少控件，想要访问这些控件组成的页面，通常直接访问弹出的native mode窗口，当然，也可以直接在浏览器里输入地址。
 
 但是，细心的读者就会发现，当用户打开多个浏览器页面访问这个地址或者多个用户打开同一地址的时候，任意一个页面进行交互，其他页面都会有反应，和印象中的网站页面不太一样，正常的网站页面不应该这样。
 
-没错，前面的控件其实都布局在auto-index的页面下，也就是网站的根目录，即网址后面只有一个斜杠或者没有斜杠的情况（http://127.0.0.1:8000/ 或者http://127.0.0.1:8000）。前面提到过一个概念叫上下文，这里想要快速理解页面的概念的话，还是要正确划分上下文关系，后面才能更好应用页面设计。
+没错，前面的控件其实都布局在auto-index的页面下，也就是网站的根目录，即网址后面只有一个斜杠或者没有斜杠的情况（`http://127.0.0.1:8000/` 或者`http://127.0.0.1:8000`）。前面提到过一个概念叫上下文，这里想要快速理解页面的概念的话，还是要正确划分上下文关系，后面才能更好应用页面设计。
 
-默认情况下，没有添加ui.page装饰器的话，整个程序内的控件都在auto-index的页面下；即使添加了ui.page装饰器，没有在装饰器修饰的函数的上下文内，也会自动划分到auto-index的页面。
+默认情况下，没有添加`ui.page`装饰器的话，整个程序内的控件都在auto-index的页面下；即使添加了`ui.page`装饰器，没有在装饰器修饰的函数的上下文内，也会自动划分到auto-index的页面。
 
-理解auto-index之后，现在，可以正式介绍ui.page了。
+理解auto-index之后，现在，可以正式介绍`ui.page`了。
 
-不同于auto-index的页面是多人共享，ui.page产生的页面是私有的，即每个人在打开的页面交互，不会影响其他人打开的页面。
+不同于auto-index的页面是多人共享，`ui.page`产生的页面是私有的，即每个人在打开的页面交互，不会影响其他人打开的页面。
 
 以下面的代码为例：
 
@@ -1590,23 +1624,23 @@ ui.link('private page', private_page)
 ui.run(port=8000)
 ```
 
-访问http://127.0.0.1:8000/时看到的uuid64和访问http://127.0.0.1:8000/private_page时看到的uuid64是不一样的，http://127.0.0.1:8000//private_page是ui.page产生的，属于私有页面，每次打开（可以尝试刷新）之后，`uuid4()`都会运行一次，因此uuid64会重新生成。而http://127.0.0.1:8000/下的uuid64是程序启动之后就生成了，`uuid4()`只在程序启动时运行一次，因此每次打开http://127.0.0.1:8000/显示的uuid64是一样的。如果想要http://127.0.0.1:8000/下的uuid64和http://127.0.0.1:8000/private_page一样，就要创建一个`path='/'`的ui.page。
+访问`http://127.0.0.1:8000/`时看到的uuid64和访问`http://127.0.0.1:8000/private_page`时看到的uuid是不一样的，`http://127.0.0.1:8000//private_page`是`ui.page`产生的，属于私有页面，每次打开（可以尝试刷新）之后，`uuid4()`都会运行一次，因此uuid会重新生成。而`http://127.0.0.1:8000/`下的uuid是程序启动之后就生成了，`uuid4()`只在程序启动时运行一次，因此每次打开`http://127.0.0.1:8000/`显示的uuid是一样的。如果想要`http://127.0.0.1:8000/`下的uuid和`http://127.0.0.1:8000/private_page`一样，就要创建一个`path='/'`的`ui.page`。
 
-创建ui.page的方法很简单，使用Python中的装饰器，在`@ui.page(path='/private_page',title='private_page')`的下一行定义一个函数，函数的内部就是ui.page的上下文。
+创建`ui.page`的方法很简单，使用Python中的装饰器，在`@ui.page(path='/private_page',title='private_page')`的下一行定义一个函数，函数的内部就是`ui.page`的上下文。
 
-ui.page默认有很多参数，这里只讲常用的`path`和`title`。
+`ui.page`默认有很多参数，这里只讲常用的`path`和`title`。
 
-`path`参数，字符串类型，表示这个ui.page对应的服务器地址，即http://127.0.0.1:8000后面的部分。
+`path`参数，字符串类型，表示这个`ui.page`对应的服务器地址，即`http://127.0.0.1:8000`后面的部分。
 
-`title`参数，字符串类型，表示这个ui.page的浏览器窗口标题。除了在定义ui.page时候设置标题外，还可以调用`ui.page_title(title='title')`来设置当前页的浏览器窗口标题。
+`title`参数，字符串类型，表示这个`ui.page`的浏览器窗口标题。除了在定义`ui.page`时候设置标题外，还可以调用`ui.page_title(title='title')`来设置当前页的浏览器窗口标题。
 
 ##### 2.3.8.2 页面布局
 
-尽管前面已经说过图形布局，这里还是有必要介绍一下页面布局。不同于图形布局能被嵌套在其他布局、控件内，页面布局的上一层只能是ui.page，或者说页面布局不受上层布局影响（专指ui.page_sticky，虽然放在图形布局下不报错，但图形布局并不会生效）。
+尽管前面已经说过图形布局，这里还是有必要介绍一下页面布局。不同于图形布局能被嵌套在其他布局、控件内，页面布局的上一层只能是`ui.page`，或者说页面布局不受上层布局影响（专指`ui.page_sticky`，虽然放在图形布局下不报错，但图形布局并不会生效）。
 
-ui.header和ui.footer：
+`ui.header`和`ui.footer`：
 
-标题和页脚，就是浮动在页面最上面和最下面的区域，就像报纸的页眉和页脚一样，不过这里使用的单词是header，所以称之为标题。这两个控件的代码参数只有一处差异，不过一般不怎么用。平时用的最多的还是相同的几个参数，这里只说布尔类型参数`value`，这个参数决定了这两个布局的显示状态，可以通过初始化传参来决定默认状态，也可以通过后续使用set_value修改这个值来显示、隐藏，使用set_visibility也能达到同样的效果，toggle可以自动切换显示、隐藏。
+标题和页脚，就是浮动在页面最上面和最下面的区域，就像报纸的页眉和页脚一样，不过这里使用的单词是header，所以称之为标题。这两个控件的代码参数只有一处差异，不过一般不怎么用。平时用的最多的还是相同的几个参数，这里只说布尔类型参数`value`，这个参数决定了这两个布局的显示状态，可以通过初始化传参来决定默认状态，也可以通过后续使用`set_value`修改这个值来显示、隐藏，使用`set_visibility`也能达到同样的效果，`toggle`可以自动切换显示、隐藏。
 
 ```python3
 from nicegui import ui
@@ -1624,9 +1658,9 @@ ui.run(port=8000)
 
 ![ui_header_footer](nicegui.assets/ui_header_footer.png)
 
-ui.left_drawer和ui.right_drawer：
+`ui.left_drawer`和`ui.right_drawer`：
 
-左右抽屉，其实这两个布局是基于ui.drawer的包装，呈现出来就是左右边栏。既然是基于同一控件的包装，参数自然是一样的。与标题和页脚一样，主要关注的还是参数`value`，含义一样是表示控件的显示、隐藏。
+左右抽屉，其实这两个布局是基于`ui.drawer`的包装，呈现出来就是左右边栏。既然是基于同一控件的包装，参数自然是一样的。与标题和页脚一样，主要关注的还是参数`value`，含义一样是表示控件的显示、隐藏。
 
 ```python3
 from nicegui import ui
@@ -1647,9 +1681,9 @@ ui.run(port=8000)
 
 <img src="nicegui.assets/ui_drawer.png" alt="ui_drawer" style="zoom: 50%;" />
 
-ui.page_sticky：
+`ui.page_sticky`：
 
-便签，这是从字面意义上看，实际作用也和便签类似，放在这个布局内的内容，会出现在侧边或者角落，就像贴在显示器的便签一样。ui.page_sticky的参数里，用得最多的就是字符串参数`position`位置，浮点类型参数`x_offset`和 `y_offset`XY方向的偏移。
+便签，这是从字面意义上看，实际作用也和便签类似，放在这个布局内的内容，会出现在侧边或者角落，就像贴在显示器的便签一样。`ui.page_sticky`的参数里，用得最多的是：字符串参数`position`表示位置，浮点类型参数`x_offset`和 `y_offset`表示XY方向的偏移。
 
 ```python3
 from nicegui import ui
@@ -1667,13 +1701,13 @@ ui.run(port=8000)
 
 ![ui_page_sticky](nicegui.assets/ui_page_sticky.png)
 
-##### 2.3.8.3 ui.navigate
+##### 2.3.8.3 `ui.navigate`
 
-有了ui.page之后，访问不同的地址代表不同的页面，可以使用之前的ui.link来创建指向不同页面的超链接。那么，有没有方法来跳转不同页面而不用明显地摆出超链接？
+有了`ui.page`之后，访问不同的地址代表不同的页面，可以使用之前的`ui.link`来创建指向不同页面的超链接。那么，有没有方法来跳转不同页面而不用明显地摆出超链接？
 
-也有，那就是这一节要说的ui.navigate。
+也有，那就是这一节要说的`ui.navigate`。
 
-ui.navigate提供了四个方法，分别是back后退、forward前进、reload重新载入、to跳转到。除了跳转到之外，其他方法都没有参数，跳转到的参数和ui.link一样，具体可以参考前面的介绍。
+`ui.navigate`提供了四个方法，分别是`back`后退、`forward`前进、`reload`重新载入、`to`跳转到。除了跳转到之外，其他方法都没有参数，跳转到的参数和`ui.link`一样，具体可以参考前面的介绍。
 
 ```python3
 from nicegui import ui
@@ -1688,28 +1722,31 @@ with ui.row():
 ui.run(port=8000)
 ```
 
-##### 2.3.8.4 ui.download
+##### 2.3.8.4 `ui.download`
 
-除了用ui.link提供链接让用户点击下载文件之外，还可以调用ui.download来触发下载。
+除了用`ui.link`提供链接让用户点击下载文件之外，还可以调用`ui.download`来触发下载。
 
-ui.download有三个参数，常用的是前两个字符串类型或者字节类型参数`src`来源，字符串类型参数`filename`文件名。
+`ui.download`有三个参数，常用的是前两个参数：字符串类型或者字节类型参数`src`来源，字符串类型参数`filename`文件名。
 
 ```python3
-from nicegui import ui
+from nicegui import ui,app
 
+app.native.settings['ALLOW_DOWNLOADS'] = True
 ui.button('Logo', on_click=lambda: ui.download(src='https://nicegui.io/logo.png',filename='logo.png',media_type=''))
 ui.button('Download', on_click=lambda: ui.download(src=b'Hello World',filename='hello.txt',media_type=''))
 
 ui.run(port=8000)
 ```
 
+因为`pywebview`默认禁止下载，在测试上面的代码时，需要设置`app.native.settings['ALLOW_DOWNLOADS']`为`True`来允许下载。
+
 #### 2.3.9 运行配置
 
-##### 2.3.9.1 ui.run
+##### 2.3.9.1 `ui.run`
 
-几乎每个例子都要用的ui.run有非常多的参数，可基础内容都快讲完也不说说参数的话，多少有点说不过去。接下来，针对ui.run里常用的几个参数说一下。
+几乎每个例子都要用的`ui.run`有非常多的参数，可基础内容都快讲完也不说说参数的话，多少有点说不过去。接下来，针对`ui.run`里常用的几个参数说一下。
 
-`host`参数，字符串类型，表示整个程序监听的ip，默认情况下是'0.0.0.0'，即监听全部可用的本机ip，如果是native mode下，这个值默认为'127.0.0.1'，即只监听本地ip。
+`host`参数，字符串类型，表示整个程序监听的ip，默认情况下是`'0.0.0.0'`，即监听全部可用的本机ip，如果是native mode下，这个值默认为`'127.0.0.1'`，即只监听本地ip。
 
 `port`参数，整数类型，表示程序监听的端口。
 
@@ -1717,7 +1754,7 @@ ui.run(port=8000)
 
 `show`参数，布尔类型，表示程序启动后是否自动唤起默认浏览器打开程序的地址，如果同时开启了native mode的话，这个参数会被强制禁用。
 
-`native`参数，布尔类型，表示是否启用本地窗口模式，即调用pywebview来显示NiceGUI程序，看上去就和桌面程序一样。
+`native`参数，布尔类型，表示是否启用本地窗口模式，即调用`pywebview`来显示NiceGUI程序，看上去就和桌面程序一样。
 
 `reload`参数，布尔类型，表示是否启用热重载。不知道各位读者有没有注意到，之前都没有设置这个参数，但是修改了程序并保存的话，保存都是很快就生效，不需要手动重启程序。没错，这个参数默认为`True`，即程序修改会触发程序自动重启，让界面修改即使体现，这一点倒是方便开发的时候调试界面。不过，这个参数在非开发过程中最好设置为`False`，以免频繁触发重启。
 
@@ -1745,11 +1782,11 @@ ui.run(native=True, window_size=(400, 300), fullscreen=False,title='main')
 
 有能力的读者肯定试过在浏览器窗口中启用开发者调试工具来调整界面效果。但是，在本地窗口中，虽然本质上也是浏览器，但想要调试界面效果的话，还要额外开个浏览器窗口，总觉得有些麻烦，没关系，本地窗口也是可以启用开发者工具的。将`app.native.start_args['debug']`设置为`True`，在启动本地窗口的同时，还会弹出一个开发者工具，和在普通浏览器里一样，方便同步调试界面。
 
-在前面介绍过ui.download，这个功能是程序化控制下载文件的。但是，有的读者可能遇到过在本地窗口下，这个功能好像失效了，以为是NiceGUI的bug。其实不然，这个是因为pywebview默认禁止下载，可以设置`app.native.settings['ALLOW_DOWNLOADS']`为`True`来允许下载。
+在前面介绍过`ui.download`，这个功能是程序化控制下载文件的。但是，有的读者可能遇到过在本地窗口下，这个功能好像失效了，以为是NiceGUI的bug。其实不然，这个是因为`pywebview`默认禁止下载，可以设置`app.native.settings['ALLOW_DOWNLOADS']`为`True`来允许下载。
 
-前面讲了禁用窗口大小调整的方法，但是，如果在这种情况，还想控制窗口大小的变化，或者在没有禁用的情况下自由控制窗口大小，有没有办法？有，使用 app.native.main_window.resize方法即可，参数就是窗口的宽度和高度。
+前面讲了禁用窗口大小调整的方法，但是，如果在这种情况，还想控制窗口大小的变化，或者在没有禁用的情况下自由控制窗口大小，有没有办法？有，使用`app.native.main_window.resize`方法即可，参数就是窗口的宽度和高度。
 
-在[ui.page](#2.3.8.1 ui.page)一节介绍过ui.page_title方法来设置窗口标题，有没有一种方法设置窗口标题但是只针对本地窗口有效？有，app.native.main_window.set_title方法只设置本地窗口标题，不会影响浏览器的窗口标题。其实，ui.page_title方法里默认调用了一次app.native.main_window.set_title方法，如果没有特殊需求，只用ui.page_title方法更简单。
+在[`ui.page`](#2.3.8.1 `ui.page`)一节介绍过`ui.page_title`方法来设置窗口标题，有没有一种方法设置窗口标题但是只针对本地窗口有效？有，`app.native.main_window.set_title`方法只设置本地窗口标题，不会影响浏览器的窗口标题。其实，`ui.page_title`方法里默认调用了一次`app.native.main_window.set_title`方法，如果没有特殊需求，只用`ui.page_title`方法更简单。
 
 ## 3 高阶技巧
 
@@ -1806,9 +1843,9 @@ ui.run(native=True)
 
 ![slot](nicegui.assets/slot.png)
 
-### 3.3 tailwindcss的技巧
+### 3.3 TailWindCSS的技巧
 
-不同于CSS定义中伪类在冒号之后来定义效果，在tailwindcss中，美化悬停（hover）和激活（active），需要放在冒号之前，冒号后紧随着要对状态应用的效果。比如，要实现标签背景颜色的悬停为红色、点击为黄色，代码如下：
+不同于CSS定义中伪类在冒号之后来定义效果，在TailWindCSS中，美化悬停（hover）和激活（active），需要放在冒号之前，冒号后紧随着要对状态应用的效果。比如，要实现标签背景颜色的悬停为红色、点击为黄色，代码如下：
 
 ```python3
 from nicegui import ui
@@ -1860,9 +1897,9 @@ ui.run(native=True)
 
 ### 3.4 自定义控件
 
-#### 3.4.1 通过继承nicegui现有控件来创建新控件
+#### 3.4.1 通过继承NiceGUI现有控件来创建新控件
 
-在python中，可以通过继承来扩展现有类的功能，这个操作对于nicegui同样适用。
+在Python中，可以通过继承来扩展现有类的功能，这个操作对于NiceGUI同样适用。
 
 如果想要基于button实现一个可以通过点击切换颜色的按钮，可以这样做：
 
@@ -1902,9 +1939,9 @@ ui.run(native=True)
 
 #### 3.4.2 使用Quasar的标签定义新控件
 
-如果想要实现的功能比较复杂，但是Quasar提供了nicegui没有实现的组件，还有一种简单的方法创建新控件。
+如果想要实现的功能比较复杂，但是Quasar提供了NiceGUI没有实现的组件，还有一种简单的方法创建新控件。
 
-Quasar有一个浮动功能按钮[Floating Action Button](https://quasar.dev/vue-components/floating-action-button#introduction)，但nicegui没有实现。浮动功能按钮在Quasar的使用代码是：
+Quasar有一个浮动功能按钮[Floating Action Button](https://quasar.dev/vue-components/floating-action-button#introduction)，但NiceGUI没有实现。浮动功能按钮在Quasar的使用代码是：
 
 ```html
 <q-fab color="green" icon="navigation" >
@@ -1914,7 +1951,7 @@ Quasar有一个浮动功能按钮[Floating Action Button](https://quasar.dev/vue
 </q-fab>
 ```
 
-对应地，将HTML标签嵌套关系转换为python代码，`q-fab`标签就变成了`ui.element('q-fab')`，代码如下：
+对应地，将HTML标签嵌套关系转换为Python代码，`q-fab`标签就变成了`ui.element('q-fab')`，代码如下：
 
 ```python3
 from nicegui import ui
@@ -1931,7 +1968,7 @@ ui.run(native=True)
 
 #### 3.4.3 使用VUE自定义新控件（2025.01.08更新）
 
-如果有VUE基础，可以结合VUE创建新的控件，在VUE中定义界面和部分交互，比在python中更自由。由于笔者不擅长VUE，以下来自[官方示例](https://github.com/zauberzeug/nicegui/tree/main/examples/custom_vue_component)的代码就不做完全详细的解释，只简单说一下思路。
+如果有VUE基础，可以结合VUE创建新的控件，在VUE中定义界面和部分交互，比在Python中更自由。由于笔者不擅长VUE，以下来自[官方示例](https://github.com/zauberzeug/nicegui/tree/main/examples/custom_vue_component)的代码就不做完全详细的解释，只简单说一下思路。
 
 `counter.js`内容为：
 
@@ -2292,7 +2329,7 @@ ui.teleport就是这样一个基于CSS选择器语法将任意控件传送至指
 
 ElementFilter和ui模块同级，使用`from nicegui import ElementFilter`来导入。
 
-ElementFilter的功能等于ui.query加ui.teleport，既能设置指定元素的样式，又能将控件传送到指定位置。但与ui.query和ui.teleport使用CSS选择器语法不同，ElementFilter的筛选方式更Pythonic，更直观，更契合python编程习惯。
+ElementFilter的功能等于ui.query加ui.teleport，既能设置指定元素的样式，又能将控件传送到指定位置。但与ui.query和ui.teleport使用CSS选择器语法不同，ElementFilter的筛选方式更pythonic，更直观，更契合Python编程习惯。
 
 以下代码是用于匹配的模板内容，以下面的代码为例，分别看看ElementFilter不同参数、方法的用途：
 
@@ -6409,7 +6446,7 @@ pdm add nicegui-highcharts
 
 ```bash
 pip install nicegui[highcharts]
-#或者下面这条，但需要确保已经安装了nicegui
+#或者下面这条，但需要确保已经安装了NiceGUI
 pip install nicegui-highcharts
 ```
 
@@ -7209,13 +7246,13 @@ ui.run(native=True)
 
 什么是异步？为什么要用异步？
 
-与异步相对的是同步，平常在python中定义、执行的函数，没有`async`关键字修饰，这种函数就是同步函数。同步函数的特点是，函数中所有执行的过程都是依次进行，哪怕有的操作比较费时，也要等待其执行完毕，才能响应新的代码。异步则不同，如果代码中有耗时的操作，可以使用`await`关键字标明耗时的操作，这样程序就不会一直等待这些操作的执行结果，可以在等待期间响应新的操作。而耗时的操作也会同时进行着，不会出现同步函数中卡死的情况。
+与异步相对的是同步，平常在Python中定义、执行的函数，没有`async`关键字修饰，这种函数就是同步函数。同步函数的特点是，函数中所有执行的过程都是依次进行，哪怕有的操作比较费时，也要等待其执行完毕，才能响应新的代码。异步则不同，如果代码中有耗时的操作，可以使用`await`关键字标明耗时的操作，这样程序就不会一直等待这些操作的执行结果，可以在等待期间响应新的操作。而耗时的操作也会同时进行着，不会出现同步函数中卡死的情况。
 
 从上面的区别可以看出，面对耗时较久或者不能立刻给出结果的操作，异步可以极大提升程序的处理效率，不容易进入卡死状态，让程序更高效。
 
 只是看文字说明没有直观的感受，那就看一下相似代码的同步、异步的效果。
 
-相信不少读者在初学python的时候学过这样的操作：使用`time.sleep`来模拟一些代码执行的过程。虽然python很慢，但实际执行的时候也不是执行几十秒，所以，使用`time.sleep`睡眠一段时间，可以让开发者明显感受到代码执行的过程，更方便调试代码。然而，在nicegui中，是绝对不能这样来模拟耗时操作的，比如下面示例中的操作：
+相信不少读者在初学Python的时候学过这样的操作：使用`time.sleep`来模拟一些代码执行的过程。虽然Python很慢，但实际执行的时候也不是执行几十秒，所以，使用`time.sleep`睡眠一段时间，可以让开发者明显感受到代码执行的过程，更方便调试代码。然而，在NiceGUI中，是绝对不能这样来模拟耗时操作的，比如下面示例中的操作：
 
 ```python3
 import time
@@ -7269,25 +7306,24 @@ ui.run(native=True)
 
 当然，既然是异步休眠，自然要用`await`关键字告诉程序“等待”这个耗时的操作。`await`只能在异步函数中使用，因此函数在定义时，需要用`async`修饰。这样修改之后，按钮就可以连续点击了，也不会导致异常或者卡死界面。
 
-实际上，nicegui很多控件的响应操作（比如按钮的`on_click`）都支持异步函数，如果开发中遇到耗时较久或者不能立刻执行完毕的情况，可以先创建好异步函数，让响应操作执行这个异步函数。
+实际上，NiceGUI很多控件的响应操作（比如按钮的`on_click`）都支持异步函数，如果开发中遇到耗时较久或者不能立刻执行完毕的情况，可以先创建好异步函数，让响应操作执行这个异步函数。
 
 ##### 3.15.1.2 `ui.clipboard`和剪贴板
 
 按理来说剪贴板应该早点介绍的，拖到这个时候才说有点晚。不过事出有因，不介绍异步的话，剪贴板是不能正常使用的。因为剪贴板读取的操作就是异步操作，没法立刻得到结果。
 
+异步操作的结果不像同步结果那样可以立即获得，异步操作的返回值是一个可等待对象，必须用`await`修饰，等待操作完成，才能得到结果。
 
+读取剪贴板的操作是`ui.clipboard.read()`，本质上是NiceGUI执行了JavaScript代码。几乎所有的JavaScript代码都是异步的，因此，要想正确读取，也必须将此操作放到异步函数内，并用`await`修饰，比如：
 
-异步结果的获取特点，必须先await，确保操作执行完毕
+```python3
+async def read() -> None:
+    ui.notify(await ui.clipboard.read()
+```
 
+另外需要注意的是，不同用户的剪贴板不能互通，读写剪贴板的操作只能在确定的客户端上执行，因此读写剪贴板的操作只能在`ui.page`中使用。
 
-
-异步读取，
-
-只能在`ui.page`中使用
-
-
-
-：
+下面的示例代码中，`ui.page`装饰的函数是个异步函数，其实并非必须的，只是第一次读取剪贴板的时候会弹出请求剪贴板的弹窗，如果不使用异步函数，第一次允许时会导致终端报错，但不影响读取；如果是异步函数，函数就会等待这个允许操作，终端不会报错。
 
 ```python3
 from nicegui import ui
@@ -7303,11 +7339,7 @@ async def index():
 ui.run(native=True)
 ```
 
-
-
-
-
-js中同样需要异步读取，不过js的实现会复杂一点：
+在Python中执行读写剪贴板的操作会让服务器执行相关代码，难免给服务器添加额外的压力。这时可以使用JavaScrip的接口读写剪贴板，这样的操作就是由客户端完成，可以减小服务器的压力。当然，JavaScript中同样需要异步读取，所以，JavaScript的实现会复杂一点：
 
 ```python3
 from nicegui import ui
@@ -7323,17 +7355,18 @@ ui.on('clipboard', lambda e: ui.notify(e.args))
 ui.run(native=True)
 ```
 
-
+代码中，由JavaScript代码发射一个`"clipboard"`事件，并把读取结果通过`args`属性返回Python代码；Python代码监听`"clipboard"`事件，并接收返回的值，完成剪贴板的读取。
 
 #### 3.15.2 后台任务（2025.01.08更新）
 
-前面说使用time.sleep会阻塞主线程，所以要用异步，但如果是后台任务，不在主线程上运行，那就没问题了。
+前面说使用`time.sleep`会阻塞主线程，所以要用异步，但如果是后台任务，不在主线程上运行，那就没问题了。
 
-run.cpu_bound（开新的进程操作，会让进程池扩大）
+NiceGUI提供了两种后台执行任务的方法，由`run`子模块提供：
 
-run.io_bound（开新的线程操作，操作完线程会关闭）
+-   `run.cpu_bound`方法，常用于占用较多CPU资源的后台任务，该方法会创建新的进程操作，让进程池的进程数扩大。
+-   `run.io_bound`方法，常用于占用较多IO资源的后台任务开，因为这类后台任务不会占用太多CPU资源，因此，该方法只是创建新的线程操作，操作完线程会关闭。
 
-
+下面的示例使用`time.sleep`模拟耗时的操作，但将其放到后台任务中，所以不会卡死主线程：
 
 ```python3
 from nicegui import ui, run
@@ -7355,17 +7388,11 @@ ui.button('background task',on_click=sub_task)
 ui.run(native=True)
 ```
 
-
-
-
-
-
-
 ### 3.16 版本亮点
 
 #### 3.16.1 `app.timer`——2.9.0版本新增
 
-nicegui官方在2.9.0版本新增了`app.timer`定时器，虽然用法上和`ui.timer`一样，但其归属于`app`而不是`ui`，还是有所区别的。
+NiceGUI官方在2.9.0版本新增了`app.timer`定时器，虽然用法上和`ui.timer`一样，但其归属于`app`而不是`ui`，还是有所区别的。
 
 为了理解区别，需要先运行以下示例代码：
 
@@ -7396,11 +7423,11 @@ ui.run(native=True)
 
 ![app_timer_1](nicegui.assets/app_timer_1.gif)
 
-示例代码源于nicegui官方仓库的一个问题，这里稍微简化了一下。问题作者想要让按钮创建一个定时更新显示内容的定时器，然后用另一个按钮删掉创建定时器的按钮。就是这样听起来很简单的操作，结果在删掉按钮时，工作定时器好像被一并“删掉”了。导致删掉按钮之后，原本应该继续执行的显示更新操作随之停止了。
+示例代码源于NiceGUI官方仓库的一个问题，这里稍微简化了一下。问题作者想要让按钮创建一个定时更新显示内容的定时器，然后用另一个按钮删掉创建定时器的按钮。就是这样听起来很简单的操作，结果在删掉按钮时，工作定时器好像被一并“删掉”了。导致删掉按钮之后，原本应该继续执行的显示更新操作随之停止了。
 
 听起来很奇怪，像是一个问题，其实不是，一开始就没有必要让按钮创建定时器。定时器可以在按钮的响应函数之外创建，按钮只需启动（`activate`）、停止（`deactivate`）定时器即可。因为定时器（`ui.timer`）会自动关联创建定时器的UI组件，一般做法是在auto-index页创建定时器，定时器关联了auto-index页，而auto-index页一般不会被删掉（也不能删掉，会出问题），所以使用定时器不会出问题。如果是其他UI组件创建了定时器，删掉创建定时器的UI组件，同时会一并删掉定时器，这也就是问题的原因。
 
-上面的示例代码更换成常规用法也可以，解决方法也不难，不过，nicegui官方还是为此增加了一个独立于UI组件的定时器——`app.timer`，既是对此问题的解决方案，也是对后续有类似需求的功能实现。
+上面的示例代码更换成常规用法也可以，解决方法也不难，不过，NiceGUI官方还是为此增加了一个独立于UI组件的定时器——`app.timer`，既是对此问题的解决方案，也是对后续有类似需求的功能实现。
 
 那么，上面的代码在基本不动的前提下，只需将`ui.timer`换成`app.timer`即可：
 
@@ -7458,7 +7485,7 @@ ui.run()
 
 每次关闭程序都要在终端按下`Ctrl+C`，能不能在用户界面添加一个关闭整个程序的按钮？
 
-通常情况下，nicegui程序作为一个网站，不需要关闭。但是，如果是当做桌面程序使用或者有不得不关闭的情况，让用户在终端按下`Ctrl+C`不太方便，如果程序是以无终端的方式运行，在终端按下`Ctrl+C`就更不可能。这个时候，可以调用`app.shutdown()`来关闭整个程序，代码如下：
+通常情况下，NiceGUI程序作为一个网站，不需要关闭。但是，如果是当做桌面程序使用或者有不得不关闭的情况，让用户在终端按下`Ctrl+C`不太方便，如果程序是以无终端的方式运行，在终端按下`Ctrl+C`就更不可能。这个时候，可以调用`app.shutdown()`来关闭整个程序，代码如下：
 
 ```python3
 from nicegui import ui,app
@@ -7544,21 +7571,21 @@ ui.run(native=True)
 
 ### 4.4 ui.button
 
-1，想要在定义之后修改button的颜色，但是`bg-*`的tailwindcss样式没有用，怎么实现？
+1，想要在定义之后修改button的颜色，但是`bg-*`的TailWindCSS样式没有用，怎么实现？
 
-button的默认颜色由Quasar控制，而Quasar的颜色应用使用最高优先级的`!important`，tailwindcss的颜色样式默认比这个低，所以无法成功。如果想修改颜色，可以修改button的`color`属性。或者使用`!bg-*`来强制应用。代码如下：
+button的默认颜色由Quasar控制，而Quasar的颜色应用使用最高优先级的`!important`，TailWindCSS的颜色样式默认比这个低，所以无法成功。如果想修改颜色，可以修改button的`color`属性。或者使用`!bg-*`来强制应用。代码如下：
 
 ```python3
 from nicegui import ui
 
 ui.button('button').props('color="red-10"')
-#或者强制应用tailwindcss
+#或者强制应用TailWindCSS
 ui.button('button').classes('!bg-red-700')
 
 ui.run(native=True)
 ```
 
-注意：Quasar的颜色体系和tailwindcss的颜色体系不同。Quasar中，使用`color-[1-14]`来表示颜色，数字表示颜色程度，可选。tailwindcss中，使用`type-color-[50-950]`表示颜色，type为功能类别，数字表示颜色程度，可选。需要注意代码中不同方式使用的颜色体系。
+注意：Quasar的颜色体系和TailWindCSS的颜色体系不同。Quasar中，使用`color-[1-14]`来表示颜色，数字表示颜色程度，可选。TailWindCSS中，使用`type-color-[50-950]`表示颜色，type为功能类别，数字表示颜色程度，可选。需要注意代码中不同方式使用的颜色体系。
 
 2，不擅长CSS的话，怎么用ui.button实现一个 Floating Action Button？
 
@@ -7613,7 +7640,7 @@ ui.run(native=True)
 
 1，如何通过传参的形式动态修改页面内容？
 
-使用参数注入，基于fastapi的https://fastapi.tiangolo.com/tutorial/path-params/ 和 https://fastapi.tiangolo.com/tutorial/query-params/ 或者 https://fastapi.tiangolo.com/advanced/using-request-directly/ ，可以捕获url传入的参数，并用在Python程序中。
+使用参数注入，基于FastAPI的https://fastapi.tiangolo.com/tutorial/path-params/ 和 https://fastapi.tiangolo.com/tutorial/query-params/ 或者 https://fastapi.tiangolo.com/advanced/using-request-directly/ ，可以捕获url传入的参数，并用在Python程序中。
 
 ```python3
 from nicegui import ui
