@@ -296,7 +296,7 @@ ui.run(native=True)
 
 文本类控件主要是一些静态展示可复制文本的控件，是构成网页显示效果的主要控件。
 
-##### 2.3.1.1 ui.label
+##### 2.3.1.1 `ui.label`
 
 文本标签，用法很简单，通过传入一个字符串类型的参数`text`，让网页显示字符串内的文字。注意，虽然参数支持多行文字，但是输出只能一行，需要原样输出多行文字的话，可以使用下面介绍的ui.html，将tag参数设置为`'pre'`。
 
@@ -308,7 +308,7 @@ ui.label(text='some label')
 ui.run(native=True)
 ```
 
-##### 2.3.1.2 ui.link
+##### 2.3.1.2 `ui.link`
 
 超链接，一种点击之后跳转到指定地址的文本元素。可以传入`text`、`target`、`new_tab`三个参数。代码如下：
 
@@ -326,7 +326,7 @@ ui.run(native=True)
 
 `new_tab`参数，布尔类型，默认为`False`，表示要不要在新建标签页中打开超链接。
 
-##### 2.3.1.3 ui.element
+##### 2.3.1.3 `ui.element`
 
 通用元素，也是nicegui大部分界面控件的基类。很多控件都是通过继承这个类来调用自定义标签、JavaScript代码实现。通过继承实现自定义控件、修改默认风格属于高级用法，这里只说基本用法。
 
@@ -360,9 +360,9 @@ ui.run(native=True)
 
 ![ui_element_move](nicegui.assets/ui_element_move.gif)
 
-##### 2.3.1.4 ui.markdown和ui.html
+##### 2.3.1.4 `ui.markdown`和`ui.html`
 
-与ui.label类似，ui.markdown和ui.html，都可以用来展示文本，只是后两者支持markdown语法和HTML语法，因为markdown语法支持一部分HTML的标签，可以看到放在ui.markdown里的HTML标签也能被解析。以下是三种控件解析同一内容的代码：
+与`ui.label`类似，`ui.markdown`和`ui.html`，都可以用来展示文本，只是后两者支持markdown语法和HTML语法，因为markdown语法支持一部分HTML的标签，可以看到放在`ui.markdown`里的HTML标签也能被解析。以下是三种控件解析同一内容的代码：
 
 ```python3
 from nicegui import ui
@@ -378,7 +378,7 @@ ui.html(content)
 ui.run(native=True)
 ```
 
-此外，ui.html还支持传入字符串类型参数`tag`给基类ui.element，用于修改生成ui.html用的标签，比如：
+此外，`ui.html`还支持传入字符串类型参数`tag`给基类`ui.element`，用于修改生成`ui.html`用的标签，比如：
 
 ```python3
 from nicegui import ui
@@ -392,7 +392,7 @@ ui.run(native=True)
 
 常用控件主要是一些支持点击、输入、拖动等交互功能的控件。
 
-##### 2.3.2.1 ui.button
+##### 2.3.2.1 `ui.button`
 
 按钮作是网页交互设计中最常见的基本元素，在移动互联网没有普及之前，使用鼠标点击为主要交互方式的时代，除了用于跳转网页的超链接，按钮就是网页中用的最多的可交互元素。在nicegui中，按钮控件可以传入位置参数`text`，关键字参数`on_click`、`color`和`icon`。
 
@@ -410,7 +410,7 @@ ui.run(native=True)
 
 `color`参数，字符串类型或者`None`，表示按钮的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让按钮变成默认颜色），默认为`'primary'`，即和主题颜色一致。
 
-`icon`参数，字符串类型，表示按钮额外显示的图标，支持传入字符串类型的图标名，具体名字会在ui.icon中介绍，这里不做详细介绍。
+`icon`参数，字符串类型，表示按钮额外显示的图标，支持传入字符串类型的图标名，具体名字会在`ui.icon`一节中介绍，这里不做详细介绍。
 
 `on_click`参数，可调用类型，表示点击按钮调用的函数，可以使用lambda表达式，也可以使用函数名。
 
@@ -428,7 +428,7 @@ ui.run(native=True)
 
 ![button](nicegui.assets/ui_button.png)
 
-对于`on_click`参数、后续会涉及到的'on'开头的参数、'on'开头的方法和on方法（函数名就是`on`）里的`callback`参数或者`handler`参数，均为可调用类型参数，既可以在创建控件时定义lambda表达式，也可以提前定义。对于复杂一点逻辑操作，应该定义函数而不是lambda表达式，比如：
+对于`on_click`参数、后续会涉及到的'on'开头的参数、'on'开头的方法和`on`方法（函数名就是`on`）里的`callback`参数或者`handler`参数，均为可调用类型参数，既可以在创建控件时定义lambda表达式，也可以提前定义。对于复杂一点逻辑操作，应该定义函数而不是lambda表达式，比如：
 
 ```python3
 from nicegui import ui
@@ -443,7 +443,7 @@ ui.button('Click me!',on_click=test)
 ui.run(native=True)
 ```
 
-对于button等控件而言，除了支持通过传参创建响应动作，还支持调用对应的on开头方法（比如`on_click`）创建，这个方法极大提高了响应动作的灵活性，上面的例子就可以借助这个方法调整函数定义与按钮创建的先后顺序，代码如下：
+对于`ui.button`等控件而言，除了支持通过传参创建响应动作，还支持调用对应的'on'开头方法（比如`on_click`）创建，这个方法极大提高了响应动作的灵活性，上面的例子就可以借助这个方法调整函数定义与按钮创建的先后顺序，代码如下：
 
 ```python3
 from nicegui import ui
@@ -456,7 +456,7 @@ button.on_click(test)
 ui.run(native=True)
 ```
 
-##### 2.3.2.2 ui.input
+##### 2.3.2.2 `ui.input`
 
 输入框，大概是网页中仅次于按钮和超链接，用得最多的控件。HTML中输入框的变体很多，在nicegui中，输入框的参数也很多，基于输入框扩展的控件也多，使用输入框的逻辑设计、注意事项一样很多。不过，在这一节，针对输入框的学习并不会那么深入，只要能掌握常用的参数和基础的方法，那些疑难点会放到进阶和需要的时候细讲，以免一时不好理解而记混。
 
@@ -491,9 +491,9 @@ ui.run(native=True)
 
 `validation`参数，可调用类型、字典类型或者`None`，表示验证输入的内容是否有效。如果传入可调用类型参数，该参数返回错误信息表示内容无效，返回`None`表示内容有效。如果传入字典类型参数，则字典的键（key）表示错误信息，字典的值（value）返回`True`表示内容有效，返回`False`则表示内容有效并输出错误信息。默认值为`None`，表示不验证输入的内容。
 
-##### 2.3.2.3 ui.slider和ui.knob
+##### 2.3.2.3 `ui.slider`和`ui.knob`
 
-ui.slider是滑动条，这个比较简单，参数也不多，按理说不用专门讲一下，自学即可。至于ui.knob——旋钮，这个的样式参数比较多，也有很大的自定义自由度，值得一讲。不过，这些都不是这里要专门放在一起介绍的原因，具体原因是什么，这里先卖个关子，后面再做解释。
+`ui.slider`是滑动条，这个比较简单，参数也不多，按理说不用专门讲一下，自学即可。至于`ui.knob`——旋钮，这个的样式参数比较多，也有很大的自定义自由度，值得一讲。不过，这些都不是这里要专门放在一起介绍的原因，具体原因是什么，这里先卖个关子，后面再做解释。
 
 先看一段代码：
 
@@ -512,9 +512,9 @@ ui.run(native=True)
 
 ![ui_knob](nicegui.assets/ui_knob.png)
 
-可以看到，ui.knob的前四个参数和ui.slider的一样，都是浮点类型，分别代表最小值、最大值、每次调整的最小步长、当前值。
+可以看到，`ui.knob`的前四个参数和`ui.slider`的一样，都是浮点类型，分别代表最小值、最大值、每次调整的最小步长、当前值。
 
-在ui.knob中，有`color`、`center_color`、 `track_color`三种参数可以修改颜色，分别代表旋钮边缘的颜色、旋钮中间的颜色、旋钮边缘没有覆盖之前的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）、`None`（即让按钮变成默认颜色）或者`'primary'`（跟随主题颜色）。
+在`ui.knob`中，有`color`、`center_color`、 `track_color`三种参数可以修改颜色，分别代表旋钮边缘的颜色、旋钮中间的颜色、旋钮边缘没有覆盖之前的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）、`None`（即让按钮变成默认颜色）或者`'primary'`（跟随主题颜色）。
 
 `size`参数是旋钮的整体大小，字符串类型，采用CSS语法的大小表示方式。
 
@@ -522,9 +522,9 @@ ui.run(native=True)
 
 #### 2.3.3 多媒体控件
 
-##### 2.3.3.1 ui.image和ui.interactive_image
+##### 2.3.3.1 `ui.image`和`ui.interactive_image`
 
-点开一个网页，最抓人眼球的是什么内容？没错，是图片。既然用nicegui设计网页，没有图片元素怎么行？在nicegui中，有两种显示图片的控件：ui.image和ui.interactive_image。前者可以简单理解为显示图片的简单标签，后者是基于前者扩展了很多交互功能的plus版本。两者的第一个参数都是`source`，支持字符串类型的本地图像路径、网络图像路径，或者base64编码的图像本身，这个没什么难点，这里不做细讲，接下来要重点讲的是ui.interactive_image的其他参数的用法，因为这个控件有时候比看似简单的ui.image更加好用趁手。
+点开一个网页，最抓人眼球的是什么内容？没错，是图片。既然用nicegui设计网页，没有图片元素怎么行？在nicegui中，有两种显示图片的控件：`ui.image`和`ui.interactive_image`。前者可以简单理解为显示图片的简单标签，后者是基于前者扩展了很多交互功能的plus版本。两者的第一个参数都是`source`，支持字符串类型的本地图像路径、网络图像路径，或者base64编码的图像本身，这个没什么难点，这里不做细讲，接下来要重点讲的是`ui.interactive_image`的其他参数的用法，因为这个控件有时候比看似简单的`ui.image`更加好用。
 
 先看一段代码：
 
@@ -540,9 +540,9 @@ ui.run(native=True)
 
 <img src="nicegui.assets/ui_img.png" alt="ui_img" style="zoom:50%;" />
 
-可以看到，同样的图片地址，都是不传入其他参数的情况下，即使可用空间大于图片大小，ui.interactive_image也不会随着页面大小而缩放图片，始终保持图片的原始大小，这个有别于ui.image的特性，可以在日后想要保持图片真实大小时使用。
+可以看到，同样的图片地址，都是不传入其他参数的情况下，即使可用空间大于图片大小，`ui.interactive_image`也不会随着页面大小而缩放图片，始终保持图片的原始大小，这个有别于`ui.image`的特性，可以在日后想要保持图片真实大小时使用。
 
-除了`source`参数外，ui.interactive_image还有以下参数：
+除了`source`参数外，`ui.interactive_image`还有以下参数：
 
 `content`参数，字符串类型，表示覆盖在图片之上的SVG内容，SVG的画布大小就是图片的大小。当然，不太理解SVG的话也没关系，后面用到会详细介绍，也可以专门找一下资料。这里可以简单理解SVG为一种用定义描述的几何图形，这种图形不会因为缩放变成马赛克，因为它是基于定义绘制的。
 
@@ -571,9 +571,9 @@ ui.run(native=True)
 
 <img src="nicegui.assets/ui_interactive_image.png" alt="ui_interactive_image" style="zoom: 67%;" />
 
-##### 2.3.3.2 ui.icon和ui.avatar
+##### 2.3.3.2 `ui.icon`和`ui.avatar`
 
-在[ui.button](#2.3.2.1 ui.button)中挖了一个有关ui.icon的坑，现在，终于到了填坑的时候。先看一个简单的示例，了解一下ui.icon控件的用法：
+在[`ui.button`](#2.3.2.1 `ui.button`)一节中挖了一个有关`ui.icon`的坑，现在，终于到了填坑的时候。先看一个简单的示例，了解一下`ui.icon`控件的用法：
 
 ```python3
 from nicegui import ui
@@ -589,9 +589,9 @@ ui.run(native=True)
 
 <img src="nicegui.assets/ui_icon.png" alt="ui_icon" style="zoom:67%;" />
 
-ui.icon的参数不多，就三个：
+`ui.icon`的参数不多，就三个：
 
-`name`参数，字符串类型，表示图标字体中的图标名，ui.icon通过给定的图标名，从字体中加载图标，默认支持Material Icons图标字体。也可以自己添加其他图标字体，并结合对应图标字体的用法加载。这一部分需要根据具体情况灵活变通，这里不做详解。
+`name`参数，字符串类型，表示图标字体中的图标名，`ui.icon`通过给定的图标名，从字体中加载图标，默认支持Material Icons图标字体。也可以自己添加其他图标字体，并结合对应图标字体的用法加载。这一部分需要根据具体情况灵活变通，这里不做详解。
 
 `color`参数，字符串类型，表示图标的颜色。
 
@@ -735,7 +735,7 @@ ui.run(native=True,title='Material Icons Search')
 
 可以在选择框里选择或者输入名字，得到该名字家族的全部图标，如果有的名字不支持全部风格的图标，会有英文提示。也可以点第二、第三个链接，查看对应图标的放大细节。点击图标，会自动复制全名。
 
-也可以使用下面的icons模块，将代码存为icons.py，放到同目录下，使用`from icons import Filled,filled,Outline,outline,Round,round,Sharp,sharp,Outline_symbol,outline_symbol,Round_symbol,round_symbol,Sharp_symbol,sharp_symbol`来导入使用。首字母大写的是字典，语法为`Filled['10k']`，首字母小写的是函数，语法为`filled('10k')`。这两种使用方法都会返回准确的icon名字，在VSCode或者其他IDE中会弹出提示。
+也可以使用下面的`icons`模块，将代码存为`icons.py`，放到同目录下，使用`from icons import Filled,filled,Outline,outline,Round,round,Sharp,sharp,Outline_symbol,outline_symbol,Round_symbol,round_symbol,Sharp_symbol,sharp_symbol`来导入使用。首字母大写的是字典，语法为`Filled['10k']`，首字母小写的是函数，语法为`filled('10k')`。这两种使用方法都会返回准确的图标名字，在VSCode或者其他IDE中会弹出提示。
 
 ```python3
 from __future__ import annotations
@@ -810,7 +810,7 @@ def sharp_symbol(name:_SHARP_SYMBOL)->str:
         raise Exception('Name is illegal')
 ```
 
-这一节到这里还没结束，还有一个控件要一并讲解。之所以放在一起讲，是因为这个控件主要参数和ui.icon一样，实际应用也不少，那就是头像控件——ui.avatar。
+这一节到这里还没结束，还有一个控件要一并讲解。之所以放在一起讲，是因为这个控件主要参数和`ui.icon`一样，实际应用也不少，那就是头像控件——`ui.avatar`。
 
 按照惯例先看代码：
 
@@ -834,13 +834,13 @@ ui.run(native=True)
 
 从参数上看，`icon`就是ui.icon的`name`；颜色这里不太一样，`color`和`text_color`分别代表头像的背景颜色、图标颜色；`size`是头像大小，`font_size`是图标大小。此外，还有两个布尔类型的参数决定头像框的形状：`square`是方形，`rounded`是圆角方形，如果两个都是`False`，头像框就是圆形。
 
-除了使用图标字体外，头像当然可以使用图片。一种是用以`img:`开头的图片地址，另一种是在defalut slot中加入图片控件。要注意的是，两种方法呈现的图片不一样，后者使用的是ui.image的样式，实际图片显示会有差别。
+除了使用图标字体外，头像当然可以使用图片。一种是用以`img:`开头的图片地址，另一种是在default slot中加入图片控件。要注意的是，两种方法呈现的图片不一样，后者使用的是`ui.image`的样式，实际图片显示会有差别。
 
-##### 2.3.3.3 ui.audio和ui.video
+##### 2.3.3.3 `ui.audio`和`ui.video`
 
-ui.audio和ui.video从本质上讲是一样的，参数、方法基本一致，所以，只需学会其中一个的用法，另一个就是改个名字的事儿。
+`ui.audio`和`ui.video`从本质上讲是一样的，参数、方法基本一致，所以，只需学会其中一个的用法，另一个就是改个名字的事儿。
 
-顾名思义，ui.audio和ui.video，分别代表着音频、视频控件，对于需要在网页播放音频、视频的情况，这两个控件再合适不过。
+顾名思义，`ui.audio`和`ui.video`，分别代表着音频、视频控件，对于需要在网页播放音频、视频的情况，这两个控件再合适不过。
 
 先看示例代码：
 
@@ -893,19 +893,19 @@ ui.button('Add label2', on_click=lambda: ui.label('Click!'))
 ui.run(native=True)
 ```
 
-'Add label1'按钮在ui.card内部，它添加的ui.label就在ui.card内。'Add label2'按钮在ui.card外，它添加的ui.label就在ui.card外。所以点击两个按钮的效果是这样的：
+'Add label1'按钮在`ui.card`内部，它添加的`ui.label`就在ui.card内。'Add label2'按钮在`ui.card`外，它添加的`ui.label`就在`ui.card`外。所以点击两个按钮的效果是这样的：
 
 ![auto_context](nicegui.assets/auto_context.png)
 
-##### 2.3.4.1 ui.row、ui.column和ui.grid
+##### 2.3.4.1 `ui.row`、`ui.column`和`ui.grid`
 
 在图形界面的布局设计中，最常用也是最基本的布局，就是行布局、列布局和网格布局，几乎所有的现代GUI框架都提供了这三种布局。说来神奇，哪怕不用框架提供的其他布局，只是这三种布局相互组合，也能构成了用户在程序里看到的各种控件排布，真可谓“三生万物”。
 
-ui.row（行）布局，即所有控件排成一行。
+`ui.row`（行）布局，即所有控件排成一行。
 
-ui.column（列）布局，即所有控件排成一列。
+`ui.column`（列）布局，即所有控件排成一列。
 
-ui.grid（网格）布局，即所有控件按照给定的网格排布（几行几列），依次占据每个单元格，就和表格一样。
+`ui.grid`（网格）布局，即所有控件按照给定的网格排布（几行几列），依次占据每个单元格，就和表格一样。
 
 <img src="nicegui.assets/layout_sketch.png" alt="layout_sketch" style="zoom:67%;" />
 
@@ -934,11 +934,11 @@ ui.run(native=True)
 
 ![ui_layout](nicegui.assets/ui_layout.png)
 
-##### 2.3.4.2 ui.space
+##### 2.3.4.2 `ui.space`
 
-在布局控件的时候，如果想要一些控件放在末尾，可按照布局控件的规则，内部的控件总是像排队一样一个挨着一个，似乎需要调整CSS才行。其实，有一种不用CSS的方法，那就是使用ui.space。
+在布局控件的时候，如果想要一些控件放在末尾，可按照布局控件的规则，内部的控件总是像排队一样一个挨着一个，似乎需要调整CSS才行。其实，有一种不用CSS的方法，那就是使用`ui.space`。
 
-ui.space可以默认填充浮动布局的可用空间，让布局不会因为默认的排列规则而显得末尾空空如也。
+`ui.space`可以默认填充浮动布局的可用空间，让布局不会因为默认的排列规则而显得末尾空空如也。
 
 ```python3
 from nicegui import ui
@@ -1461,9 +1461,28 @@ ui.run(native=True)
 
 ![app_timer_2](nicegui.assets/app_timer_2.gif)
 
-##### 2.3.7.4 可刷新方法ui.refreshable
+##### 2.3.7.4 UI更新和可刷新方法`ui.refreshable`（2025.01.08更新）
 
-一般来说，每个控件都有`update`方法来更新控件显示，主要是针对某些不会触发UI刷新的修改。但是，`update`方法有一定局限性，只能刷新控件自身，如果控件下嵌套其他控件，该方法不能确保子控件一并刷新。因此，可刷新方法ui.refreshable就派上用场了。
+一般来说，当修改控件的属性时，nicegui会尝试更新控件的显示状态，比如标签的文本、输入框的内容、控件的`style`/`classes`/`props `属性等。当然，如果某些修改不会触发UI刷新，那就要调用控件的`update`方法来更新控件显示。如果需要更新的控件比较多，也可以使用`ui`的`update`方法，该方法可以传入多个控件，一次性完成每个控件的更新，不用重复调用每个控件`update`方法的代码。
+
+以下面的代码为例，如果不调用`update`方法，加载动画控件不会因为显示为新的大小：
+
+```python3
+from nicegui import ui
+
+spinner = ui.spinner(type='default',size='xl',color='red',thickness=5)
+
+def change_size():
+    spinner.props.update({'size':'100px'})
+    spinner.update()
+    # 或者用ui.update(spinner)
+
+ui.button('change size',on_click=change_size)
+
+ui.run(native=True)
+```
+
+但是，`update`方法有一定局限性，只能刷新控件自身，如果控件下嵌套其他控件，该方法不能确保子控件一并刷新。因此，可刷新方法`ui.refreshable`就派上用场了。
 
 以下面代码为例：
 
@@ -1489,7 +1508,7 @@ ui.button('A+1',on_click=clicked)
 ui.run(native=True)
 ```
 
-定义了一个字符串列表`a`，用于存储字符串。函数`row_ui`会根据a的内容创建相同数目的ui.label。然而，按钮`A+1`要执行的函数里，会执行一次给`a`追加一个'A'，也就是说，每点一次按钮，`a`里的'A'就会多一个。可是，即便函数`clicked`里已经添加了`row.update()`来刷新ui.row，每次点击按钮，屏幕上的ui.label并不会增加。
+定义了一个字符串列表`a`，用于存储字符串。函数`row_ui`会根据a的内容创建相同数目的ui.label。然而，按钮'A+1'要执行的函数里，会执行一次给`a`追加一个`'A'`，也就是说，每点一次按钮，`a`里的`'A'`就会多一个。可是，即便函数`clicked`里已经添加了`row.update()`来刷新`ui.row`，每次点击按钮，屏幕上的`ui.label`并不会增加。
 
 问题出在哪里？稍安勿躁，先修改一下代码，用`@ui.refreshable`装饰一下函数`row_ui`，然后将函数`clicked`里的`row.update()`换成`row_ui.refresh()`，再看看按钮点击的效果：
 
@@ -1515,13 +1534,13 @@ ui.button('A+1',on_click=clicked)
 ui.run(native=True)
 ```
 
-这一次，结果总算正确了，点一次按钮，屏幕上的ui.label增加一个。
+这一次，结果总算正确了，点一次按钮，屏幕上的`ui.label`增加一个。
 
 为什么？
 
-可刷新方法ui.refreshable装饰的函数，会多一个`refresh`方法，调用这个方法会触发被装饰函数的重新执行，相当于这一部分的UI全部重新绘制，并不会像`update`方法一样只是触发刷新。触发刷新只能检测到与控件相关联的事件，示例代码里定义的列表a，没有使用绑定方法与控件关联，只有执行迭代的时候才有不同，因此ui.row的刷新并不能实现预期效果。
+可刷新方法`ui.refreshable`装饰的函数，会多一个`refresh`方法，调用这个方法会触发被装饰函数的重新执行，相当于这一部分的UI全部重新绘制，并不会像`update`方法一样只是触发刷新。触发刷新只能检测到与控件相关联的事件，示例代码里定义的列表`a`，没有使用绑定方法与控件关联，只有执行迭代的时候才有不同，因此`ui.row`的刷新并不能实现预期效果。
 
-一般来说，为了快捷创建有规律的控件而使用迭代方法，需要根据数据变化刷新显示，都要用ui.refreshable来重新绘制。当然，没有控件数量变化的时候也有需要使用ui.refreshable来重新绘制的情况，读者在遇到时见机行事。毕竟重新绘制比触发刷新的性能开销大，非必要的情况，还是不要制造需要重新绘制的情况。
+一般来说，为了快捷创建有规律的控件而使用迭代方法，需要根据数据变化刷新显示，都要用`ui.refreshable`来重新绘制。当然，没有控件数量变化的时候也有需要使用`ui.refreshable`来重新绘制的情况，读者在遇到时见机行事。毕竟重新绘制比触发刷新的性能开销大，非必要的情况，还是不要制造需要重新绘制的情况。
 
 ##### 2.3.7.5 运行JavaScript代码ui.run_javascript
 
@@ -1909,6 +1928,77 @@ ui.run(native=True)
 ```
 
 ![ui_element_q_fab](nicegui.assets/ui_element_q_fab.gif)
+
+#### 3.4.3 使用VUE自定义新控件（2025.01.08更新）
+
+如果有VUE基础，可以结合VUE创建新的控件，在VUE中定义界面和部分交互，比在python中更自由。由于笔者不擅长VUE，以下来自[官方示例](https://github.com/zauberzeug/nicegui/tree/main/examples/custom_vue_component)的代码就不做完全详细的解释，只简单说一下思路。
+
+`counter.js`内容为：
+
+```javascript
+// NOTE: Make sure to reload the browser with cache disabled after making changes to this file.
+export default {
+  template: `
+  <button @click="handle_click">
+    <strong>{{title}}: {{value}}</strong>
+  </button>`,
+  data() {
+    return {
+      value: 0,
+    };
+  },
+  methods: {
+    handle_click() {
+      this.value += 1;
+      this.$emit("change", {value:this.value});
+    },
+    reset() {
+      this.value = 0;
+    },
+  },
+  props: {
+    title: String,
+  },
+};
+```
+
+`counter.py`内容为：
+
+```python3
+from typing import Callable, Optional
+from nicegui.element import Element
+
+class Counter(Element, component='counter.js'):
+    def __init__(self, title: str, *, on_change: Optional[Callable] = None) -> None:
+        super().__init__()
+        self.props['title'] = title
+        self.on('change', on_change)
+    def reset(self) -> None:
+        self.run_method('reset')
+```
+
+测试代码为：
+
+```python3
+from counter import Counter
+from nicegui import ui
+
+ui.markdown('''
+#### Try the new click counter!
+
+Click to increment its value.
+''')
+with ui.card():
+    counter = Counter('Clicks', on_change=lambda e: ui.notify(f'The value changed to {e.args['value']}.'))
+
+ui.button('Reset', on_click=counter.reset).props('small outline')
+
+ui.run(native=True)
+```
+
+自定义控件的核心在js文件中，由VUE暴露需要用到的属性和js方法，在py文件中通过`props`属性接收和设置暴露的属性，使用`run_method`方法执行暴露出的js方法。如果在js文件中发射（`$emit`）了事件，还可以在py文件中使用`on`方法响应对应的事件。
+
+![vue_1](nicegui.assets/vue_1.gif)
 
 ### 3.5 for循环的技巧
 
@@ -7078,13 +7168,12 @@ ui.run(native=True)
 
 以下面的代码为例，在地图控件完成初始化之后，先设置默认attribution的前缀，然后清除现有的attribution。点击'Add Attribution'按钮，可以调用接口方法（[官网文档](https://leafletjs.com/reference.html#map-addcontrol)）增加一个attribution，与先前options里设置的attribution合并，显示为两个attribution。但是，layer接口方法'getAttribution'（[官网文档](https://leafletjs.com/reference.html#layer-getattribution)）获取的attribution是options里设置的attribution，因此最后弹出的通知只显示options里设置的attribution。
 
-需要额外注意的是，调用任何接口方法都要等地图完成初始化之后，可以使用异步等待控件的initialized方法，就像下面代码中的`await m.initialized()`，就是为了确保地图确实完成了初始化，而添加的异步等待。
+需要额外注意的是，调用任何接口方法都要等地图完成初始化之后，可以使用异步等待控件的`initialized`方法，就像下面代码中的`await m.initialized()`，就是为了确保地图确实完成了初始化，而添加的异步等待。
 
 示例代码如下：
 
 ```python3
 from nicegui import ui
-
 
 @ui.page('/')
 async def index():
@@ -7112,11 +7201,171 @@ ui.run(native=True)
 
 ![ui_leaflet8](nicegui.assets/ui_leaflet8.gif)
 
-### 3.15 杂项技巧【随时更新】
+### 3.15 多任务与异步的技巧（2025.01.08更新）
 
-#### 3.15.1 app.timer
+#### 3.15.1 异步（2025.01.08更新）
 
-nicegui官方在2.9.0版本新增了app.timer定时器，虽然用法上和ui.timer一样，但其归属于app而不是ui，还是有所区别的。
+##### 3.15.1.1 异步支持
+
+什么是异步？为什么要用异步？
+
+与异步相对的是同步，平常在python中定义、执行的函数，没有`async`关键字修饰，这种函数就是同步函数。同步函数的特点是，函数中所有执行的过程都是依次进行，哪怕有的操作比较费时，也要等待其执行完毕，才能响应新的代码。异步则不同，如果代码中有耗时的操作，可以使用`await`关键字标明耗时的操作，这样程序就不会一直等待这些操作的执行结果，可以在等待期间响应新的操作。而耗时的操作也会同时进行着，不会出现同步函数中卡死的情况。
+
+从上面的区别可以看出，面对耗时较久或者不能立刻给出结果的操作，异步可以极大提升程序的处理效率，不容易进入卡死状态，让程序更高效。
+
+只是看文字说明没有直观的感受，那就看一下相似代码的同步、异步的效果。
+
+相信不少读者在初学python的时候学过这样的操作：使用`time.sleep`来模拟一些代码执行的过程。虽然python很慢，但实际执行的时候也不是执行几十秒，所以，使用`time.sleep`睡眠一段时间，可以让开发者明显感受到代码执行的过程，更方便调试代码。然而，在nicegui中，是绝对不能这样来模拟耗时操作的，比如下面示例中的操作：
+
+```python3
+import time
+from nicegui import ui
+
+def task():
+    ui.notify('task started')
+    time.sleep(5)
+    ui.notify('task finished')
+
+ui.button('start task', on_click=task)
+
+ui.run(native=True)
+```
+
+看起来示例里想要模拟一个耗时操作，让程序在耗时操作开始时、结束时分别发送一次通知。这种情况在开发中很常见，程序往往为了避免耗时操作卡住用户的其他响应，会把耗时操作放到后台，并在完成时通知用户。想法没问题，代码看上去也没问题，可实际执行的时候就有问题：程序没有按照预期显示通知，甚至还出现异常的掉线情况。
+
+可能有的读者会怀疑代码本身有问题，那这样做个验证：注释掉`time.sleep(5)`，看看程序能否正常执行：
+
+```python3
+import time
+from nicegui import ui
+
+def task():
+    ui.notify('task started')
+    #time.sleep(5)
+    ui.notify('task finished')
+
+ui.button('start task', on_click=task)
+
+ui.run(native=True)
+```
+
+实际上代码没有问题，注释掉休眠的代码之后，其余的代码正常执行。这是因为`time.sleep`是在主线程上执行的，这个休眠操作会阻塞主线程，让负责ui逻辑的主线程被休眠卡住，进而导致界面失去响应。所以，如果想要避免这样的问题，还想模拟耗时操作的话，要用异步休眠来模拟：`asyncio.sleep`就是异步版本的`time.sleep`。
+
+替换休眠操作之后，代码如下：
+
+```python3
+import asyncio
+from nicegui import ui
+
+async def task():
+    ui.notify('task started')
+    await asyncio.sleep(5)
+    ui.notify('task finished')
+
+ui.button('start task', on_click=task)
+
+ui.run(native=True)
+```
+
+当然，既然是异步休眠，自然要用`await`关键字告诉程序“等待”这个耗时的操作。`await`只能在异步函数中使用，因此函数在定义时，需要用`async`修饰。这样修改之后，按钮就可以连续点击了，也不会导致异常或者卡死界面。
+
+实际上，nicegui很多控件的响应操作（比如按钮的`on_click`）都支持异步函数，如果开发中遇到耗时较久或者不能立刻执行完毕的情况，可以先创建好异步函数，让响应操作执行这个异步函数。
+
+##### 3.15.1.2 `ui.clipboard`和剪贴板
+
+按理来说剪贴板应该早点介绍的，拖到这个时候才说有点晚。不过事出有因，不介绍异步的话，剪贴板是不能正常使用的。因为剪贴板读取的操作就是异步操作，没法立刻得到结果。
+
+
+
+异步结果的获取特点，必须先await，确保操作执行完毕
+
+
+
+异步读取，
+
+只能在`ui.page`中使用
+
+
+
+：
+
+```python3
+from nicegui import ui
+
+@ui.page('/')
+async def index():
+    ui.button('Write', on_click=lambda: ui.clipboard.write('Hi!'))
+
+    async def read() -> None:
+        ui.notify(await ui.clipboard.read())
+    ui.button('Read', on_click=read)
+
+ui.run(native=True)
+```
+
+
+
+
+
+js中同样需要异步读取，不过js的实现会复杂一点：
+
+```python3
+from nicegui import ui
+
+ui.button('Write').on('click', js_handler='''
+    () => navigator.clipboard.writeText("Ho!")
+''')
+ui.button('Read').on('click', js_handler='''
+    async () => emitEvent("clipboard", await navigator.clipboard.readText())
+''')
+ui.on('clipboard', lambda e: ui.notify(e.args))
+
+ui.run(native=True)
+```
+
+
+
+#### 3.15.2 后台任务（2025.01.08更新）
+
+前面说使用time.sleep会阻塞主线程，所以要用异步，但如果是后台任务，不在主线程上运行，那就没问题了。
+
+run.cpu_bound（开新的进程操作，会让进程池扩大）
+
+run.io_bound（开新的线程操作，操作完线程会关闭）
+
+
+
+```python3
+from nicegui import ui, run
+import time
+
+def test_task(t):
+    time.sleep(t)
+    return 0
+
+async def sub_task():
+    #单独进程
+    result = await run.cpu_bound(test_task,5)
+    #单独线程
+    #result = await run.io_bound(test_task,5)
+    ui.notify(result)
+
+ui.button('background task',on_click=sub_task)
+
+ui.run(native=True)
+```
+
+
+
+
+
+
+
+### 3.16 版本亮点
+
+#### 3.16.1 `app.timer`——2.9.0版本新增
+
+nicegui官方在2.9.0版本新增了`app.timer`定时器，虽然用法上和`ui.timer`一样，但其归属于`app`而不是`ui`，还是有所区别的。
 
 为了理解区别，需要先运行以下示例代码：
 
@@ -7151,7 +7400,7 @@ ui.run(native=True)
 
 听起来很奇怪，像是一个问题，其实不是，一开始就没有必要让按钮创建定时器。定时器可以在按钮的响应函数之外创建，按钮只需启动（`activate`）、停止（`deactivate`）定时器即可。因为定时器（`ui.timer`）会自动关联创建定时器的UI组件，一般做法是在auto-index页创建定时器，定时器关联了auto-index页，而auto-index页一般不会被删掉（也不能删掉，会出问题），所以使用定时器不会出问题。如果是其他UI组件创建了定时器，删掉创建定时器的UI组件，同时会一并删掉定时器，这也就是问题的原因。
 
-上面的示例代码更换成常规用法也可以，解决方法也不难，不过，nicegui官方还是为此增加了一个独立于UI组件的定时器——app.timer，既是对此问题的解决方案，也是对后续有类似需求的功能实现。
+上面的示例代码更换成常规用法也可以，解决方法也不难，不过，nicegui官方还是为此增加了一个独立于UI组件的定时器——`app.timer`，既是对此问题的解决方案，也是对后续有类似需求的功能实现。
 
 那么，上面的代码在基本不动的前提下，只需将`ui.timer`换成`app.timer`即可：
 
@@ -7182,7 +7431,7 @@ ui.run(native=True)
 
 ![app_timer_2](nicegui.assets/app_timer_2.gif)
 
-当然，有了app.timer这种独立于UI组件的定时器之后，以前那种将ui.timer放在ui.page之外，用来充当独立于页面的定时器的方法，就可以使用app.timer了：
+当然，有了`app.timer`这种独立于UI组件的定时器之后，以前那种将`ui.timer`放在`ui.page`之外，用来充当独立于页面的定时器的方法，就可以使用`app.timer`了：
 
 ```python3
 from nicegui import app, ui
@@ -7198,26 +7447,6 @@ ui.run()
 ```
 
 两种定时器在这种情景下都不会出问题，这里替换为新的定时器更多是为了区分定时器的作用范围。
-
-
-
-有些技巧是灵感乍现，实在找不到合适的分类，就写在了这里。内容和分类可能会因为后续更新而变动。
-
-高性能计算
-
-subprocess
-
-multiprocessing
-
-threading
-
-run.cpu_bound
-
-run.io_bound
-
-asyncio
-
-
 
 ## 4 具体示例【随时更新】
 
