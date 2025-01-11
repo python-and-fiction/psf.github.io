@@ -3567,11 +3567,11 @@ ui.run(native=True)
 
 ![ui_notification](nicegui.assets/ui_notification.png)
 
-#### 3.9.12 ui.dialog
+#### 3.9.12 `ui.dialog`
 
 对话框常见于桌面程序，在网页中并不多见。因为网页经常通过页面切换来跳转到特定界面，实现对话框一样的功能。但是，NiceGUI是混合框架，网页中也没法完全不用对话框。所以，还是有必要看一下对话框的用法。
 
-ui.dialog只有一个布尔类型参数`value`，表示对话框初始的开启状态，默认为`False`。其余的对话框设计样式可以参考[Quasar的文档](https://quasar.dev/vue-components/dialog#qdialog-api)。
+`ui.dialog`只有一个布尔类型参数`value`，表示对话框初始的开启状态，默认为`False`。其余的对话框设计样式可以参考[Quasar的文档](https://quasar.dev/vue-components/dialog#qdialog-api)。
 
 以下是示例：
 
@@ -3590,11 +3590,11 @@ ui.run(native=True)
 
 ![ui_dialog](nicegui.assets/ui_dialog.png)
 
-调用对话框的open方法打开对话框，调用close方法、点击关闭按钮、点击空白处、按ESC键都可以关闭对话框。如果想设置为只有点击关闭按钮才能关闭对话框，可以使用 `.props('persistent')`添加属性`'persistent'`。
+调用对话框的`open`方法打开对话框，调用`close`方法、点击关闭按钮、点击空白处、按`esc`键都可以关闭对话框。如果想设置为只有点击关闭按钮才能关闭对话框，可以使用 `.props('persistent')`添加属性`'persistent'`。
 
-需要注意的是，对话框实际运行时只创建一次，后续是重复使用的。关闭对话框并不会销毁对话框，只是隐藏对话框，而且下次开启时会重复使用已经创建的对话框。如果想要确保对话框内容准确，要么在打开对话框前更新对话框内容，要么每次打开前重新创建一次。更新对话框内容有两种方法，一是遍历对话框内每个控件，调用对应的更新方法；二是重新创建对话框内的内容，使用clear方法清除之后重新创建，或者使用refreshable方法包装需要更新的控件，调用refresh方法触发刷新重建。
+需要注意的是，对话框实际运行时只创建一次，后续是重复使用的。关闭对话框并不会销毁对话框，只是隐藏对话框，而且下次开启时会重复使用已经创建的对话框。如果想要确保对话框内容准确，要么在打开对话框前更新对话框内容，要么每次打开前重新创建一次。更新对话框内容有两种方法，一是遍历对话框内每个控件，调用对应的更新方法；二是重新创建对话框内的内容，使用`clear`方法清除之后重新创建，或者使用`refreshable`方法包装需要更新的控件，调用`refresh`方法触发刷新重建。
 
-以下面的代码为例，为了更新对话框的内容，先调用clear方法清除原有内容，然后创建新内容：
+以下面的代码为例，为了更新对话框的内容，先调用`clear`方法清除原有内容，然后创建新内容：
 
 ```python3
 from nicegui import ui
@@ -3634,9 +3634,9 @@ ui.button('Await a dialog', on_click=show)
 ui.run(native=True)
 ```
 
-#### 3.9.13 ui.menu补充
+#### 3.9.13 `ui.menu`补充
 
-ui.menu中除了可以嵌入ui.menu_item，还可以嵌入其他控件，有时候会有意想不到的效果：
+`ui.menu`中除了可以嵌入`ui.menu_item`，还可以嵌入其他控件，有时候会有意想不到的效果：
 
 ```python3
 from nicegui import ui
@@ -3656,9 +3656,9 @@ ui.run(native=True)
 
 ![ui_menu_2](nicegui.assets/ui_menu_2.png)
 
-#### 3.9.14 ui.tooltip补充
+#### 3.9.14 `ui.tooltip`补充
 
-对于像ui.html、ui.markdown、ui.upload等不支持tooltip的元素，可以使用ui.element包装来间接实现：
+对于像`ui.html`、`ui.markdown`、`ui.upload`等不支持添加`tooltip`的元素，可以使用`ui.element`包装来间接实现：
 
 ```python3
 from nicegui import ui
@@ -3669,7 +3669,7 @@ with ui.element().tooltip('...with a tooltip!'):
 ui.run(native=True)
 ```
 
-tooltip里除了显示一般的文本，还可以显示图像等其他内容。不过，不建议在tooltip内放置需要交互的内容，因为被添加tooltip的控件一旦失去焦点，tooltip就会消失，里面的交互内容永远无法交互：
+`tooltip`里除了显示一般的文本，还可以显示图像等其他内容。不过，不建议在`tooltip`内放置需要交互的内容，因为被添加`tooltip`的控件一旦失去焦点，`tooltip`就会消失，里面的交互内容永远无法交互：
 
 ```python3
 from nicegui import ui
@@ -3685,9 +3685,9 @@ ui.run(native=True)
 
 ### 3.10 其他常用控件
 
-#### 3.10.1 ui.dropdown_button
+#### 3.10.1 `ui.dropdown_button`
 
-前面在介绍菜单控件的时候，是用按钮内嵌入菜单，实现点击按钮弹出菜单的效果。其实，在NiceGUI中，有个控件可以实现一步到位，无需嵌入，那就是ui.dropdown_button——下拉按钮。
+前面在介绍菜单控件的时候，是用按钮内嵌入菜单，实现点击按钮弹出菜单的效果。其实，在NiceGUI中，有个控件可以实现一步到位，无需嵌入，那就是`ui.dropdown_button`——下拉按钮。
 
 先看示例：
 
@@ -3711,11 +3711,11 @@ ui.run(native=True)
 
 `value`参数，布尔类型，表示下拉按钮的初始状态是否为下拉内容弹出，默认为`False`。
 
-`on_value_change`参数，可调用类型，表示下拉按钮的value变化（即下拉内容弹出状态变化）时执行什么操作。
+`on_value_change`参数，可调用类型，表示下拉按钮的`value`变化（即下拉内容弹出状态变化）时执行什么操作。
 
 `on_click`参数，可调用类型，表示点击下拉按钮主体（不是右边的小三角）时执行什么操作，和普通按钮一样。
 
-`color`参数，字符串类型或者None，表示按钮的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让按钮变成默认颜色），默认为'primary'，即和主题颜色一致。
+`color`参数，字符串类型或者`None`，表示按钮的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让按钮变成默认颜色），默认为`'primary'`，即和主题颜色一致。
 
 `icon`参数，字符串类型，表示按钮额外显示的图标，支持传入字符串类型的图标名，和普通按钮一样。
 
@@ -3741,7 +3741,7 @@ ui.run(native=True)
 
 ![ui_dropdown_button2](nicegui.assets/ui_dropdown_button2.png)
 
-想要修改下拉触发区的图标，可以参考[API文档](https://quasar.dev/vue-components/button-dropdown#qbtndropdown-api)，修改'dropdown-icon'属性，
+想要修改下拉触发区的图标，可以参考[API文档](https://quasar.dev/vue-components/button-dropdown#qbtndropdown-api)，修改`'dropdown-icon'`属性（`props`），
 
 ```python3
 from nicegui import ui
@@ -3757,7 +3757,7 @@ ui.run(native=True)
 
 ![ui_dropdown_button3](nicegui.assets/ui_dropdown_button3.png)
 
-#### 3.10.2 ui.button_group
+#### 3.10.2 `ui.button_group`
 
 下拉按钮看起来就像两个按钮组合到一起，也可以用按钮组控件模拟实现，让右边的按钮支持更多功能：
 
@@ -3791,7 +3791,7 @@ ui.run(native=True)
 
 ![ui_button_group2](nicegui.assets/ui_button_group2.png)
 
-#### 3.10.3 ui.badge
+#### 3.10.3 `ui.badge`
 
 角标控件，可以在一个控件的上层显示简单的文字，就像手机图标上提示有多少消息未读的角标一样：
 
@@ -3810,7 +3810,7 @@ ui.run(native=True)
 
 `text`参数，字符串类型，显示在角标内的文字。
 
-`color`参数，字符串类型或者None，表示角标的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让角标变成默认颜色），默认为'primary'，即和主题颜色一致。
+`color`参数，字符串类型或者`None`，表示角标的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让角标变成默认颜色），默认为`'primary'`，即和主题颜色一致。
 
 `text_color`参数，字符串类型或者None，表示文字的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让文字变成默认颜色）。
 
