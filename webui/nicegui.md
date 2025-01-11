@@ -1112,7 +1112,7 @@ ui.run(native=True)
 
  `message`参数，字符串类型，信息文本，显示在通知中的主要内容。
 
-`position`参数，字符串类型，通知出现的位置，有`"top-left"`、 `"top-right"`、`"bottom-left"`、`"bottom-right"`、`"top"`、`"bottom"`、`"left"`、`"right"`、`"center"`可选，默认为`"bottom"`。
+`position`参数，字符串类型，通知出现的位置，有`"top-left"`、`"top-right"`、`"bottom-left"`、`"bottom-right"`、`"top"`、`"bottom"`、`"left"`、`"right"`、`"center"`可选，默认为`"bottom"`。
 
 `close_button`参数，字符串类型或者布尔型，是否显示关闭按钮，如果是字符串类型，关闭按钮的文字就是给定的文字，默认为`False`。
 
@@ -1792,9 +1792,9 @@ ui.run(native=True, window_size=(400, 300), fullscreen=False,title='main')
 
 NiceGUI的控件有很多，日常开发中，除了了解常用控件之外，不常用的控件也可以在学有余力的时候看看。当然，图形界面的开发不止对控件的了解，一些逻辑上的处理技巧，Python语言的特性与框架的结合，也是难免会遇到的难题。不过，不用怕，授人以鱼不如授人以渔，日常能遇到、能解决的难题，这里都有。
 
-### 3.1 with的技巧
+### 3.1 `with`的技巧
 
-with可以嵌套使用，来实现类似HTML中div嵌套的效果，比如：
+`with`可以嵌套使用，来实现类似HTML中`div`嵌套的效果，比如：
 
 ```python3
 from nicegui import ui
@@ -1819,9 +1819,9 @@ ui.run(native=True)
 
 ### 3.2 slot的技巧
 
-其实，所有的`with element`都是修改了 element 中名为`default`的slot。基于这个操作原理，可以借用`add_slot`的方法，结合`with`的用法，优雅、快捷地美化元素，实现复杂的布局。
+其实，所有的`with element`都是修改了`element`中名为`'default'`的slot。基于这个操作原理，可以借用`add_slot`的方法，结合`with`的用法，优雅、快捷地美化元素，实现复杂的布局。
 
-比如，`ui.dropdown_button`有两个slot，`default`和`label`；其中，`default`就是默认的slot，常规方法就可以嵌入元素到弹出的下拉列表里，如果想要像修改`ui.button`一样修改`ui.dropdown_button`本身，则要修改`ui.dropdown_button`的`label`这个slot，代码如下：
+比如，`ui.dropdown_button`有两个slot，`default`和`label`；其中，`default`就是默认的slot，常规方法就可以嵌入元素到弹出的下拉列表里，如果想要像修改`ui.button`一样修改`ui.dropdown_button`本身，则要修改`ui.dropdown_button`的`'label'`这个slot，代码如下：
 
 ```python3
 from nicegui import ui
@@ -1845,7 +1845,7 @@ ui.run(native=True)
 
 ### 3.3 TailWindCSS的技巧
 
-不同于CSS定义中伪类在冒号之后来定义效果，在TailWindCSS中，美化悬停（hover）和激活（active），需要放在冒号之前，冒号后紧随着要对状态应用的效果。比如，要实现标签背景颜色的悬停为红色、点击为黄色，代码如下：
+不同于CSS定义中伪类在冒号之后来定义效果，在TailWindCSS中，美化悬停（`hover`）和激活（`active`），需要放在冒号之前，冒号后紧随着要对状态应用的效果。比如，要实现标签背景颜色的悬停为红色、点击为黄色，代码如下：
 
 ```python3
 from nicegui import ui
@@ -1857,7 +1857,7 @@ ui.run(native=True)
 
 ![tailwindcss_1](nicegui.assets/tailwindcss_1.gif)
 
-类似的，还可以实现暗黑模式（dark）下的颜色定义，点击switch来切换暗黑模式的开关，可以看到标签在暗黑模式下的背景颜色为红色，非暗黑模式下的背景颜色为绿色，代码如下：
+类似的，还可以实现暗黑模式（`dark`）下的颜色定义，点击`switch`来切换暗黑模式的开关，可以看到标签在暗黑模式下的背景颜色为红色，非暗黑模式下的背景颜色为绿色，代码如下：
 
 ```python3
 from nicegui import ui
@@ -1901,7 +1901,7 @@ ui.run(native=True)
 
 在Python中，可以通过继承来扩展现有类的功能，这个操作对于NiceGUI同样适用。
 
-如果想要基于button实现一个可以通过点击切换颜色的按钮，可以这样做：
+如果想要基于`ui.button`实现一个可以通过点击切换颜色的按钮，可以这样做：
 
 继承现有的控件类`ui.button`，先在`__init__`内调用父类的初始化方法；然后增加`_state`属性，默认为`False`，用于保存状态；最后定义点击事件的响应调用自身的`toggle`方法。
 
@@ -2033,15 +2033,15 @@ ui.button('Reset', on_click=counter.reset).props('small outline')
 ui.run(native=True)
 ```
 
-自定义控件的核心在js文件中，由VUE暴露需要用到的属性和js方法，在py文件中通过`props`属性接收和设置暴露的属性，使用`run_method`方法执行暴露出的js方法。如果在js文件中发射（`$emit`）了事件，还可以在py文件中使用`on`方法响应对应的事件。
+自定义控件的核心在`counter.js`文件中，由VUE暴露需要用到的属性和JavaScript方法，在`counter.py`文件中通过`props`属性接收和设置暴露的属性，使用`run_method`方法执行暴露出的JavaScript方法。如果在`counter.js`文件中发射（`$emit`）了事件，还可以在`counter.py`文件中使用`on`方法响应对应的事件。
 
 ![vue_1](nicegui.assets/vue_1.gif)
 
-### 3.5 for循环的技巧
+### 3.5 `for`循环的技巧
 
-#### 3.5.1 用for创建多个有规律的控件
+#### 3.5.1 用`for`创建多个有规律的控件
 
-有时候，要创建多个外观一致或者有规律的控件，一个一个写代码或者复制粘贴的话，就不太pythonic了。在Python中，可以使用for来遍历迭代，同样可以使用for来创建多个外观一致或者有规律的控件。
+有时候，要创建多个外观一致或者有规律的控件，一个一个写代码或者复制粘贴的话，就不太pythonic了。在Python中，可以使用`for`来遍历迭代，同样可以使用`for`来创建多个外观一致或者有规律的控件。
 
 ```python3
 from nicegui import ui
@@ -2055,7 +2055,7 @@ ui.run(native=True)
 
 ![for_1](nicegui.assets/for_1.png)
 
-#### 3.5.2 与lambda组合使用时的问题
+#### 3.5.2 与lambda表达式组合使用时的问题
 
 除了要创建一样的控件，还要给每个控件添加事件响应的话，每次都写一遍函数定义未免大材小用，更何况同名函数会出现覆盖，让函数名动态变化又没那么简单。这个时候Python的匿名函数——lambda表达式就派上用场了。lambda表达式可以创建语句简单的匿名函数，不必担心函数名重复的情况。比如，在下面的代码中，通过使用lambda表达式，让按钮的点击操作变成弹出一条通知。
 
@@ -2069,9 +2069,9 @@ with ui.grid(rows=3,columns=3):
 ui.run(native=True)
 ```
 
-不过，事情并没有看上去那么简单，当写完代码开始执行的时候，才发现每个按钮的点击结果都一样，都是弹出内容为8的通知，这是为何？
+不过，事情并没有看上去那么简单，当写完代码开始执行的时候，才发现每个按钮的点击结果都一样，都是弹出内容为`8`的通知，这是为何？
 
-原来，使用lambda表达式执行的`ui.notify(i)`，因为表达式没有绑定默认值，实际上绑定到了动态的`i`上，按钮的on_click的定义不是第一时间执行，而是在完成定义之后响应用户的操作。最终，当for完成遍历之后，动态的`i`已经被赋值为8，因此按钮的响应操作中的`i`都被统一修改了。为了避免这种情况，需要修改一下lambda表达式，添加一个参数并绑定默认值：
+原来，使用lambda表达式执行的`ui.notify(i)`，因为表达式没有绑定默认值，实际上绑定到了动态的`i`上，按钮的`on_click`的定义不是第一时间执行，而是在完成定义之后响应用户的操作。最终，当`for`完成遍历之后，动态的`i`已经被赋值为`8`，因此按钮的响应操作中的`i`都被统一修改了。为了避免这种情况，需要修改一下lambda表达式，添加一个参数并绑定默认值：
 
 ```python3
 from nicegui import ui
@@ -2083,7 +2083,7 @@ with ui.grid(rows=3,columns=3):
 ui.run(native=True)
 ```
 
-修改之后的`lambda i=i:ui.notify(i)`中，`i=i`的意思是lambda表达式里的i变成了函数的参数i，而这个i绑定到了外部的i当时值。
+修改之后的`lambda i=i:ui.notify(i)`中，`i=i`的意思是lambda表达式里的i变成了函数的参数`i`，而这个i绑定到了外部的i当时值。
 
 当然，实际代码中不建议这样写，太容易混淆了（怕被裁员倒是可以这样做）。
 
@@ -2099,11 +2099,11 @@ with ui.grid(rows=3, columns=3):
 ui.run(native=True)
 ```
 
-#### 3.5.3 更好的for循环
+#### 3.5.3 更好的`for`循环
 
 为了确保批量生成之后还能访问每个控件，最好将批量生成的控件存储到列表里（不建议使用元组，没法修改；字典非必要也别用，字典的结构有点复杂，除非是列表没法实现需求）。
 
-以下面的代码为例，使用buttons创建一个列表，在列表中用列表生成式来创建多个控件。后续如果需要修改某一个控件，就可以通过buttons来访问任意一个控件，这里是将第一个按钮隐藏。
+以下面的代码为例，使用`buttons`创建一个列表，在列表中用列表生成式来创建多个控件。后续如果需要修改某一个控件，就可以通过`buttons`来访问任意一个控件，这里是将第一个按钮隐藏。
 
 ```python3
 from nicegui import ui
@@ -2118,11 +2118,11 @@ ui.run(native=True)
 
 ![for_2](nicegui.assets/for_2.png)
 
-### 3.6 binding的技巧
+### 3.6 绑定的技巧
 
 #### 3.6.1 绑定到字典
 
-在入门基础里提到的binding只介绍如何绑定两个控件，其实，binding除了绑定另一个控件，还支持绑定字典。绑定控件时，`target_object`是控件对象，这里则换成字典对象；`target_name`是控件对象的属性名，这里则换成字典的key，于是，就有了以下代码：
+在入门基础里提到的绑定只介绍如何绑定两个控件，其实，绑定除了绑定另一个控件，还支持绑定字典。绑定控件时，`target_object`是控件对象，这里则换成字典对象；`target_name`是控件对象的属性名，这里则换成字典的key，于是，就有了以下代码：
 
 ```python3
 from nicegui import ui
@@ -2140,7 +2140,7 @@ ui.run(native=True)
 
 ![binding_1](nicegui.assets/binding_1.png)
 
-要注意的是，ui.number的值输出为小数，如果不增加`forward=lambda x:int(x)`的话，`data['age']`会被修改为小数，而不是整数。同理，ui.input的值输出为字符串，如果字典输入不是字符串的话，在输出时需要转换。
+要注意的是，`ui.number`的值输出为小数，如果不增加`forward=lambda x:int(x)`的话，`data['age']`会被修改为小数，而不是整数。同理，`ui.input`的值输出为字符串，如果字典输入不是字符串的话，在输出时需要转换。
 
 #### 3.6.2 绑定到全局变量
 
@@ -2172,7 +2172,7 @@ ui.number(label='age:').bind_value(globals(), 'age', forward=lambda x: int(x))
 ui.run(native=True)
 ```
 
-任何在py文件内定义的全局变量，都会成为全局变量字典的一个键值，可以使用`globals()`访问全局变量字典。
+任何在Python文件内定义的全局变量，都会成为全局变量字典的一个键值，可以使用`globals()`访问全局变量字典。
 
 #### 3.6.3 性能优化
 
@@ -2210,11 +2210,11 @@ ui.run(native=True)
 
 因为代码中的绑定数量很少，因此差异不大，如果将绑定数量放大百倍，就能看出两种绑定的性能差异。
 
-### 3.7 app.storage的技巧
+### 3.7 `app.storage`的技巧
 
 有时候，网页上不同页面、用户需要存储、共享特定数据，依靠自己编程实现的话确实麻烦。好在NiceGUI提供了一种简单有效的数据存储功能，那就是`app.storage`（存储）。 存储有5个子字典，分别对应着不同的空间，有不同的应用范围：
 
--   `app.storage.tab`：存储在服务器的内存中，此字典对于每个选项卡、会话都是唯一的，可以存储任意对象。需要注意的是，在实现 https://github.com/zauberzeug/nicegui/discussions/2841 之前，重启服务器会导致此字典的数据丢失。对于使用复制选项卡功能（右键选项卡点复制）创建的新选项卡，二者的tab_id（ui.context.client.tab_id）是相同的，因此，复制的选项卡与原选项卡共享此字典。此外，此字典只能在仅在[`ui.page`](https://nicegui.io/documentation/page)中使用，并且需要等待客户端建立连接（确保读写此字典的操作在异步函数内的 [`await ui.context.client.connected()`](https://nicegui.io/documentation/page#wait_for_client_connection)之后）。
+-   `app.storage.tab`：存储在服务器的内存中，此字典对于每个选项卡、会话都是唯一的，可以存储任意对象。需要注意的是，在实现 `https://github.com/zauberzeug/nicegui/discussions/2841` 之前，重启服务器会导致此字典的数据丢失。对于使用复制选项卡功能（右键选项卡点复制）创建的新选项卡，二者的`tab_id`（`ui.context.client.tab_id`）是相同的，因此，复制的选项卡与原选项卡共享此字典。此外，此字典只能在仅在[`ui.page`](https://nicegui.io/documentation/page)中使用，并且需要等待客户端建立连接（确保读写此字典的操作在异步函数内的 [`await ui.context.client.connected()`](https://nicegui.io/documentation/page#wait_for_client_connection)之后）。
 -   `app.storage.client`：该字典也存储在服务器的内存中，对于每个客户端连接都是唯一的，并且可以存储任意对象。当页面重新加载或用户导航到另一个页面时，数据将被销毁。不同于能在服务器上保存数据好几天的`app.storage.tab`，`app.storage.client`更适合缓存频繁使用、一次性的数据。比如，需要动态更新的数据或者数据库连接，但希望在用户离开页面或关闭浏览器时立即销毁。同样的，这个字典只能在[`ui.page`](https://nicegui.io/documentation/page)中使用。
 -   `app.storage.user`：存储在服务器磁盘中，每个字典都与浏览器cookie中保存的唯一标识符相关联，换句话说，此字典对于每个用户都是唯一的，并与浏览器的其他选项卡共享。可以通过存储在`app.storage.browser['id']`的标识符识别用户、会话。同样的，这个字典只能在[`ui.page`](https://nicegui.io/documentation/page)中使用。此外，这个字典需要设置`ui.run()`的`storage_secret`参数来签名浏览器会话cookie。
 -   `app.storage.general`：该字典也存储在服务器磁盘中，提供了所有用户都可以访问的共享存储空间。
@@ -2262,23 +2262,23 @@ ui.run(storage_secret='private_key')
 选择器{样式}
  ```
 
-在{}之前的部分就是“选择器”。 “选择器”指明了{}中的“样式”的作用对象，也就是“样式”作用于网页中的哪些元素。
+在`{`之前的部分就是“选择器”。 “选择器”指明了`{样式}`中的“样式”的作用对象，也就是“样式”作用于网页中的哪些元素。
 
 选择器有一套自己的[语法规则](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors)，通过合理设置选择器的规则，可以很精准地选择指定元素。
 
-NiceGUI简化了不少CSS上的操作，但不代表不需要CSS的基础。如果读者掌握了CSS的选择器，与ui.query和ui.teleport结合使用，那就如同得到了屠龙宝刀，操作界面布局、美化界面将更加得心应手。
+NiceGUI简化了不少CSS上的操作，但不代表不需要CSS的基础。如果读者掌握了CSS的选择器，与`ui.query`和`ui.teleport`结合使用，那就如同得到了屠龙宝刀，操作界面布局、美化界面将更加得心应手。
 
 注意，前两小节要求读者具备CSS选择器基础，没有相应基础的读者可以搁置前两小节，直接看第三小节。
 
-#### 3.8.1 ui.query
+#### 3.8.1 `ui.query`
 
-前面讲过如何美化控件，即在控件定义时使用props、classes、style等方法美化控件，也可以在控件定义好之后，通过给定的变量名调用相应方法。但是，如果想要美化的控件、元素根本就不是定义出来的，而是框架带出来的，想要美化就有点麻烦。当然，直接修改内置样式、源码很直观，但麻烦。要是有种方法能让想要修改的内容就像被定义为变量一样，后续直接使用，那就方便不少。正巧，ui.query就有这样的功能。
+前面讲过如何美化控件，即在控件定义时使用`props`、`classes`、`style`等方法美化控件，也可以在控件定义好之后，通过给定的变量名调用相应方法。但是，如果想要美化的控件、元素根本就不是定义出来的，而是框架带出来的，想要美化就有点麻烦。当然，直接修改内置样式、源码很直观，但麻烦。要是有种方法能让想要修改的内容就像被定义为变量一样，后续直接使用，那就方便不少。正巧，`ui.query`就有这样的功能。
 
-注意，ui.query的props方法修改的是HTML元素的属性（attribute），而不是ui.element或者Quasar组件的属性（props）。
+注意，`ui.query`的`props`方法修改的是HTML元素的属性（`attribute`），而不是`ui.element`或者Quasar组件的属性（`props`）。
 
-ui.query只有一个字符串类型参数`selector`，顾名思义，就是前面提到的选择器。通过给ui.query传入选择器语法，ui.query将返回CSS选择器能够选择的元素，后续可以直接对该元素执行样式美化的方法。
+`ui.query`只有一个字符串类型参数`selector`，顾名思义，就是前面提到的选择器。通过给`ui.query`传入选择器语法，`ui.query`将返回CSS选择器能够选择的元素，后续可以直接对该元素执行样式美化的方法。
 
-下面的代码就是使用ui.query选择了body（网页的主体），并设置body的背景颜色：
+下面的代码就是使用`ui.query`选择了`body`（网页的主体），并设置`body`的背景颜色：
 
 ```python3
 from nicegui import ui
@@ -2291,11 +2291,11 @@ ui.run(native=True)
 
 ![ui_query](nicegui.assets/ui_query.png)
 
-ui.query的用法很简单，难点在于确定CSS选择器的写法，这一部分属于CSS基础知识，这里就不再赘述，有能力的读者可以抽时间深入学习CSS选择器的语法。
+`ui.query`的用法很简单，难点在于确定CSS选择器的写法，这一部分属于CSS基础知识，这里就不再赘述，有能力的读者可以抽时间深入学习CSS选择器的语法。
 
-#### 3.8.2 ui.teleport
+#### 3.8.2 `ui.teleport`
 
-肯定有读者在学了ui.query美化指定元素之后，突发奇想，想要给指定元素内部添加控件，比如，下面的代码：
+肯定有读者在学了`ui.query`美化指定元素之后，突发奇想，想要给指定元素内部添加控件，比如，下面的代码：
 
 ```python3
 from nicegui import ui
@@ -2307,7 +2307,7 @@ with ui.query(f'#c{markdown.id} strong'):
 ui.run(native=True)
 ```
 
-然而，这段代码并不能成功运行，因为ui.query并不支持add_slot。如果想要实现类似效果，只需将ui.query换成ui.teleport即可，不过传递的参数名不是`selector`，而是`to`：
+然而，这段代码并不能成功运行，因为`ui.query`并不支持`add_slot`。如果想要实现类似效果，只需将`ui.query`换成`ui.teleport`即可，不过传递的参数名不是`selector`，而是`to`：
 
 ```python3
 from nicegui import ui
@@ -2321,17 +2321,17 @@ ui.run(native=True)
 
 ![ui_teleport](nicegui.assets/ui_teleport.png)
 
-ui.teleport就是这样一个基于CSS选择器语法将任意控件传送至指定位置的控件。
+`ui.teleport`就是这样一个基于CSS选择器语法将任意控件传送至指定位置的控件。
 
-#### 3.8.3 ElementFilter
+#### 3.8.3 `ElementFilter`
 
-暂时不会CSS选择器语法的读者也不用着急，尽管CSS选择器语法很强大，但在Python中不够直观，想要快速确定选择器还要去网页中开启调试模式。好在NiceGUI提供了另一种不需要CSS选择器的定位指定元素工具，那就是ElementFilter。
+暂时不会CSS选择器语法的读者也不用着急，尽管CSS选择器语法很强大，但在Python中不够直观，想要快速确定选择器还要去网页中开启调试模式。好在NiceGUI提供了另一种不需要CSS选择器的定位指定元素工具，那就是`ElementFilter`。
 
-ElementFilter和ui模块同级，使用`from nicegui import ElementFilter`来导入。
+`ElementFilter`和`ui`模块同级，使用`from nicegui import ElementFilter`来导入。
 
-ElementFilter的功能等于ui.query加ui.teleport，既能设置指定元素的样式，又能将控件传送到指定位置。但与ui.query和ui.teleport使用CSS选择器语法不同，ElementFilter的筛选方式更pythonic，更直观，更契合Python编程习惯。
+`ElementFilter`的功能等于`ui.query`加`ui.teleport`，既能设置指定元素的样式，又能将控件传送到指定位置。但与`ui.query`和`ui.teleport`使用CSS选择器语法不同，`ElementFilter`的筛选方式更pythonic，更直观，更契合Python编程习惯。
 
-以下代码是用于匹配的模板内容，以下面的代码为例，分别看看ElementFilter不同参数、方法的用途：
+以下代码是用于匹配的模板内容，以下面的代码为例，分别看看`ElementFilter`不同参数、方法的用途：
 
 ```python3
 from nicegui import ui,ElementFilter
@@ -2351,9 +2351,9 @@ ui.run(native=True)
 
 ##### 3.8.3.1 初始化方法
 
-ElementFilter是一个类，需要初始化为对象实例才能使用。ElementFilter的初始化方法有四个参数，分别是 `kind` 、`marker` 、`content` 、`local_scope`。
+`ElementFilter`是一个类，需要初始化为对象实例才能使用。`ElementFilter`的初始化方法有四个参数，分别是 `kind` 、`marker` 、`content` 、`local_scope`。
 
-`kind`参数，NiceGUI的ui类型，表示筛选什么类型的控件。比如，在下面的代码中，传入的参数是`ui.label`，ElementFilter就会筛选ui.label，这样给ElementFilter对象设置背景颜色为红色的时候，页面内所有的ui.label的背景颜色就相应变成红色。
+`kind`参数，NiceGUI的`ui`类型，表示筛选什么类型的控件。比如，在下面的代码中，传入的参数是`ui.label`，`ElementFilter`就会筛选`ui.label`，这样给`ElementFilter`对象设置背景颜色为红色的时候，页面内所有的`ui.label`的背景颜色就相应变成红色。
 
 ```python3
 from nicegui import ui,ElementFilter
@@ -2375,11 +2375,11 @@ ui.run(native=True)
 
 ![ElementFilter_01](nicegui.assets/ElementFilter_01.png)
 
-`marker`参数，字符串类型或者字符串列表类型，表示筛选包含指定mark或者指定mark列表的对象。
+`marker`参数，字符串类型或者字符串列表类型，表示筛选包含指定marker或者指定marker列表的对象。
 
-在此，需要额外介绍一下控件的mark方法，也就是如何给控件添加marker。对于每一个ui控件，都可以通过mark方法定义一组marker，用于ElementFilter的筛选。mark方法的参数是一个支持解包、分解的字符串类型参数`markers`。也就是说，传入`'A'` 、`'A','B','AB'`、`'B A BA'`、`'A','B BA'`都是可以的。本质上说，mark方法就是将传入的字符串转换为该对象的`_markers`列表。对于`'A','B','AB'`这样多个字符串，该方法会转化为`['B','A','AB']`这样的列表来使用。对于`'B A BA'`这样用空格划分的字符串，该方法会自动以空格为分隔符分解为`['B','A','BA']`这样的列表来使用。当然，两种方法混用也没问题，`'A','B BA'`这样的多个字符串，则会转化为`['A','B','BA']`这样的列表。注意，虽然mark方法支持串联、重复使用，但最好不要这样做，因为后执行的mark会覆盖先前mark方法的结果，如果是想清除之前的marker，倒是可以重复执行。
+在此，需要额外介绍一下控件的`mark`方法，也就是如何给控件添加marker。对于每一个控件，都可以通过`mark`方法定义一组marker，用于`ElementFilter`的筛选。`mark`方法的参数是一个支持解包、分解的字符串类型参数`markers`。也就是说，传入`'A'` 、`'A','B','AB'`、`'B A BA'`、`'A','B BA'`都是可以的。本质上说，`mark`方法就是将传入的字符串转换为该对象的`_markers`列表。对于`'A','B','AB'`这样多个字符串，该方法会转化为`['B','A','AB']`这样的列表来使用。对于`'B A BA'`这样用空格划分的字符串，该方法会自动以空格为分隔符分解为`['B','A','BA']`这样的列表来使用。当然，两种方法混用也没问题，`'A','B BA'`这样的多个字符串，则会转化为`['A','B','BA']`这样的列表。注意，虽然`mark`方法支持串联、重复使用，但最好不要这样做，因为后执行的`mark`方法结果会覆盖先前`mark`方法的结果，如果是想清除之前的marker，倒是可以重复执行。
 
-说完给控件添加marker，下面回归正题，说说如何筛选。`marker`参数和mark方法的`markers`参数类似，只不过`marker`参数没有解包过程，想要传入多个字符串，只能使用字符串列表。与mark方法的宽松不同，`marker`参数的要求比较严格，要么是纯字符串，带空格的会自动划分、转化为列表，要么是无空格的字符串组成列表，不支持正确解析内含带空格的字符串列表，所以，只有以下格式才是正确的用法：`'A'` 、`['A','B','AB']`、`'B A BA'`。
+说完给控件添加marker，下面回归正题，说说如何筛选。`marker`参数和`mark`方法的`markers`参数类似，只不过`marker`参数没有解包过程，想要传入多个字符串，只能使用字符串列表。与`mark`方法的宽松不同，`marker`参数的要求比较严格，要么是纯字符串，带空格的会自动划分、转化为列表，要么是无空格的字符串组成列表，不支持正确解析内含带空格的字符串列表，所以，只有以下格式才是正确的用法：`'A'` 、`['A','B','AB']`、`'B A BA'`。
 
 代码示例如下：
 
@@ -2405,7 +2405,7 @@ ui.run(native=True)
 
 ![ElementFilter_02](nicegui.assets/ElementFilter_02.png)
 
-`content`参数，字符串类型或者字符串列表类型，表示筛选包含指定内容的对象。筛选范围包括对象的value、text、label、icon、placeholder等文本属性。匹配要求完全包含指定字符串或者字符串列表。
+`content`参数，字符串类型或者字符串列表类型，表示筛选包含指定内容的对象。筛选范围包括对象的`value`、`text`、`label`、`icon`、`placeholder`等文本属性。匹配要求完全包含指定字符串或者字符串列表。
 
 ```python3
 from nicegui import ui,ElementFilter
@@ -2427,7 +2427,7 @@ ui.run(native=True)
 
 ![ElementFilter_03](nicegui.assets/ElementFilter_03.png)
 
-`local_scope`参数，布尔类型，表示ElementFilter匹配当前范围还是全局，默认为`False`，即匹配全局。如果设置为`True`，则只匹配当前上下文。可以看以下代码，修改了缩进并将此参数设置为`True`，ElementFilter对象就只能匹配同一缩进内的控件：
+`local_scope`参数，布尔类型，表示`ElementFilter`匹配当前范围还是全局，默认为`False`，即匹配全局。如果设置为`True`，则只匹配当前上下文。可以看以下代码，修改了缩进并将此参数设置为`True`，ElementFilter对象就只能匹配同一缩进内的控件：
 
 ```python3
 from nicegui import ui,ElementFilter
@@ -2450,13 +2450,13 @@ ui.run(native=True)
 
 ##### 3.8.3.2 `within`方法和`not_within`方法
 
-顾名思义，这两个方法就是在ElementFilter初始化参数的筛选范围内进一步筛选指定的父级对象，得到在指定的父级对象上下文之内、不在指定的父级对象上下文之内的对象。对`within`方法而言，会得到符合该方法匹配条件的对象。对`not_within`方法而言，会排除符合该方法匹配条件的对象
+顾名思义，这两个方法就是在`ElementFilter`初始化参数的筛选范围内进一步筛选指定的父级对象，得到在指定的父级对象上下文之内、不在指定的父级对象上下文之内的对象。对`within`方法而言，会得到符合该方法匹配条件的对象。对`not_within`方法而言，会排除符合该方法匹配条件的对象
 
 两个方法的参数都一样，都是三个，分别是`kind`、`marker`、`instance`。
 
 `kind`和`marker`与初始化方法的参数一样，这里不再赘述。只是，这里的`marker`不支持字符串列表。
 
-`instance`参数，对象或者对象列表，指定具体对象的范围内是否筛选。以 `within`方法为例，给此参数传递具体对象，ElementFilter将只筛选在该对象之内的ui.label：
+`instance`参数，对象或者对象列表，指定具体对象的范围内是否筛选。以 `within`方法为例，给此参数传递具体对象，`ElementFilter`将只筛选在该对象之内的`ui.label`：
 
 ```python3
 from nicegui import ui,ElementFilter
@@ -2482,7 +2482,7 @@ ui.run(native=True)
 
 ##### 3.8.3.3 `exclude`方法
 
-该方法是在ElementFilter初始化参数的筛选范围内进一步排除指定的对象。
+该方法是在`ElementFilter`初始化参数的筛选范围内进一步排除指定的对象。
 
 该方法有三个参数，`kind` 、`marker` 、`content` ，同初始化方法的参数一样，这里简单说一下示例代码，不做详解。不过，该方法的三个参数不支持传入列表，`marker`也不支持根据空格自动划分字符串，这一点需要注意。
 
@@ -2507,13 +2507,13 @@ ui.run(native=True)
 
 ![ElementFilter_06](nicegui.assets/ElementFilter_06.png)
 
-ui.label和ui.button都继承了TextElement，因此匹配TextElement会同时匹配到这两种控件，因此，在exclude方法中指定kind为ui.label之后，匹配结果就排除了ui.label，只有ui.button的颜色变成红色。
+`ui.label`和`ui.button`都继承了`TextElement`，因此匹配`TextElement`会同时匹配到这两种控件，因此，在`exclude`方法中指定`kind`为`ui.label`之后，匹配结果就排除了`ui.label`，只有`ui.button`的颜色变成红色。
 
 ##### 3.8.3.4 传送控件到匹配结果
 
-对于ElementFilter，想要传送控件到结果也很简单，只需遍历ElementFilter对象，就能获取匹配结果。
+对于`ElementFilter`，想要传送控件到结果也很简单，只需遍历`ElementFilter`对象，就能获取匹配结果。
 
-如下面代码所示，使用for遍历ElementFilter对象，使用with进入每个元素的上下文，就和正常添加控件到对应slot一样：
+如下面代码所示，使用`for`遍历`ElementFilter`对象，使用with进入每个元素的上下文，就和正常添加控件到对应slot一样：
 
 ```python3
 from nicegui import ui,ElementFilter
@@ -2540,7 +2540,7 @@ ui.run(native=True)
 
 ##### 3.8.3.5 总结
 
-ElementFilter的方法、参数不多，但用法不统一，要是组合使用，需要一些时间思考其匹配模式。而有的读者看到文字太多就头疼，没关系，这里将上面的内容简化为一个表格方便查阅。详细看过一遍文字教程之后，后续开发中再次遇到，可以快速参阅表格来确定匹配模式。
+`ElementFilter`的方法、参数不多，但用法不统一，要是组合使用，需要一些时间思考其匹配模式。而有的读者看到文字太多就头疼，没关系，这里将上面的内容简化为一个表格方便查阅。详细看过一遍文字教程之后，后续开发中再次遇到，可以快速参阅表格来确定匹配模式。
 
 对应参数的匹配模式：
 
@@ -2551,7 +2551,7 @@ ElementFilter的方法、参数不多，但用法不统一，要是组合使用�
 | `instance`参数      | 无此参数   | 全部匹配 | 任意一个     | 无此参数  |
 | `marker`参数        | 全部匹配   | 全部匹配 | 任意一个     | 任意一个  |
 
-Match type for parameters in ElementFilter's method:
+Match type for parameters in `ElementFilter`'s method:
 
 | ElementFilter's method | `__init__` | `within` | `not_within` | `exclude` |
 | ---------------------- | ---------- | -------- | ------------ | --------- |
@@ -2560,7 +2560,7 @@ Match type for parameters in ElementFilter's method:
 | parameter `instance`   | ----       | all/and  | any/or       | ----      |
 | parameter `marker`     | all/and    | all/and  | any/or       | any/or    |
 
-另外，对于NiceGUI2.1版本的ElementFilter部分方法参数不支持列表传入，这里特地补丁了一份模块文件，有需要的读者可以自行替换，文件的具体路径为`.venv\Lib\site-packages\nicegui\element_filter.py`，如果是全局环境的Python，路径为`{Python执可执行文件所在目录}\Lib\site-packages\nicegui\element_filter.py`
+另外，对于NiceGUI2.1版本的`ElementFilter`部分方法参数不支持列表传入，这里特地补丁了一份模块文件，有需要的读者可以自行替换，文件的具体路径为`.venv\Lib\site-packages\nicegui\element_filter.py`，如果是全局环境的Python，路径为`{Python执可执行文件所在目录}\Lib\site-packages\nicegui\element_filter.py`
 
 ```python3
 from __future__ import annotations
@@ -2812,18 +2812,15 @@ class ElementFilter(Generic[T]):
         for element in self:
             element.props(add, remove=remove)
         return self
-
 ```
-
-
 
 ### 3.9 其他布局
 
 前面介绍过常用的布局，其实NiceGUI支持的布局控件有很多，下面提到的这些不常用，但有些需求比较刁钻，用这些布局刚好可以减少不必要的工作。
 
-#### 3.9.1 ui.list
+#### 3.9.1 `ui.list`
 
-列表布局，看上去有点像ui.column，但列表布局主要是给ui.item用的，当然，要是想在一般布局的时候使用也没问题，不过需要注意一下二者的区别。
+列表布局，看上去有点像`ui.column`，但列表布局主要是给`ui.item`用的，当然，要是想在一般布局的时候使用也没问题，不过需要注意一下二者的区别。
 
 以代码为例：
 
@@ -2847,9 +2844,9 @@ ui.run(native=True)
 
 ![ui_list](nicegui.assets/ui_list.png)
 
-为了能清楚看到二者的区别，这里给两种布局加了个边框，方便看到边界。可以看出，ui.list比ui.column的默认行距小，整体看上去更加紧凑。当然，ui.list主要是给ui.item用的，默认的紧凑是有别的用途，如果在一般布局中需要紧凑一些的观感，可以根据需求调整样式，而不是使用ui.list代替ui.column。
+为了能清楚看到二者的区别，这里给两种布局加了个边框，方便看到边界。可以看出，`ui.list`比`ui.column`的默认行距小，整体看上去更加紧凑。当然，`ui.list`主要是给`ui.item`用的，默认的紧凑是有别的用途，如果在一般布局中需要紧凑一些的观感，可以根据需求调整样式，而不是使用`ui.list`代替`ui.column`。
 
-关于ui.list更恰当的用途，还是以代码为例：
+关于`ui.list`更恰当的用途，还是以代码为例：
 
 ```python3
 from nicegui import ui
@@ -2879,13 +2876,13 @@ ui.run(native=True)
 
 ![ui_list2](nicegui.assets/ui_list2.png)
 
-给ui.item内增加ui.item_section、ui.item_label等控件，可以实现类似通讯录的布局。不同于使用基本布局组合实现需要较多的样式调整，这些预定义的控件本身有很多属性样式，只需设置好对应的属性，就能让样式接近想要的效果。而且，本身的含义也比较直观，后续维护起来也方便。
+给`ui.item`内增加`ui.item_section`、`ui.item_label`等控件，可以实现类似通讯录的布局。不同于使用基本布局组合实现需要较多的样式调整，这些预定义的控件本身有很多属性样式，只需设置好对应的属性，就能让样式接近想要的效果。而且，本身的含义也比较直观，后续维护起来也方便。
 
-#### 3.9.2 ui.splitter
+#### 3.9.2 `ui.splitter`
 
-前面介绍过ui.separator，可以生成一条水平或者垂直的分隔线，用来不明显地区分控件。但是，在NiceGUI中，除了ui.separator外，还有一种分隔线，那就是ui.splitter，也可以生成一条水平或者垂直的分隔线。不过，在前面没介绍这个控件，是因为这个控件的用法可比ui.separator复杂，用途也多，只是简单分隔一下，还是用ui.separator比较好。倘若对于分隔有更高的要求或者其他用途，ui.splitter绝对能胜任。
+前面介绍过`ui.separator`，可以生成一条水平或者垂直的分隔线，用来不明显地区分控件。但是，在NiceGUI中，除了`ui.separator`外，还有一种分隔线，那就是`ui.splitter`，也可以生成一条水平或者垂直的分隔线。不过，在前面没介绍这个控件，是因为这个控件的用法可比`ui.separator`复杂，用途也多，只是简单分隔一下，还是用`ui.separator`比较好。倘若对于分隔有更高的要求或者其他用途，`ui.splitter`绝对能胜任。
 
-先看代码，分别用ui.separator和ui.splitter实现类似的效果：
+先看代码，分别用`ui.separator`和`ui.splitter`实现类似的效果：
 
 ```python3
 from nicegui import ui
@@ -2915,23 +2912,23 @@ ui.run(native=True)
 
 ![ui_splitter](nicegui.assets/ui_splitter.png)
 
-单看效果对比的话，ui.splitter看上去只是比ui.separator紧凑一些，似乎没什么不同。如果仔细看代码，就会发现ui.splitter的代码量比ui.separator多不少。
+单看效果对比的话，`ui.splitter`看上去只是比`ui.separator`紧凑一些，似乎没什么不同。如果仔细看代码，就会发现`ui.splitter`的代码量比`ui.separator`多不少。
 
-ui.splitter可以看做是一个容器，定义ui.splitter之后，会产生ui.splitter().before、ui.splitter().after、ui.splitter().separator三个子容器，需要分别给前两个容器填充内容，才能看到分隔效果。而且，中间的分隔线也支持添加内容和鼠标交互，可以用鼠标左右拖动。
+`ui.splitter`可以看做是一个容器，定义`ui.splitter`之后，会产生`ui.splitter().before`、`ui.splitter().after`、`ui.splitter().separator`三个子容器，需要分别给前两个容器填充内容，才能看到分隔效果。而且，中间的分隔线也支持添加内容和鼠标交互，可以用鼠标左右拖动。
 
-当然，ui.splitter支持的参数不少，用起来也比ui.separator复杂：
+当然，`ui.splitter`支持的参数不少，用起来也比`ui.separator`复杂：
 
-`horizontal`参数，布尔类型，是否将ui.splitter水平显示。
+`horizontal`参数，布尔类型，是否将`ui.splitter`水平显示。
 
-`limits`参数，浮点元组类型，表示拖动分隔线的范围（最小、最大百分比），这是一个二元元组，默认为(0,100)，第一个元素表示拖动范围的最小值，，第二个元素表示拖动范围的最大值。
+`limits`参数，浮点元组类型，表示拖动分隔线的范围（最小、最大百分比），这是一个二元元组，默认为`(0,100)`，第一个元素表示拖动范围的最小值，，第二个元素表示拖动范围的最大值。
 
-`value`参数，浮点类型，表示ui.splitter().before的初始大小百分比。
+`value`参数，浮点类型，表示`ui.splitter().before`的初始大小百分比。
 
-`reverse`参数，布尔类型，表示是否反转ui.splitter().before和ui.splitter().after先后顺序。
+`reverse`参数，布尔类型，表示是否反转`ui.splitter().before`和`ui.splitter().after`先后顺序。
 
 `on_change`参数，可调用类型，表示拖动分隔线时执行的操作。
 
-以下代码是ui.splitter的典型运用，通过拖动分隔线，显示彩色、黑白图像的对比效果，同时弹出通知显示当前分隔线的位置：
+以下代码是`ui.splitter`的典型运用，通过拖动分隔线，显示彩色、黑白图像的对比效果，同时弹出通知显示当前分隔线的位置：
 
 ```python3
 from nicegui import ui
@@ -2964,16 +2961,16 @@ ui.run(native=True)
 
 ![ui_splitter2](nicegui.assets/ui_splitter2.png)
 
-#### 3.9.3 ui.tabs
+#### 3.9.3 `ui.tabs`
 
 选项卡，现代浏览器的基本布局，可以通过点击上面的选项卡，切换下面的内容。
 
-在NiceGUI中，和选项卡相关的控件有 ui.tabs、ui.tab、ui.tab_panels和ui.tab_panel。ui.tabs是放置选项卡的容器，ui.tab是选项卡，ui.tab_panels是放置选项卡关联内容的容器，ui.tab_panel则是选项卡的关联内容。
+在NiceGUI中，和选项卡相关的控件有`ui.tabs`、`ui.tab`、`ui.tab_panels`和`ui.tab_panel`。`ui.tabs`是放置选项卡的容器，`ui.tab`是选项卡，`ui.tab_panels`是放置选项卡关联内容的容器，`ui.tab_panel`则是选项卡的关联内容。
 
-以下面的代码为例，ui.tab放置在ui.tabs内，ui.tab_panel放置在ui.tab_panels内，想要让选项卡正确关联、交互，需要确保以下参数正确设置：
+以下面的代码为例，`ui.tab`放置在`ui.tabs`内，`ui.tab_panel`放置在`ui.tab_panels`内，想要让选项卡正确关联、交互，需要确保以下参数正确设置：
 
-1.   ui.tab_panels的参数`tabs`需要传递已经创建的ui.tabs实例；
-2.   ui.tab_panel的参数`name`需要传递已经创建的ui.tab实例，或者实例的字符串参数`name`。
+1.   `ui.tab_panels`的参数`tabs`需要传递已经创建的`ui.tabs`实例；
+2.   `ui.tab_panel`的参数`name`需要传递已经创建的`ui.tab`实例，或者实例的字符串参数`name`。
 
 ```python3
 from nicegui import ui
@@ -2992,7 +2989,7 @@ ui.run(native=True)
 
 ![ui_tab](nicegui.assets/ui_tab.png)
 
-ui.tab的`name`参数是用来区分选项卡的唯一标识符，称之为id也可以，但是，肯定有读者觉得不太方便，如果想要修改选项卡的名字，势必影响到下面ui.tab_panel的关联。其实，并不会导致这样的问题，ui.tab还有一个字符串参数`label`，如果设置了这个参数，显示在选项卡上的内容就会变成`label`而不是`name`。此外，ui.tab还支持像ui.button一样设置图标，只需给参数`icon`传入图标字符的名字即可：
+`ui.tab`的`name`参数是用来区分选项卡的唯一标识符，称之为id也可以，但是，肯定有读者觉得不太方便，如果想要修改选项卡的名字，势必影响到下面`ui.tab_panel`的关联。其实，并不会导致这样的问题，`ui.tab`还有一个字符串参数`label`，如果设置了这个参数，显示在选项卡上的内容就会变成`label`而不是`name`。此外，`ui.tab`还支持像`ui.button`一样设置图标，只需给参数`icon`传入图标字符的名字即可：
 
 ```python3
 from nicegui import ui
@@ -3011,7 +3008,7 @@ ui.run(native=True)
 
 ![ui_tab2](nicegui.assets/ui_tab2.png)
 
-除了通过点击交互来切换选项卡，调用ui.tabs、ui.panels的set_value方法也能切换选项卡：
+除了通过点击交互来切换选项卡，调用`ui.tabs`、`ui.panels`的`set_value`方法也能切换选项卡：
 
 ```python3
 from nicegui import ui
@@ -3031,7 +3028,7 @@ ui.button('GoTo 2', on_click=lambda: tabs.set_value('Two'))
 ui.run(native=True)
 ```
 
-想要让选项卡从水平变成垂直，只需调用`props('vertical')`，设置`'vertical'`即可。不过，只是设置一下，界面并不会如预想中那样改变，还需要借用前面介绍到的ui.splitter：
+想要让选项卡从水平变成垂直，只需调用`props('vertical')`，设置`'vertical'`即可。不过，只是设置一下，界面并不会如预想中那样改变，还需要借用前面介绍到的`ui.splitter`：
 
 ```python3
 from nicegui import ui
@@ -3051,39 +3048,39 @@ ui.run(native=True)
 
 ![ui_tab3](nicegui.assets/ui_tab3.png)
 
-ui.tabs支持两个参数：
+`ui.tabs`支持两个参数：
 
-`value`参数，字符串类型或者ui.tab类型或者ui.tab_panel类型，用于指定初始化选择的ui.tab或者ui.tab_panel，如果是字符串类型，则值为ui.tab或者ui.tab_panel的name属性的值。但是，因为定义ui.tabs时，ui.tab和ui.tab_panel通常还没定义，这个参数一般不需要知道，也没法指定。
+`value`参数，字符串类型或者`ui.tab`类型或者`ui.tab_panel`类型，用于指定初始化选择的`ui.tab`或者`ui.tab_panel`，如果是字符串类型，则值为`ui.tab`或者`ui.tab_panel`的`name`属性的值。但是，因为定义`ui.tabs`时，`ui.tab`和`ui.tab_panel`通常还没定义，这个参数一般不需要知道，也没法指定。
 
 `on_change`参数，可调用类型，当选项卡切换时执行的操作。
 
-ui.tab支持三个参数：
+`ui.tab`支持三个参数：
 
-`name`参数，字符串类型，表示选项卡的名字，也可以称之为标识符，如果对应的ui.tab_panel也定义了name，需要保持一致。
+`name`参数，字符串类型，表示选项卡的名字，也可以称之为标识符，如果对应的`ui.tab_panel`也定义了`name`，需要保持一致。
 
-`label`参数，字符串类型，表示选项卡的标签，如果此参数没有定义，默认使用name的值。
+`label`参数，字符串类型，表示选项卡的标签，如果此参数没有定义，默认使用`name`的值。
 
 `icon`参数，字符串类型，表示选项卡的图标。
 
-ui.tab_panels支持五个参数：
+`ui.tab_panels`支持五个参数：
 
-`tabs`参数，ui.tabs类型，与已经创建的ui.tabs关联，ui.tabs切换选项卡时，ui.tab_panels也切换为相应的选项卡。
+`tabs`参数，`ui.tabs`类型，与已经创建的`ui.tabs`关联，`ui.tabs`切换选项卡时，`ui.tab_panels`也切换为相应的选项卡。
 
-`value`参数，字符串类型或者ui.tab类型或者ui.tab_panel类型，用于指定初始化选择的ui.tab或者ui.tab_panel，如果是字符串类型，则值为ui.tab或者ui.tab_panel的name属性的值。但是，因为定义ui.tab_panels时，ui.tab_panel通常还没定义，这个参数一般不设置为ui.tab_panel类型对象，而是指定为字符串或者已经定义的ui.tab。
+`value`参数，字符串类型或者`ui.tab`类型或者`ui.tab_panel`类型，用于指定初始化选择的`ui.tab`或者`ui.tab_panel`，如果是字符串类型，则值为`ui.tab`或者`ui.tab_panel`的`name`属性的值。但是，因为定义`ui.tab_panels`时，`ui.tab_panel`通常还没定义，这个参数一般不设置为`ui.tab_panel`类型对象，而是指定为字符串或者已经定义的`ui.tab`。
 
 `on_change`参数，可调用类型，当选项卡切换时执行的操作。
 
 `animated`参数，布尔类型，表示是否启用切换动画，默认为`True`。
 
-`keep_alive`参数，布尔类型，表示是否对容器内的控件启用VUE的keep-alive组件。启用此组件，容器内控件不会在不可见的时候销毁，而是一直保持存活，以免再次访问控件时，控件的状态因为重建而被重置。
+`keep_alive`参数，布尔类型，表示是否对容器内的控件启用VUE的`keep-alive`组件。启用此组件，容器内控件不会在不可见的时候销毁，而是一直保持存活，以免再次访问控件时，控件的状态因为重建而被重置。
 
-ui.tab_panel支持一个字符串参数`name`，与ui.tab的name相同，如果值一致，则会将ui.tab_panel与ui.tab关联。
+ui.tab_panel支持一个字符串参数`name`，与`ui.tab`的`name`相同，如果值一致，则会将`ui.tab_panel`与`ui.tab`关联。
 
-#### 3.9.4 ui.scroll_area
+#### 3.9.4 `ui.scroll_area`
 
 对于较多的内容放置在网页，会导致网页又臭又长，可以使用滚动区域当容器。滚动区域控件会生成滚动条，让内容只在指定的大小内显示，拖动滚动条可以显示其余内容。
 
-滚动区域控件支持一个可调用类型参数`on_scroll`作为响应滚动的执行操作，通过一个事件参数捕获滚动的响应事件，并将vertical_position（当前位置的垂直位置，单位像素）、vertical_percentage（当前位置的垂直位置，单位百分比）、vertical_size（滚动内容的垂直大小，单位像素）、vertical_container_size（滚动区域容器的垂直大小，单位像素）、horizontal_position（当前位置的水平位置，单位像素）、horizontal_percentage（当前位置的水平位置，单位百分比）、horizontal_size（滚动内容的水平大小，单位像素）、horizontal_container_size（滚动区域容器的水平大小，单位像素）等属性传递出来。此外，该控件的`scroll_to`方法可以设置控件内容滚动到什么位置。
+滚动区域控件支持一个可调用类型参数`on_scroll`作为响应滚动的执行操作，通过一个事件参数捕获滚动的响应事件，并将`vertical_position`（当前位置的垂直位置，单位像素）、`vertical_percentage`（当前位置的垂直位置，单位百分比）、`vertical_size`（滚动内容的垂直大小，单位像素）、`vertical_container_size`（滚动区域容器的垂直大小，单位像素）、`horizontal_position`（当前位置的水平位置，单位像素）、`horizontal_percentage`（当前位置的水平位置，单位百分比）、`horizontal_size`（滚动内容的水平大小，单位像素）、`horizontal_container_size`（滚动区域容器的水平大小，单位像素）等属性传递出来。此外，该控件的`scroll_to`方法可以设置控件内容滚动到什么位置。
 
 以下是简单的示例：
 
@@ -3101,7 +3098,7 @@ ui.run(native=True)
 
 ![ui_scroll_area](nicegui.assets/ui_scroll_area.png)
 
-给`on_scroll`参数传入带一个参数的lambda表达式，可以捕获滚动的响应事件，该事件的属性均为浮点类型。以下面的代码为例，代码中捕获的该事件的vertical_percentage，并将其赋给ui.number：
+给`on_scroll`参数传入带一个参数的lambda表达式，可以捕获滚动的响应事件，该事件的属性均为浮点类型。以下面的代码为例，代码中捕获的该事件的`vertical_percentage`，并将其赋给`ui.number`：
 
 ```python3
 from nicegui import ui
@@ -3122,11 +3119,11 @@ ui.run(native=True)
 
 `percent`参数，浮点类型，用百分比表示目标位置，不能与`pixels`参数同时指定。
 
-`axis`参数，字符串类型，限定为'vertical'或'horizontal'，默认为 'vertical'，表示滚动的方向是水平还垂直。
+`axis`参数，字符串类型，限定为`'vertical'`或`'horizontal'`，默认为`'vertical'`，表示滚动的方向是水平还垂直。
 
-`duration`参数，浮点类型，表示滚动动画的持续时间，默认是0，表示启用滚动动画。
+`duration`参数，浮点类型，表示滚动动画的持续时间，默认是`0`，表示启用滚动动画。
 
-以下代码在左边滚动区域的响应事件中添加执行了右边滚动区域的scroll_to方法，让左右的滚动保持一致：
+以下代码在左边滚动区域的响应事件中添加执行了右边滚动区域的`scroll_to`方法，让左右的滚动保持一致：
 
 ```python3
 from nicegui import ui
@@ -3148,7 +3145,7 @@ ui.run(native=True)
 
 ![ui_scroll_area3](nicegui.assets/ui_scroll_area3.png)
 
-#### 3.9.5 ui.skeleton
+#### 3.9.5 `ui.skeleton`
 
 骨架控件可以提供一系列占位轮廓，当内容还没有加载的时候，用占位轮廓提供网页的内容结构预览。同时，骨架控件上的鼠标样式会显示为正忙的样式，表示内容正在加载。
 
@@ -3165,37 +3162,37 @@ ui.run(native=True)
 
 ![ui_skeleton](nicegui.assets/ui_skeleton.png)
 
-`type`参数，字符串类型，表示骨架的基本形状，支持'text'、'rect'、'circle',、'QBtn'、'QBadge'、'QChip'、'QToolbar'、'QCheckbox'、'QRadio'、'QToggle'、'QSlider'、'QRange'、'QInput'、'QAvatar'，默认为'rect'。
+`type`参数，字符串类型，表示骨架的基本形状，支持`'text'`、`'rect'`、`'circle'`、`'QBtn'`、`'QBadge'`、`'QChip'`、`'QToolbar'`、`'QCheckbox'`、`'QRadio'`、`'QToggle'`、`'QSlider'`、`'QRange'`、`'QInput'`、`'QAvatar'`，默认为`'rect'`。
 
- `tag`参数，字符串类型，表示创建骨架控件用的HTML标签，默认为'div'。
+ `tag`参数，字符串类型，表示创建骨架控件用的HTML标签，默认为`'div'`。
 
-`animation`参数，字符串类型，骨架控件的动画，因为是在加载过程中占位显示，必须要有动画，以缓解用户等待期间的焦虑。支持'wave'、'pulse'、'pulse-x'、'pulse-y'、'fade'、blink'、'none'，默认为'wave'。
+`animation`参数，字符串类型，骨架控件的动画，因为是在加载过程中占位显示，必须要有动画，以缓解用户等待期间的焦虑。支持`'wave'`、`'pulse'`、`'pulse-x'`、`'pulse-y'`、`'fade'`、`'blink'`、`'none'`，默认为`'wave'`。
 
-`animation_speed`参数，浮点类型，表示动画的速度，即在多少秒完成一次动画循环，默认为1.5。
+`animation_speed`参数，浮点类型，表示动画的速度，即在多少秒完成一次动画循环，默认为`1.5`。
 
-`square`参数，布尔类型，表示是否移除骨架控件的圆角，默认为False。
+`square`参数，布尔类型，表示是否移除骨架控件的圆角，默认为`False`。
 
-`bordered`参数，布尔类型，表示是否显示骨架控件的边框，默认为False。
+`bordered`参数，布尔类型，表示是否显示骨架控件的边框，默认为`False`。
 
-`size`参数，字符串类型，表示使用CSS的大小单位指定骨架控件的大小，此时骨架控件显示为正方形或者圆形（取决于`type`参数），并且会覆盖`width`参数和`height`参数的设置，默认为None。
+`size`参数，字符串类型，表示使用CSS的大小单位指定骨架控件的大小，此时骨架控件显示为正方形或者圆形（取决于`type`参数），并且会覆盖`width`参数和`height`参数的设置，默认为`None`。
 
-`width`参数，字符串类型，表示使用CSS的大小单位指定骨架控件的宽度，会被`size`参数覆盖，默认为None。
+`width`参数，字符串类型，表示使用CSS的大小单位指定骨架控件的宽度，会被`size`参数覆盖，默认为`None`。
 
-`height`参数，字符串类型，表示使用CSS的大小单位指定骨架控件的高度，会被`size`参数覆盖，默认为None。
+`height`参数，字符串类型，表示使用CSS的大小单位指定骨架控件的高度，会被`size`参数覆盖，默认为`None`。
 
-#### 3.9.6 ui.carousel
+#### 3.9.6 `ui.carousel`
 
 ‌‌轮播图是一种常见的网页设计元素，主要用于提供网页内容的快速展示和导航。‌ 它通过切换多个图片或内容，吸引用户的注意力，提高页面的视觉吸引力。轮播图支持自定义轮播图片、轮播动画效果等，能够在可视化应用中展示多张图片轮流播放的效果。
 
-在NiceGUI中，ui.carousel就是可以实现轮播图效果的控件，不过它的英文是carousel，翻译过来的话是旋转木马，听起来不太像控件，这里就用轮播图代替。
+在NiceGUI中，`ui.carousel`就是可以实现轮播图效果的控件，不过它的英文是carousel，翻译过来的话是旋转木马，听起来不太像控件，这里就用轮播图代替。
 
 <img src="nicegui.assets/ui_carousel_sketch.png" alt="ui_carousel_sketch" style="zoom:67%;" />
 
-NiceGUI的轮播图控件，本质上是一种容器，轮播图会依次展示每个子控件，放在其中的子控件就是像一页一页的幻灯片。一般来说，轮播图子控件应该是ui.carousel_slide，实际上用其他控件也可以。
+NiceGUI的轮播图控件，本质上是一种容器，轮播图会依次展示每个子控件，放在其中的子控件就是像一页一页的幻灯片。一般来说，轮播图子控件应该是`ui.carousel_slide`，实际上用其他控件也可以。
 
-ui.carousel有五个参数：
+`ui.carousel`有五个参数：
 
-`value`参数，字符串类型或者ui.carousel_slide，表示轮播图初始展示哪一个子控件，默认为`None`，表示展示第一个。
+`value`参数，字符串类型或者`ui.carousel_slide`类型，表示轮播图初始展示哪一个子控件，默认为`None`，表示展示第一个。
 
 `on_value_change`参数，可调用类型，表示轮播图当前展示的子控件变化时，执行什么操作。
 
@@ -3209,7 +3206,7 @@ ui.carousel有五个参数：
 
 `next`方法，切换下一个子控件。
 
-ui.carousel_slide只有一个字符串参数`name`，也就是上面ui.carousel中`value`用到的指定当前页的值。默认没有指定的话，这个值是自动生成的——'slide_1'这种名字，下划线后的数字代表当前控件在所有子控件中的排序。
+`ui.carousel_slide`只有一个字符串参数`name`，也就是上面`ui.carousel`中`value`用到的指定当前页的值。默认没有指定的话，这个值是自动生成的——`'slide_1'`这种名字，下划线后的数字代表当前控件在所有子控件中的排序。
 
 ```python3
 from nicegui import ui
@@ -3234,7 +3231,7 @@ ui.run(native=True)
 
 <img src="nicegui.assets/ui_carousel.png" alt="ui_carousel" style="zoom:80%;" />
 
-#### 3.9.7 ui.expansion
+#### 3.9.7 `ui.expansion`
 
 在其他UI框架中可能叫做Accordion或者手风琴，这里也称之为手风琴控件，而不是直译其为扩大。
 
@@ -3260,7 +3257,7 @@ ui.run(native=True)
 
 <img src="nicegui.assets/ui_expansion.png" alt="ui_expansion" style="zoom: 67%;" />
 
-ui.expansion有六个参数：
+`ui.expansion`有六个参数：
 
 `text`参数，字符串类型，表示手风琴控件的文本内容。
 
@@ -3268,9 +3265,9 @@ ui.expansion有六个参数：
 
 `icon`参数，字符串类型，表示手风琴控件的图标。
 
-`group`参数，字符串类型，表示手风琴控件的分组，默认为`None`。其实，单个ui.expansion没法组成手风琴控件，需要多个配合。在没有指定此参数的情况下，每个ui.expansion都是独立打开、关闭的，只有在指定相同的此参数之后，各个ui.expansion的开闭才会关联，每组ui.expansion中只允许一个ui.expansion开启，点开其他ui.expansion会让已经打开的ui.expansion关闭。
+`group`参数，字符串类型，表示手风琴控件的分组，默认为`None`。其实，单个`ui.expansion`没法组成手风琴控件，需要多个配合。在没有指定此参数的情况下，每个`ui.expansion`都是独立打开、关闭的，只有在指定相同的此参数之后，各个`ui.expansion`的开闭才会关联，每组`ui.expansion`中只允许一个`ui.expansion`开启，点开其他`ui.expansion`会让已经打开的`ui.expansion`关闭。
 
-`value`参数，布尔类型，表示ui.expansion的开关状态，默认为`False`。
+`value`参数，布尔类型，表示`ui.expansion`的开关状态，默认为`False`。
 
 `on_value_change`参数，可调用类型，表示手风琴控件的值变化时执行什么操作。
 
@@ -3312,9 +3309,9 @@ ui.run(native=True)
 
 ![ui_expansion3](nicegui.assets/ui_expansion3.png)
 
-#### 3.9.8 ui.pagination
+#### 3.9.8 `ui.pagination`
 
-常在网页中看到多页内容的底部有标着页码的分页控件，点击后一页或者对应页码可以直接跳转。在NiceGUI，实现此功能的是ui.pagination。
+常在网页中看到多页内容的底部有标着页码的分页控件，点击后一页或者对应页码可以直接跳转。在NiceGUI，实现此功能的是`ui.pagination`。
 
 ```python3
 from nicegui import ui
@@ -3335,7 +3332,7 @@ ui.run(native=True)
 
 ![ui_pagination](nicegui.assets/ui_pagination.png)
 
-ui.pagination有五个参数：
+`ui.pagination`有五个参数：
 
 `min`参数，整数类型，分页控件的页码最小值。
 
@@ -3374,13 +3371,13 @@ ui.run(native=True)
 
 ![ui_pagination2](nicegui.assets/ui_pagination2.png)
 
-#### 3.9.9 ui.stepper
+#### 3.9.9 `ui.stepper`
 
-ui.stepper是一个类似向导功能的综合控件，可以给用户提供直观的操作引导。从本质上说，ui.stepper是个容器，有点像前面提到的轮播图，每次都是展示当前子控件的内容。不同的是，ui.stepper会在上方（或者左边）提供全部子控件标题作为步骤的预览，大致结构如下图所示：
+`ui.stepper`是一个类似向导功能的综合控件，可以给用户提供直观的操作引导。从本质上说，`ui.stepper`是个容器，有点像前面提到的轮播图，每次都是展示当前子控件的内容。不同的是，`ui.stepper`会在上方（或者左边）提供全部子控件标题作为步骤的预览，大致结构如下图所示：
 
 <img src="nicegui.assets/ui_stepper_sketch.png" alt="ui_stepper_sketch" style="zoom:80%;" />
 
-与ui.stepper相关的控件有ui.step和ui.stepper_navigation。ui.step是每一步的步骤，放在ui.stepper的上下文内。ui.step的上下文主要放置步骤的操作说明，这里的内容会展示在步骤预览的下方。ui.stepper_navigation是导航栏，里面放置下一步、上一步之类的操作按钮，通常放置在ui.step内，也可以放置在外面。
+与`ui.stepper`相关的控件有`ui.step`和`ui.stepper_navigation`。`ui.step`是每一步的步骤，放在`ui.stepper`的上下文内。`ui.step`的上下文主要放置步骤的操作说明，这里的内容会展示在步骤预览的下方。`ui.stepper_navigation`是导航栏，里面放置下一步、上一步之类的操作按钮，通常放置在`ui.step`内，也可以放置在外面。
 
 顺着上面的思路，代码如下：
 
@@ -3413,29 +3410,29 @@ ui.run(native=True)
 
 <img src="nicegui.assets/ui_stepper.png" alt="ui_stepper" style="zoom:67%;" />
 
-ui.stepper支持三个参数：
+`ui.stepper`支持三个参数：
 
-`value`参数，字符串类型或者ui.step类型，表示初始选择的步骤是哪一个，默认为`None`，即第一个。因为步骤的定义在这一行后面，直接使用ui.step类型会触发未定义报错，要指定非第一个当初始选择步骤，一般只能用字符串类型的名字，即ui.step的name属性的值。实际上ui.stepper点击下一步的操作，也就是将ui.stepper的value设置为指定ui.step的name的值。
+`value`参数，字符串类型或者`ui.step`类型，表示初始选择的步骤是哪一个，默认为`None`，即第一个。因为步骤的定义在这一行后面，直接使用`ui.step`类型会触发未定义报错，要指定非第一个当初始选择步骤，一般只能用字符串类型的名字，即`ui.step`的`name`属性的值。实际上`ui.stepper`点击下一步的操作，也就是将`ui.stepper`的`value`设置为指定`ui.step`的`name`的值。
 
-`on_value_change`参数，可调用类型，当ui.stepper的value变化时执行的操作。
+`on_value_change`参数，可调用类型，当`ui.stepper`的`value`变化时执行的操作。
 
-`keep_alive`参数，布尔类型，表示是否对容器内的控件启用VUE的keep-alive组件。启用此组件，容器内控件不会在不可见的时候销毁，而是一直保持存活，以免再次访问控件时，控件的状态因为重建而被重置。
+`keep_alive`参数，布尔类型，表示是否对容器内的控件启用VUE的`keep-alive`组件。启用此组件，容器内控件不会在不可见的时候销毁，而是一直保持存活，以免再次访问控件时，控件的状态因为重建而被重置。
 
 `previous`方法，切换上一步骤。
 
 `next`方法，切换下一步骤。
 
-ui.step支持三个参数：
+`ui.step`支持三个参数：
 
-`name`参数，字符串类型，和ui.tab类似，name也是ui.step的唯一标识符。同时，当title没有被定义时，这也是title的默认值。
+`name`参数，字符串类型，和`ui.tab`类似，`name`也是`ui.step`的唯一标识符。同时，当`title`没有被定义时，这也是`title`的默认值。
 
-`title`参数，字符串类型，表示步骤的标题，当此参数没有定义、为默认的`None`时，此参数会取name的值。
+`title`参数，字符串类型，表示步骤的标题，当此参数没有定义、为默认的`None`时，此参数会取`name`的值。
 
 `icon`参数，字符串类型，表示步骤的默认图标。注意，此图标只有在当前步骤没有被选定或者完成的时候显示。
 
-ui.stepper_navigation支持一个布尔类型参数`wrap`，表示里面的内容如果超出容器宽度的话，是否自动换行，默认为`True`。
+`ui.stepper_navigation`支持一个布尔类型参数`wrap`，表示里面的内容如果超出容器宽度的话，是否自动换行，默认为`True`。
 
-ui.stepper除了横向显示步骤，还可以变成竖向显示，只需调用`props('vertical')`，设置`'vertical'`即可：
+`ui.stepper`除了横向显示步骤，还可以变成竖向显示，只需调用`props('vertical')`，设置`'vertical'`即可：
 
 ```python3
 from nicegui import ui
@@ -3466,11 +3463,11 @@ ui.run(native=True)
 
 <img src="nicegui.assets/ui_stepper2.png" alt="ui_stepper2" style="zoom:67%;" />
 
-#### 3.9.10 ui.timeline
+#### 3.9.10 `ui.timeline`
 
-时间线控件有点像ui.stepper，不同的是，时间线控件只是展示为主的控件，并不具备交互功能。时间线控件可以像绘制思维导图一样，提供一个按照时间排序展示内容的控件。
+时间线控件有点像`ui.stepper`，不同的是，时间线控件只是展示为主的控件，并不具备交互功能。时间线控件可以像绘制思维导图一样，提供一个按照时间排序展示内容的控件。
 
-以代码为例，ui.timeline需要内嵌ui.timeline_entry，才能构成完整的时间线控件：
+以代码为例，`ui.timeline`需要内嵌`ui.timeline_entry`，才能构成完整的时间线控件：
 
 ```python3
 from nicegui import ui
@@ -3488,29 +3485,29 @@ ui.run(native=True)
 
 ![ui_timeline](nicegui.assets/ui_timeline.png)
 
-ui.timeline支持三个参数：
+`ui.timeline`支持三个参数：
 
-`side`参数，字符串类型，表示时间线的内容在时间线的哪边，允许值是'left'和'right'，默认是'left'，即左边。
+`side`参数，字符串类型，表示时间线的内容在时间线的哪边，允许值是`'left'`和`'right'`，默认是`'left'`，即左边。
 
-`layout`参数，字符串类型，表示时间线的布局，允许值是'dense', 'comfortable', 'loose'，默认是'dense'。dense布局是时间点的大字标题、标题、副标题和主要内容在时间线指定的side一边。comfortable布局是时间点的大字标题、标题和主要内容在时间线指定的side一边，副标题在另一边。loose布局是大字标题在中间，标题和主要内容在时间点指定的side一边，副标题在另一边。三种布局的对比如下：
+`layout`参数，字符串类型，表示时间线的布局，允许值是`'dense'`、`'comfortable'`、`'loose'`，默认是`'dense'`。dense布局是时间点的大字标题、标题、副标题和主要内容在时间线指定的`side`一边。comfortable布局是时间点的大字标题、标题和主要内容在时间线指定的`side`一边，副标题在另一边。loose布局是大字标题在中间，标题和主要内容在时间点指定的`side`一边，副标题在另一边。三种布局的对比如下：
 
 <img src="nicegui.assets/ui_timeline2.png" alt="ui_timeline2" style="zoom:50%;" />
 
 `color`参数，字符串类型，表示时间线的颜色。
 
-ui.timeline_entry支持的控件比较多，有九个：
+`ui.timeline_entry`支持的控件比较多，有九个：
 
 `body`参数，字符串类型，表示时间点的主要内容。
 
- `side`参数，字符串类型，表示时间线的内容在时间线的哪边，允许值是'left'和'right'，默认是'left'，即左边。注意，ui.timeline_entry的side只有在ui.timeline的layout属性为`'loose'`时生效。
+`side`参数，字符串类型，表示时间线的内容在时间线的哪边，允许值是`'left'`和`'right'`，默认是`'left'`，即左边。注意，`ui.timeline_entry`的`side`只有在`ui.timeline`的`layout`属性为`'loose'`时生效。
 
- `heading`参数，布尔类型，表示时间点是否为大字标题，默认为`False`。如果为`True`，当前时间点将只显示主要内容，并且样式与其他时间点不同，具体参考上面的布局对比图片。
+`heading`参数，布尔类型，表示时间点是否为大字标题，默认为`False`。如果为`True`，当前时间点将只显示主要内容，并且样式与其他时间点不同，具体参考上面的布局对比图片。
 
- `tag`参数，字符串类型，表示当前时间点如果被设定为大字标题，使用什么HTML标签当做大字标题的外围标签，默认是'h3'。
+`tag`参数，字符串类型，表示当前时间点如果被设定为大字标题，使用什么HTML标签当做大字标题的外围标签，默认是`'h3'`。
 
 `icon`参数，字符串类型，表示当前时间点的图标。
 
-`avatar`参数，字符串类型，表示当前时间点的头像，可以用图片的地址。注意，如果指定了icon参数，则只会显示图标，因为图标的优先级比头像高。
+`avatar`参数，字符串类型，表示当前时间点的头像，可以用图片的地址。注意，如果指定了`icon`参数，则只会显示图标，因为图标的优先级比头像高。
 
 `title`参数，字符串类型，表示当前时间点的标题。
 
@@ -3518,19 +3515,19 @@ ui.timeline_entry支持的控件比较多，有九个：
 
 `color`参数，字符串类型，表示时间点的颜色，如果当前时间点没有指定颜色，则采用时间线的颜色。
 
-#### 3.9.11 ui.notification
+#### 3.9.11 `ui.notification`
 
-ui.notification也是通知提示控件，相比ui.notify，ui.notification可以在显示的同时更新内容和一些其他属性，还可以使用dismiss方法手动移除。
+`ui.notification`也是通知提示控件，相比`ui.notify`，`ui.notification`可以在显示的同时更新内容和一些其他属性，还可以使用`dismiss`方法手动移除。
 
-而且，ui.notification的参数也不藏着掖着，直接放在提示里：
+而且，`ui.notification`的参数也不藏着掖着，直接放在提示里：
 
- `message`参数，字符串类型，信息文本，显示在通知中的主要内容。
+`message`参数，字符串类型，信息文本，显示在通知中的主要内容。
 
-`position`参数，字符串类型，通知出现的位置，有"top-left"、 "top-right"、"bottom-left"、 "bottom-right"、 "top"、 "bottom"、 "left"、 "right"、 "center"可选，默认为 "bottom"。
+`position`参数，字符串类型，通知出现的位置，有`"top-left"`、`"top-right"`、`"bottom-left"`、`"bottom-right"`、`"top"`、`"bottom"`、`"left"`、`"right"`、`"center"`可选，默认为`"bottom"`。
 
 `close_button`参数，字符串类型或者布尔型，是否显示关闭按钮，如果是字符串类型，关闭按钮的文字就是给定的文字，默认为`False`。
 
-`type`参数，字符串类型，通知的类型，有"positive"、 "negative"、 "warning"、 "info"、 "ongoing"，默认为`None`，不是其中的任何一种。
+`type`参数，字符串类型，通知的类型，有`"positive"`、`"negative"`、`"warning"`、`"info"`、`"ongoing"`，默认为`None`，不是其中的任何一种。
 
 `color`参数，字符串类型，通知的背景颜色。
 
@@ -3540,13 +3537,13 @@ ui.notification也是通知提示控件，相比ui.notify，ui.notification可�
 
 `spinner`参数，布尔类型，是否显示转盘动，默认为`False`。
 
-`timeout`参数，整数型，通知自动消失的时间，单位秒，默认为5，为0就是不消失。但是要确保`close_button`不是`False`，或者有调用dismiss的方法，否则通知没法正常消除，影响用户体验。
+`timeout`参数，整数型，通知自动消失的时间，单位秒，默认为`5`，为`0`就是不消失。但是要确保`close_button`不是`False`，或者有调用`dismiss`的方法，否则通知没法正常消除，影响用户体验。
 
 `on_dismiss`参数，可调用类型，当通知消失时执行的操作。
 
 `options`参数，字典类型，其他[Quasar的通知控件API](https://quasar.dev/quasar-plugins/notify#notify-api)中可用的参数可以传入此字典。
 
-由于ui.notification的特殊性，现在可以弹出一个显示百分比进度并自动消失的通知了（并不需要估计执行时间）：
+由于`ui.notification`的特殊性，现在可以弹出一个显示百分比进度并自动消失的通知了（并不需要估计执行时间）：
 
 ```python3
 import asyncio
