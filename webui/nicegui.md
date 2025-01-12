@@ -3812,13 +3812,13 @@ ui.run(native=True)
 
 `color`参数，字符串类型或者`None`，表示角标的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让角标变成默认颜色），默认为`'primary'`，即和主题颜色一致。
 
-`text_color`参数，字符串类型或者None，表示文字的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让文字变成默认颜色）。
+`text_color`参数，字符串类型或者`None`，表示文字的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让文字变成默认颜色）。
 
 `outline`参数，布尔类型，是否启用轮廓线风格，默认为`False`即填充风格。
 
-更多角标的设计属性可以参考[API文档](https://quasar.dev/vue-components/badge#qbadge-api)，示例代码中的'floating'就是修改了设计属性，让角标显示在右上角。其他有用的属性有'rounded'、'transparent'、'label'等。
+更多角标的设计属性可以参考[API文档](https://quasar.dev/vue-components/badge#qbadge-api)，示例代码中的`'floating'`就是修改了设计属性，让角标显示在右上角。其他有用的属性有`'rounded'`、`'transparent'`、`'label'`等。
 
-#### 3.10.4 ui.chip
+#### 3.10.4 `ui.chip`
 
 晶片控件，看上去有点像角标，但交互性远远高于角标。可以点击、选择、移除，设计属性也比角标多。先看示例代码：
 
@@ -3856,11 +3856,11 @@ ui.run(native=True)
 
 `icon`参数，字符串类型，控件内的图标。
 
-`color`参数，字符串类型，表示控件的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名），默认为'primary'，即和主题颜色一致。
+`color`参数，字符串类型，表示控件的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名），默认为`'primary'`，即和主题颜色一致。
 
-`text_color`参数，字符串类型或者None，表示文字的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让文字变成默认颜色）。
+`text_color`参数，字符串类型或者`None`，表示文字的颜色，支持传入字符串类型的颜色类（Quasar、 Tailwind、CSS的颜色名）或者`None`（即让文字变成默认颜色）。
 
-`on_click`参数，可调用类型，当点击控件时执行什么操作。注意，设置此参数，会同时添加控件的'clickable'属性，启用控件的鼠标悬停效果，让控件响应'click'事件。也就是说，如果直接使用`ui.chip('test').on('click',handler=lambda: ui.notify("Clicked"))`设置点击事件响应，这样操作并不能成功，只有`ui.chip('test').props('clickable').on('click',handler=lambda: ui.notify("Clicked"))`这样同时添加'clickable'属性才行。否则，只能用`ui.chip('test').on('mousedown',handler=lambda: ui.notify("Clicked"))`这样直接监听鼠标事件的响应才行，但这样会导致控件没有鼠标悬停效果。
+`on_click`参数，可调用类型，当点击控件时执行什么操作。注意，设置此参数，会同时添加控件的`'clickable'`属性（`props`），启用控件的鼠标悬停效果，让控件响应`'click'`事件。也就是说，如果不设置`on_click`参数或者调用`on_click`方法来设置点击事件，而是直接使用`ui.chip('test').on('click',handler=lambda: ui.notify("Clicked"))`设置点击事件响应，这样操作并不能成功，只有`ui.chip('test').props('clickable').on('click',handler=lambda: ui.notify("Clicked"))`这样同时添加`'clickable'`属性才行。否则，只能用`ui.chip('test').on('mousedown',handler=lambda: ui.notify("Clicked"))`这样直接监听鼠标事件的响应才行，但这样会导致控件没有鼠标悬停效果。
 
 `selectable`参数，布尔类型，控件是否可选择，默认为`False`。
 
